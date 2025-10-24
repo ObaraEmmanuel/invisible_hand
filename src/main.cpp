@@ -1,8 +1,19 @@
 #include <Arduino.h>
+
+#include "BLE_HID.h"
+#include "HID.h"
+
+
+HID* hid_device;
+
 void setup() {
-// write your initialization code here
+    BLEDevice::init("Hand");
+    hid_device = new BLEHID();
 }
 
 void loop() {
-// write your code here
+    if (!hid_device->connected())
+        return;
+    hid_device->press(UP_ARROW, 0);
+    delay(2000);
 }
