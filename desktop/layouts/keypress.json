@@ -1,0 +1,139 @@
+{
+    "attrib": {
+        "attr": {
+            "background": "#174f2a", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "pack"
+        }, 
+        "layout": {
+            "height": 32, 
+            "width": 370, 
+            "x": 139, 
+            "y": 156
+        }, 
+        "name": "base"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "name": "theme", 
+                "sub_theme": "dark", 
+                "theme": "sun-valley"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#174f2a", 
+                    "compound": "left", 
+                    "disabledforeground": "#535353", 
+                    "foreground": "#fafafa", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "image": "..\\resources\\keypress.png", 
+                    "text": "   KeyPress"
+                }, 
+                "layout": {
+                    "anchor": "w", 
+                    "height": 0, 
+                    "padx": 5, 
+                    "side": "left", 
+                    "width": 0
+                }, 
+                "name": "label"
+            }, 
+            "type": "tkinter.Label"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "background": "#363636", 
+                    "foreground": "#fafafa", 
+                    "highlightbackground": "#363636", 
+                    "highlightcolor": "#2f60d8", 
+                    "highlightthickness": 1, 
+                    "insertbackground": "#fafafa", 
+                    "relief": "flat", 
+                    "selectbackground": "#2f60d8", 
+                    "selectforeground": "#ffffff", 
+                    "state": "disabled"
+                }, 
+                "layout": {
+                    "expand": 1, 
+                    "fill": "both", 
+                    "height": 1, 
+                    "side": "left", 
+                    "width": 10
+                }, 
+                "name": "body"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "add": "False", 
+                        "handler": "on_keypress", 
+                        "sequence": "<KeyPress>"
+                    }, 
+                    "type": "event"
+                }, 
+                {
+                    "attrib": {
+                        "add": "False", 
+                        "handler": "on_buttonpress", 
+                        "sequence": "<ButtonPress>"
+                    }, 
+                    "type": "event"
+                }, 
+                {
+                    "attrib": {
+                        "add": "False", 
+                        "handler": "on_focus_out", 
+                        "sequence": "<FocusOut>"
+                    }, 
+                    "type": "event"
+                }
+            ], 
+            "type": "tkinter.Text"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#363636", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#363636", 
+                    "borderwidth": "0", 
+                    "command": "clear", 
+                    "disabledforeground": "#535353", 
+                    "foreground": "#fafafa", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "image": "..\\resources\\clear_small.png", 
+                    "relief": "flat", 
+                    "text": "button_2"
+                }, 
+                "layout": {
+                    "fill": "y", 
+                    "height": "16", 
+                    "ipadx": 5, 
+                    "side": "left", 
+                    "width": "20"
+                }, 
+                "name": "button_2"
+            }, 
+            "type": "tkinter.Button"
+        }
+    ], 
+    "type": "tkinter.Frame"
+}

@@ -1,0 +1,99 @@
+{
+    "attrib": {
+        "attr": {
+            "layout": "pack", 
+            "style": "Card.TFrame"
+        }, 
+        "layout": {
+            "height": 45, 
+            "width": 499, 
+            "x": 142, 
+            "y": 229
+        }, 
+        "name": "base"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "name": "theme", 
+                "sub_theme": "dark", 
+                "theme": "sun-valley"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "background": "#4499ff", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "layout": "place"
+                }, 
+                "layout": {
+                    "anchor": "w", 
+                    "fill": "y", 
+                    "height": 0, 
+                    "side": "left", 
+                    "width": 5
+                }, 
+                "name": "indicator"
+            }, 
+            "type": "tkinter.Frame"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "font": "SunValleyBodyFont", 
+                    "state": "readonly", 
+                    "takefocus": 0
+                }, 
+                "layout": {
+                    "anchor": "w", 
+                    "height": 10, 
+                    "padx": 5, 
+                    "side": "left", 
+                    "width": 10
+                }, 
+                "name": "key"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "add": "False", 
+                        "handler": "update_widgets", 
+                        "sequence": "<<ComboboxSelected>>"
+                    }, 
+                    "type": "event"
+                }
+            ], 
+            "type": "tkinter.ttk.Combobox"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "layout": "place"
+                }, 
+                "layout": {
+                    "anchor": "w", 
+                    "expand": 1, 
+                    "fill": "x", 
+                    "height": "0", 
+                    "padx": 5, 
+                    "side": "left", 
+                    "width": "1"
+                }, 
+                "name": "body"
+            }, 
+            "type": "tkinter.ttk.Frame"
+        }
+    ], 
+    "type": "tkinter.ttk.Frame"
+}

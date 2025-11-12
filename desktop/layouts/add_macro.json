@@ -1,0 +1,147 @@
+{
+    "attrib": {
+        "attr": {
+            "background": "#1c1c1c", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "pack", 
+            "relief": "ridge"
+        }, 
+        "layout": {
+            "height": 181, 
+            "width": 486, 
+            "x": 150, 
+            "y": 176
+        }, 
+        "name": "frame_1"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "name": "title"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "Add Macro"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        },
+        {
+            "attrib": {
+                "name": "geometry"
+            },
+            "children": [
+                {
+                    "attrib": {
+                        "value": "486x148+0+0"
+                    },
+                    "type": "arg"
+                }
+            ],
+            "type": "meth"
+        },
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "name": "theme", 
+                "sub_theme": "dark", 
+                "theme": "sun-valley"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "text": "Macro Name"
+                }, 
+                "layout": {
+                    "fill": "x", 
+                    "padx": 10, 
+                    "pady": 10, 
+                    "width": ""
+                }, 
+                "name": "label_1"
+            }, 
+            "type": "tkinter.ttk.Label"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "cursor": "ibeam", 
+                    "font": "SunValleyBodyFont"
+                }, 
+                "layout": {
+                    "fill": "x", 
+                    "padx": 10, 
+                    "pady": 10, 
+                    "width": 20
+                }, 
+                "name": "macro_name"
+            }, 
+            "type": "tkinter.ttk.Entry"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "layout": "pack"
+                }, 
+                "layout": {
+                    "expand": 1, 
+                    "fill": "both", 
+                    "height": "0", 
+                    "ipadx": 10, 
+                    "ipady": 10, 
+                    "width": "0"
+                }, 
+                "name": "frame_2"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "attr": {
+                            "command": "on_submit", 
+                            "style": "Accent.TButton", 
+                            "text": "Okay"
+                        }, 
+                        "layout": {
+                            "padx": 10, 
+                            "pady": 10, 
+                            "side": "right", 
+                            "width": ""
+                        }, 
+                        "name": "okay_btn"
+                    }, 
+                    "type": "tkinter.ttk.Button"
+                }, 
+                {
+                    "attrib": {
+                        "attr": {
+                            "command": "on_cancel", 
+                            "text": "Cancel"
+                        }, 
+                        "layout": {
+                            "pady": 10, 
+                            "side": "right", 
+                            "width": ""
+                        }, 
+                        "name": "cancel_btn"
+                    }, 
+                    "type": "tkinter.ttk.Button"
+                }
+            ], 
+            "type": "tkinter.ttk.Frame"
+        }
+    ], 
+    "type": "tkinter.Toplevel"
+}

@@ -1,0 +1,331 @@
+{
+    "attrib": {
+        "attr": {
+            "background": "#1c1c1c", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "grid"
+        }, 
+        "layout": {
+            "height": 653, 
+            "width": 782, 
+            "x": 30, 
+            "y": 30
+        }, 
+        "name": "main"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "row": "0", 
+                "weight": "1"
+            }, 
+            "type": "grid"
+        }, 
+        {
+            "attrib": {
+                "row": "1", 
+                "weight": "200"
+            }, 
+            "type": "grid"
+        }, 
+        {
+            "attrib": {
+                "column": "0", 
+                "weight": "1"
+            }, 
+            "type": "grid"
+        }, 
+        {
+            "attrib": {
+                "column": "1", 
+                "weight": "8"
+            }, 
+            "type": "grid"
+        }, 
+        {
+            "attrib": {
+                "name": "title"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "Invisible Hand"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "name": "geometry"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "782x620+0+0"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "name": "theme", 
+                "sub_theme": "dark", 
+                "theme": "sun-valley"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "name": "device", 
+                    "value": ""
+                }
+            }, 
+            "type": "tkinter.StringVar"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "layout": "pack"
+                }, 
+                "layout": {
+                    "column": 0, 
+                    "columnspan": 2, 
+                    "height": 0, 
+                    "ipadx": 5, 
+                    "ipady": 5, 
+                    "row": 0, 
+                    "sticky": "nesw", 
+                    "width": 0
+                }, 
+                "name": "header"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "attr": {
+                            "background": "#1c1c1c", 
+                            "exportselection": 0,
+                            "foreground": "#fafafa", 
+                            "state": "readonly", 
+                            "textvariable": "device"
+                        }, 
+                        "layout": {
+                            "height": 10, 
+                            "padx": 5, 
+                            "side": "left", 
+                            "width": 20
+                        }, 
+                        "name": "device_select"
+                    }, 
+                    "type": "tkinter.ttk.Combobox"
+                }, 
+                {
+                    "attrib": {
+                        "attr": {
+                            "command": "execute_macro", 
+                            "compound": "left", 
+                            "image": "C:\\Users\\emman\\projects\\embedded\\invisible_hand\\desktop\\resources\\play.png", 
+                            "text": "Execute"
+                        }, 
+                        "layout": {
+                            "padx": 5, 
+                            "side": "right", 
+                            "width": ""
+                        }, 
+                        "name": "execute_btn"
+                    }, 
+                    "type": "tkinter.ttk.Button"
+                }, 
+                {
+                    "attrib": {
+                        "attr": {
+                            "command": "upload_macro", 
+                            "compound": "left", 
+                            "image": "C:\\Users\\emman\\projects\\embedded\\invisible_hand\\desktop\\resources\\firmware.png", 
+                            "text": "Upload"
+                        }, 
+                        "layout": {
+                            "side": "right", 
+                            "width": ""
+                        }, 
+                        "name": "upload_btn"
+                    }, 
+                    "type": "tkinter.ttk.Button"
+                }, 
+                {
+                    "attrib": {
+                        "attr": {
+                            "command": "add_macro", 
+                            "compound": "left", 
+                            "image": "C:\\Users\\emman\\projects\\embedded\\invisible_hand\\desktop\\resources\\add.png", 
+                            "text": "Add"
+                        }, 
+                        "layout": {
+                            "padx": 5, 
+                            "side": "right", 
+                            "width": ""
+                        }, 
+                        "name": "button_3"
+                    }, 
+                    "type": "tkinter.ttk.Button"
+                }
+            ], 
+            "type": "tkinter.ttk.Frame"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "layout": "grid"
+                }, 
+                "layout": {
+                    "column": 1, 
+                    "height": 0, 
+                    "row": 1, 
+                    "sticky": "nesw", 
+                    "width": 0
+                }, 
+                "name": "package_body"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "row": "1", 
+                        "weight": "1"
+                    }, 
+                    "type": "grid"
+                }, 
+                {
+                    "attrib": {
+                        "column": "0", 
+                        "weight": "1"
+                    }, 
+                    "type": "grid"
+                }, 
+                {
+                    "attrib": {
+                        "attr": {
+                            "layout": "pack"
+                        }, 
+                        "layout": {
+                            "column": 0, 
+                            "height": "50", 
+                            "ipadx": 10, 
+                            "ipady": 10, 
+                            "row": 0, 
+                            "sticky": "ew", 
+                            "width": "0"
+                        }, 
+                        "name": "frame_1"
+                    }, 
+                    "children": [
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "anchor": "center", 
+                                    "text": "Macro name"
+                                }, 
+                                "layout": {
+                                    "expand": 1, 
+                                    "fill": "x", 
+                                    "padx": 10, 
+                                    "side": "left", 
+                                    "width": ""
+                                }, 
+                                "name": "macro_name_lbl"
+                            }, 
+                            "type": "tkinter.ttk.Label"
+                        }, 
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "command": "delete_macro", 
+                                    "image": "C:\\Users\\emman\\projects\\embedded\\invisible_hand\\desktop\\resources\\delete.png", 
+                                    "text": "button_1"
+                                }, 
+                                "layout": {
+                                    "padx": 5, 
+                                    "side": "right", 
+                                    "width": ""
+                                }, 
+                                "name": "button_1"
+                            }, 
+                            "type": "tkinter.ttk.Button"
+                        }, 
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "command": "clear_macro", 
+                                    "image": "C:\\Users\\emman\\projects\\embedded\\invisible_hand\\desktop\\resources\\clear.png", 
+                                    "text": "button_2"
+                                }, 
+                                "layout": {
+                                    "side": "right", 
+                                    "width": ""
+                                }, 
+                                "name": "button_2"
+                            }, 
+                            "type": "tkinter.ttk.Button"
+                        }
+                    ], 
+                    "type": "tkinter.ttk.Frame"
+                }, 
+                {
+                    "attrib": {
+                        "layout": {
+                            "column": 0, 
+                            "height": "265", 
+                            "row": 1, 
+                            "sticky": "nesw", 
+                            "width": "378"
+                        }, 
+                        "name": "macro_canvas"
+                    }, 
+                    "type": "commands.ComponentTree"
+                }
+            ], 
+            "type": "tkinter.ttk.Frame"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "displaycolumns": "#all", 
+                    "selectmode": "browse", 
+                    "show": "tree headings"
+                }, 
+                "layout": {
+                    "column": 0, 
+                    "height": 10, 
+                    "row": 1, 
+                    "sticky": "nesw"
+                }, 
+                "name": "package_list"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "add": "False", 
+                        "handler": "on_selection_change", 
+                        "sequence": "<<TreeviewSelect>>"
+                    }, 
+                    "type": "event"
+                }
+            ], 
+            "type": "tkinter.ttk.Treeview"
+        }
+    ], 
+    "type": "tkinter.Tk"
+}
