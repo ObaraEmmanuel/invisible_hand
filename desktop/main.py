@@ -76,21 +76,20 @@ class App(AppBuilder):
         self.load_packages()
         self._set_selection()
         self.macro_canvas.add_as_node(key="KeyPress")
-        self.macro_canvas.add_as_node(key="KeyPress")
+        self.macro_canvas.add_as_node(key="KeyHold")
         self.macro_canvas.add_as_node(key="KeyRelease")
         self.macro_canvas.add_as_node(key="ButtonPress")
         self.macro_canvas.add_as_node(key="KeyHold")
-        n = self.macro_canvas.add_as_node(key="MouseMove")
-        n.add_as_node(key="KeyPress")
-        n.add_as_node(key="KeyPress")
-        n.add_as_node(key="KeyPress")
-        n = n.add_as_node(key="KeyPress")
-        n.add_as_node(key="KeyPress")
-        n.add_as_node(key="KeyPress")
-        self.macro_canvas.add_as_node(key="KeyPress")
-
-
-
+        self.macro_canvas.add_as_node(key="Randomize")
+        self.macro_canvas.add_as_node(key="DelayRandom")
+        self.macro_canvas.add_as_node(key="ButtonHold")
+        self.macro_canvas.add_as_node(key="LoopFor")
+        self.macro_canvas.add_as_node(key="ButtonRelease")
+        self.macro_canvas.add_as_node(key="KeyHold")
+        self.macro_canvas.add_as_node(key="MouseMove")
+        self.macro_canvas.add_as_node(key="MouseWheel")
+        self.macro_canvas.add_as_node(key="Loop")
+        self.macro_canvas.add_as_node(key="Delay")
 
     def load_packages(self):
         packages = [

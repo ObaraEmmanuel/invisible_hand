@@ -1,14 +1,14 @@
 {
     "attrib": {
         "attr": {
-            "background": "#414f17", 
+            "background": "#4f2817", 
             "highlightbackground": "#1c1c1c", 
             "highlightcolor": "#2f60d8", 
             "layout": "pack"
         }, 
         "layout": {
             "height": 32, 
-            "width": 427, 
+            "width": 370, 
             "x": 139, 
             "y": 156
         }, 
@@ -34,17 +34,8 @@
         {
             "attrib": {
                 "attr": {
-                    "name": "delta_x", 
+                    "name": "count", 
                     "value": 1
-                }
-            }, 
-            "type": "tkinter.IntVar"
-        }, 
-        {
-            "attrib": {
-                "attr": {
-                    "name": "delta_y", 
-                    "value": 0
                 }
             }, 
             "type": "tkinter.IntVar"
@@ -54,19 +45,19 @@
                 "attr": {
                     "activebackground": "#2f60d8", 
                     "activeforeground": "#ffffff", 
-                    "background": "#414f17", 
+                    "background": "#4f2817", 
                     "compound": "left", 
                     "disabledforeground": "#535353", 
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "image": "..\\resources\\mouse.png", 
-                    "text": "   Mouse move"
+                    "image": "..\\resources\\time.png", 
+                    "text": "   Delay"
                 }, 
                 "layout": {
                     "anchor": "w", 
                     "height": 0, 
-                    "padx": "5 20", 
+                    "padx": 5, 
                     "side": "left", 
                     "width": 0
                 }, 
@@ -83,9 +74,9 @@
                     "buttondownrelief": "flat", 
                     "buttonuprelief": "flat", 
                     "disabledforeground": "#535353", 
-                    "font": "{Consolas} 9 {}", 
+                    "font": "SunValleyBodyFont", 
                     "foreground": "#fafafa", 
-                    "from": -127.0, 
+                    "from": 1.0, 
                     "highlightbackground": "#363636", 
                     "highlightcolor": "#2f60d8", 
                     "highlightthickness": 1, 
@@ -94,16 +85,15 @@
                     "relief": "flat", 
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
-                    "textvariable": "delta_y", 
+                    "textvariable": "delta", 
                     "to": 127.0
                 }, 
                 "layout": {
                     "fill": "y", 
-                    "padx": "5 0", 
                     "side": "right", 
                     "width": 4
                 }, 
-                "name": "y"
+                "name": "spnbx"
             }, 
             "type": "tkinter.Spinbox"
         }, 
@@ -112,75 +102,19 @@
                 "attr": {
                     "activebackground": "#2f60d8", 
                     "activeforeground": "#ffffff", 
-                    "background": "#414f17", 
+                    "background": "#4f2817", 
                     "disabledforeground": "#535353", 
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "delta_y:"
+                    "text": "ms: "
                 }, 
                 "layout": {
                     "height": 0, 
-                    "padx": 5, 
                     "side": "right", 
                     "width": 0
                 }, 
                 "name": "label_1"
-            }, 
-            "type": "tkinter.Label"
-        }, 
-        {
-            "attrib": {
-                "attr": {
-                    "activebackground": "#2f60d8", 
-                    "background": "#363636", 
-                    "buttonbackground": "#363636", 
-                    "buttondownrelief": "flat", 
-                    "buttonuprelief": "flat", 
-                    "disabledforeground": "#535353", 
-                    "font": "{Consolas} 9 {}", 
-                    "foreground": "#fafafa", 
-                    "from": -127.0, 
-                    "highlightbackground": "#363636", 
-                    "highlightcolor": "#2f60d8", 
-                    "highlightthickness": 1, 
-                    "increment": 1.0, 
-                    "insertbackground": "#fafafa", 
-                    "relief": "flat", 
-                    "selectbackground": "#2f60d8", 
-                    "selectforeground": "#ffffff", 
-                    "textvariable": "delta_x", 
-                    "to": 127.0
-                }, 
-                "layout": {
-                    "fill": "y", 
-                    "padx": 5, 
-                    "side": "right", 
-                    "width": 4
-                }, 
-                "name": "x"
-            }, 
-            "type": "tkinter.Spinbox"
-        }, 
-        {
-            "attrib": {
-                "attr": {
-                    "activebackground": "#2f60d8", 
-                    "activeforeground": "#ffffff", 
-                    "background": "#414f17", 
-                    "disabledforeground": "#535353", 
-                    "foreground": "#fafafa", 
-                    "highlightbackground": "#1c1c1c", 
-                    "highlightcolor": "#2f60d8", 
-                    "text": "delta_x:"
-                }, 
-                "layout": {
-                    "height": 0, 
-                    "padx": 5, 
-                    "side": "right", 
-                    "width": 0
-                }, 
-                "name": "label_2"
             }, 
             "type": "tkinter.Label"
         }

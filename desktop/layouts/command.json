@@ -1,14 +1,16 @@
 {
     "attrib": {
         "attr": {
-            "layout": "pack", 
-            "style": "Card.TFrame"
+            "background": "#414f17", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "pack"
         }, 
         "layout": {
-            "height": 45, 
-            "width": 499, 
-            "x": 142, 
-            "y": 229
+            "height": 32, 
+            "width": 427, 
+            "x": 139, 
+            "y": 156
         }, 
         "name": "base"
     }, 
@@ -32,68 +34,45 @@
         {
             "attrib": {
                 "attr": {
-                    "background": "#4499ff", 
+                    "name": "delta_x", 
+                    "value": 1
+                }
+            }, 
+            "type": "tkinter.IntVar"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "name": "delta_y", 
+                    "value": 0
+                }
+            }, 
+            "type": "tkinter.IntVar"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#414f17", 
+                    "compound": "left", 
+                    "disabledforeground": "#535353", 
+                    "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "layout": "place"
+                    "text": "   Command"
                 }, 
                 "layout": {
                     "anchor": "w", 
-                    "fill": "y", 
                     "height": 0, 
-                    "side": "left", 
-                    "width": 5
-                }, 
-                "name": "indicator"
-            }, 
-            "type": "tkinter.Frame"
-        }, 
-        {
-            "attrib": {
-                "attr": {
-                    "font": "SunValleyBodyFont", 
-                    "state": "readonly", 
-                    "takefocus": 0
-                }, 
-                "layout": {
-                    "anchor": "w", 
-                    "height": 10, 
                     "padx": 5, 
                     "side": "left", 
-                    "width": 10
+                    "width": 0
                 }, 
-                "name": "key"
+                "name": "label"
             }, 
-            "children": [
-                {
-                    "attrib": {
-                        "add": "False", 
-                        "handler": "update_widgets", 
-                        "sequence": "<<ComboboxSelected>>"
-                    }, 
-                    "type": "event"
-                }
-            ], 
-            "type": "tkinter.ttk.Combobox"
-        }, 
-        {
-            "attrib": {
-                "attr": {
-                    "layout": "place"
-                }, 
-                "layout": {
-                    "anchor": "w", 
-                    "expand": 1, 
-                    "fill": "x", 
-                    "height": "0", 
-                    "padx": 5, 
-                    "side": "left", 
-                    "width": "1"
-                }, 
-                "name": "body"
-            }, 
-            "type": "tkinter.ttk.Frame"
+            "type": "tkinter.Label"
         }
     ], 
-    "type": "tkinter.ttk.Frame"
+    "type": "tkinter.Frame"
 }

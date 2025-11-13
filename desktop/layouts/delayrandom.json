@@ -1,14 +1,14 @@
 {
     "attrib": {
         "attr": {
-            "background": "#414f17", 
+            "background": "#172a4f", 
             "highlightbackground": "#1c1c1c", 
             "highlightcolor": "#2f60d8", 
             "layout": "pack"
         }, 
         "layout": {
             "height": 32, 
-            "width": 427, 
+            "width": 414, 
             "x": 139, 
             "y": 156
         }, 
@@ -34,17 +34,8 @@
         {
             "attrib": {
                 "attr": {
-                    "name": "delta_x", 
+                    "name": "count", 
                     "value": 1
-                }
-            }, 
-            "type": "tkinter.IntVar"
-        }, 
-        {
-            "attrib": {
-                "attr": {
-                    "name": "delta_y", 
-                    "value": 0
                 }
             }, 
             "type": "tkinter.IntVar"
@@ -54,14 +45,14 @@
                 "attr": {
                     "activebackground": "#2f60d8", 
                     "activeforeground": "#ffffff", 
-                    "background": "#414f17", 
+                    "background": "#172a4f", 
                     "compound": "left", 
                     "disabledforeground": "#535353", 
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "image": "..\\resources\\mouse.png", 
-                    "text": "   Mouse move"
+                    "image": "..\\resources\\time.png", 
+                    "text": "   Random Delay"
                 }, 
                 "layout": {
                     "anchor": "w", 
@@ -83,9 +74,9 @@
                     "buttondownrelief": "flat", 
                     "buttonuprelief": "flat", 
                     "disabledforeground": "#535353", 
-                    "font": "{Consolas} 9 {}", 
+                    "font": "SunValleyBodyFont", 
                     "foreground": "#fafafa", 
-                    "from": -127.0, 
+                    "from": 1.0, 
                     "highlightbackground": "#363636", 
                     "highlightcolor": "#2f60d8", 
                     "highlightthickness": 1, 
@@ -94,16 +85,15 @@
                     "relief": "flat", 
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
-                    "textvariable": "delta_y", 
+                    "textvariable": "delta", 
                     "to": 127.0
                 }, 
                 "layout": {
                     "fill": "y", 
-                    "padx": "5 0", 
                     "side": "right", 
-                    "width": 4
+                    "width": 6
                 }, 
-                "name": "y"
+                "name": "spnbx"
             }, 
             "type": "tkinter.Spinbox"
         }, 
@@ -112,16 +102,15 @@
                 "attr": {
                     "activebackground": "#2f60d8", 
                     "activeforeground": "#ffffff", 
-                    "background": "#414f17", 
+                    "background": "#172a4f", 
                     "disabledforeground": "#535353", 
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "delta_y:"
+                    "text": "upper (ms): "
                 }, 
                 "layout": {
                     "height": 0, 
-                    "padx": 5, 
                     "side": "right", 
                     "width": 0
                 }, 
@@ -138,9 +127,9 @@
                     "buttondownrelief": "flat", 
                     "buttonuprelief": "flat", 
                     "disabledforeground": "#535353", 
-                    "font": "{Consolas} 9 {}", 
+                    "font": "SunValleyBodyFont", 
                     "foreground": "#fafafa", 
-                    "from": -127.0, 
+                    "from": 1.0, 
                     "highlightbackground": "#363636", 
                     "highlightcolor": "#2f60d8", 
                     "highlightthickness": 1, 
@@ -149,16 +138,14 @@
                     "relief": "flat", 
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
-                    "textvariable": "delta_x", 
+                    "textvariable": "delta", 
                     "to": 127.0
                 }, 
                 "layout": {
-                    "fill": "y", 
-                    "padx": 5, 
                     "side": "right", 
-                    "width": 4
+                    "width": 6
                 }, 
-                "name": "x"
+                "name": "spinbox_1"
             }, 
             "type": "tkinter.Spinbox"
         }, 
@@ -167,16 +154,15 @@
                 "attr": {
                     "activebackground": "#2f60d8", 
                     "activeforeground": "#ffffff", 
-                    "background": "#414f17", 
+                    "background": "#172a4f", 
                     "disabledforeground": "#535353", 
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "delta_x:"
+                    "text": "lower (ms): "
                 }, 
                 "layout": {
                     "height": 0, 
-                    "padx": 5, 
                     "side": "right", 
                     "width": 0
                 }, 

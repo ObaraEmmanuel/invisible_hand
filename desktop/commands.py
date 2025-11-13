@@ -32,6 +32,16 @@ class WidgetFactory:
 
 class CommandComponent:
 
+    def __init__(self, *args, **kwargs):
+        self.base: tk.Frame = None
+        self.body: tk.Text = None
+        self.label: tk.Label = None
+        super().__init__(*args, **kwargs)
+
+    @property
+    def is_block(self):
+        return False
+
     def select(self, *_):
         # self.base.configure(highlightbackground="#2f60d8")
         pass
@@ -43,14 +53,21 @@ class CommandComponent:
     def as_text(self, *_):
         return self.label['text']
 
+    def set_color(self, color):
+        self.label['bg'] = color
+        self.base['bg'] = color
 
-class KeyPressBase(CommandComponent, Builder):
+    def set_label(self, label):
+        self.label['text'] = "   " + label
+
+    def set_label_img(self, img):
+        self.label['image'] = img
+
+
+class KeyPressBase(Builder, CommandComponent):
     order = [Key.SHIFT, Key.ALT, Key.CONTROL]
 
     def __init__(self, master):
-        self.base: tk.Frame = None
-        self.body: tk.Text = None
-        self.label: tk.Label = None
         super().__init__(master, path="layouts/keypress.json")
         self.connect_callbacks(self)
         self.keys = set()
@@ -85,16 +102,6 @@ class KeyPressBase(CommandComponent, Builder):
     def on_focus_out(self, _):
         self.clicks_since_focus = 0
 
-    def set_color(self, color):
-        self.label['bg'] = color
-        self.base['bg'] = color
-
-    def set_label(self, label):
-        self.label['text'] = "   " + label
-
-    def set_label_img(self, img):
-        self.label['image'] = img
-
     def as_text(self, *_):
         return f"{self.label['text']} <{self.get_key_text()}>"
 
@@ -123,13 +130,21 @@ class KeyHold(KeyPress):
     def __init__(self, master):
         super().__init__(master)
         self.set_label("Key Hold")
-        self.set_color(to_hex(from_hsl((180, 55, 20))))
+        self.set_color(to_hex(from_hsl((140, 55, 20))))
+
+    def on_keypress(self, event):
+        key = get_key(event.keycode)
+        if key in self.keys:
+            self.keys.remove(key)
+        else:
+            self.keys.add(key)
+        self.update_text()
 
 
-class KeyRelease(KeyPressBase):
+class KeyRelease(KeyHold):
     def __init__(self, master):
         super().__init__(master)
-        self.set_color(to_hex(from_hsl((20, 55, 20))))
+        self.set_color(to_hex(from_hsl((140, 55, 20))))
         self.set_label("Key Release")
 
 
@@ -137,7 +152,7 @@ class ButtonPress(KeyPressBase):
     def __init__(self, master):
         super().__init__(master)
         self.set_color(to_hex(from_hsl((40, 55, 20))))
-        self.set_label("Mouse click")
+        self.set_label("Button Press")
         self.img = PhotoImage(file="resources/mouse.png")
         self.set_label_img(self.img)
 
@@ -161,7 +176,69 @@ class ButtonPress(KeyPressBase):
         self.update_text()
 
 
-class MouseWheel(CommandComponent, Builder):
+class Loop(Builder, CommandComponent):
+
+    def __init__(self, master):
+        super().__init__(master, path="layouts/command.json")
+        self.set_color(to_hex(from_hsl((300, 55, 20))))
+        self.set_label("Loop forever")
+        self.img = PhotoImage(file="resources/loop.png")
+        self.set_label_img(self.img)
+
+    @property
+    def is_block(self):
+        return True
+
+
+class Randomize(Loop):
+
+    def __init__(self, master):
+        super().__init__(master)
+        self.img = PhotoImage(file="resources/random.png")
+        self.set_label_img(self.img)
+        self.set_label("Randomize")
+        self.set_color(to_hex(from_hsl((220, 55, 20))))
+
+
+class LoopFor(Builder, CommandComponent):
+
+    def __init__(self, master):
+        super().__init__(master, path="layouts/loopfor.json")
+
+    @property
+    def is_block(self):
+        return True
+
+
+class ButtonHold(KeyPressBase):
+
+    def __init__(self, master):
+        super().__init__(master)
+        self.set_color(to_hex(from_hsl((40, 55, 20))))
+        self.set_label("Button Hold")
+        self.img = PhotoImage(file="resources/mouse.png")
+        self.set_label_img(self.img)
+
+    def on_buttonpress(self, event):
+        super().on_buttonpress(event)
+        if self.clicks_since_focus <= 1:
+            return
+        button = get_button(event.num)
+        if button in self.keys:
+            self.keys.remove(button)
+        else:
+            self.keys.add(button)
+        self.update_text()
+
+
+class ButtonRelease(ButtonHold):
+    def __init__(self, master):
+        super().__init__(master)
+        self.set_color(to_hex(from_hsl((40, 55, 20))))
+        self.set_label("Button Release")
+
+
+class MouseWheel(Builder, CommandComponent):
 
     def __init__(self, master):
         self.base: tk.Frame = None
@@ -169,9 +246,10 @@ class MouseWheel(CommandComponent, Builder):
         self.label: tk.Label = None
         super().__init__(master, path="layouts/mousewheel.json")
         self.delta.set(1)
+        self.set_color(to_hex(from_hsl((75, 55, 20))))
 
 
-class MouseMove(CommandComponent, Builder):
+class MouseMove(Builder, CommandComponent):
     def __init__(self, master):
         self.base: tk.Frame = None
         self.delta_x: tk.IntVar = None
@@ -180,15 +258,33 @@ class MouseMove(CommandComponent, Builder):
         super().__init__(master, path="layouts/mousemove.json")
         self.delta_x.set(1)
         self.delta_y.set(1)
+        self.set_color(to_hex(from_hsl((75, 55, 20))))
+
+
+class Delay(Builder, CommandComponent):
+    def __init__(self, master):
+        super().__init__(master, path="layouts/delay.json")
+
+
+class DelayRandom(Builder, CommandComponent):
+    def __init__(self, master):
+        super().__init__(master, path="layouts/delayrandom.json")
 
 
 _components = (
     KeyPress,
     KeyHold,
     KeyRelease,
-    MouseWheel,
     ButtonPress,
-    MouseMove
+    ButtonHold,
+    ButtonRelease,
+    MouseMove,
+    MouseWheel,
+    Loop,
+    LoopFor,
+    Randomize,
+    Delay,
+    DelayRandom,
 )
 
 _components_map = {
@@ -214,7 +310,7 @@ class ComponentTree(tree.TreeView):
             self._init_binding()
             self.editable = True
             self.strict_mode = True
-            self.is_terminal = False
+            self.is_terminal = not self.command.is_block
 
         def _bind_widgets(self):
             return self.strip, self.command.label
@@ -243,40 +339,3 @@ class ComponentTree(tree.TreeView):
     def __init__(self, master=None, **config):
         super().__init__(master, **config)
         self.allow_multi_select(True)
-
-# class CommandWidget(WidgetFactory, Builder):
-#
-#     def __init__(self, master, key, *args, **kwargs):
-#         self.base: ttk.Frame = None
-#         self.key: ttk.Combobox = None
-#         self.body: tk.Text = None
-#         self.indicator: ttk.Frame = None
-#         super().__init__(master, path="layouts/command.json")
-#         self.master = master
-#         self.key['values'] = list(command_schema.keys())
-#         self.key.set(key)
-#         self.update_widgets()
-#         self.connect_callbacks(self)
-#
-#     def bind(self, *args, **kwargs):
-#         self.base.bind(*args, **kwargs)
-#
-#     def update_widgets(self, *_):
-#         for obj in self.body.winfo_children():
-#             obj.pack_forget()
-#
-#         self.body.update_idletasks()
-#         self.base.update_idletasks()
-#
-#         items = command_schema.get(self.key.get()).items()
-#
-#         for command, klass in items:
-#             widget = klass.create(self.body)
-#             widget.pack(side='left', expand=True)
-#             widget.set('')
-#             widget.set_label(command)
-#
-#         if not items:
-#             self.body.pack_propagate(False)
-#             self.body["width"] = 1
-#             self.body.pack_propagate(True)
