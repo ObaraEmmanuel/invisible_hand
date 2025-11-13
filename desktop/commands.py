@@ -1,6 +1,6 @@
 import tkinter as tk
 from collections import defaultdict
-from tkinter import ttk, PhotoImage
+from tkinter import PhotoImage
 
 from formation import Builder
 
@@ -40,6 +40,9 @@ class CommandComponent:
         # self.base.configure(highlightbackground="#1c1c1c")
         pass
 
+    def as_text(self, *_):
+        return self.label['text']
+
 
 class KeyPressBase(CommandComponent, Builder):
     order = [Key.SHIFT, Key.ALT, Key.CONTROL]
@@ -57,12 +60,15 @@ class KeyPressBase(CommandComponent, Builder):
         self.keys = set()
         self.update_text()
 
-    def update_text(self):
-        text = " + ".join([i.value for i in sorted(
+    def get_key_text(self):
+        return " + ".join([i.value for i in sorted(
             self.keys,
             key=lambda x: self.order.index(x) if x in self.order else -1,
             reverse=True
         )])
+
+    def update_text(self):
+        text = self.get_key_text()
         self.body.configure(width=max(10, len(text)))
         self.body['state'] = 'normal'
         self.body.delete('0.0', tk.END)
@@ -88,6 +94,9 @@ class KeyPressBase(CommandComponent, Builder):
 
     def set_label_img(self, img):
         self.label['image'] = img
+
+    def as_text(self, *_):
+        return f"{self.label['text']} <{self.get_key_text()}>"
 
 
 class KeyPress(KeyPressBase):
@@ -191,9 +200,8 @@ def get_component(key):
     return _components_map[key]
 
 
-class ComponentTree(tree.MalleableTreeView):
-
-    class Node(tree.MalleableTree.Node):
+class ComponentTree(tree.TreeView):
+    class Node(tree.Tree.Node):
 
         def __init__(self, master=None, **config):
             super().__init__(master, **config)
@@ -216,6 +224,7 @@ class ComponentTree(tree.MalleableTreeView):
             if self._selected:
                 self.strip.config(background="#2a2a2a")
                 self.expander.config(background="#2a2a2a")
+                self.strip.focus_force()
 
         def deselect(self, *_):
             super().deselect(*_)
@@ -223,18 +232,17 @@ class ComponentTree(tree.MalleableTreeView):
                 self.strip.config(background="#1c1c1c")
                 self.expander.config(background="#1c1c1c")
 
-        def highlight(self):
-            super().highlight()
-            self.configure(highlightthickness=1, highlightbackground="#3d8aff")
+        @property
+        def name(self):
+            return self.command.as_text()
 
-        def clear_highlight(self):
-            super().clear_highlight()
-            self.configure(highlightthickness=0, highlightbackground="#3d8aff")
+        @property
+        def icon(self):
+            return self.command.label['image']
 
     def __init__(self, master=None, **config):
         super().__init__(master, **config)
         self.allow_multi_select(True)
-
 
 # class CommandWidget(WidgetFactory, Builder):
 #

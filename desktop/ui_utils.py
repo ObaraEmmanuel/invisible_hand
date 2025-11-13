@@ -1,7 +1,7 @@
 import functools
 import tkinter as tk
 
-from platform_utils import platform_is, MAC
+from platform_utils import platform_is, MAC, LINUX, WINDOWS
 
 
 class EventMask:
@@ -188,3 +188,68 @@ class WidgetTree:
                 return check
             check = check.nametowidget(check.winfo_parent())  # noqa
         return None
+
+
+class ScrollableInterface:
+    """
+    Interface that allows widgets to be managed by the _MouseWheelDispatcherMixin which handles mousewheel
+    events which may be tricky to handle at the widget level.
+    """
+
+    def on_mousewheel(self, event):
+        raise NotImplementedError("on_mousewheel method is required")
+
+    def handle_wheel(self, widget, event):
+        # perform cross platform mousewheel handling
+        delta = 0
+        if platform_is(LINUX):
+            delta = 1 if event.num == 5 else -1
+        elif platform_is(MAC):
+            # For mac delta remains unmodified
+            delta = -1 * event.delta
+        elif platform_is(WINDOWS):
+            delta = -1 * (event.delta // 120)
+
+        if event.state & EventMask.CONTROL:
+            # scroll horizontally when control is held down
+            widget.xview_scroll(delta, "units")
+        else:
+            widget.yview_scroll(delta, "units")
+
+    def scroll_position(self):
+        # Return the scroll position to determine if we have reach the end of scroll so we can
+        # pass the scrolling to the next widget under the cursor that can scroll
+        raise NotImplementedError("Scroll position required for scroll transfer")
+
+    def scroll_transfer(self) -> bool:
+        # Override this method and return true to allow scroll transfers
+        return False
+
+
+class MouseWheelDispatcher:
+    """
+    Dispatches mousewheel events to the right scrolledFrame. The mousewheel event is bound to the main window
+    then the event is processed by this mixin though widget resolution techniques to determine if there is any
+    scrolled frame at the scroll position
+    """
+
+    @staticmethod
+    def _on_mousewheel(widget, event):
+        # Resolve the widget under the cursor to determine if there is any scrollable widget (ScrollableInterface)
+        # If any pass the event to it
+        check = WidgetTree.containing(event.x_root, event.y_root, widget)
+        while not isinstance(check, tk.Tk) and check is not None:
+            if isinstance(check, ScrollableInterface):
+                if check.scroll_transfer() and check.scroll_position()[0] < 1:
+                    # Perform scroll transfer by ignoring this widget and checking the next
+                    continue
+                check.on_mousewheel(event)
+                break
+            check = check.nametowidget(check.winfo_parent())
+
+    @staticmethod
+    def set_up_mousewheel(widget):
+        widget.bind_all("<MouseWheel>", lambda e: MouseWheelDispatcher._on_mousewheel(widget, e), '+')
+        # linux bindings
+        widget.bind_all("<Button-4>", lambda e: MouseWheelDispatcher._on_mousewheel(widget, e), '+')
+        widget.bind_all("<Button-5>", lambda e: MouseWheelDispatcher._on_mousewheel(widget, e), '+')

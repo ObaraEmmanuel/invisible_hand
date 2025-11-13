@@ -50,9 +50,9 @@ class EdgeIndicator(tk.Frame):
     Generates a conspicuous line at the edges of a widget for various indication purposes
     """
 
-    def __init__(self, master, style=None):
+    def __init__(self, master, **style):
         super().__init__(master)
-        self.config(height=1, relief="groove", bd=1)
+        self.config(height=1, relief="groove", bd=1, **style)
 
     def bottom(self, bounds):
         x, y = bounds[0], bounds[3]

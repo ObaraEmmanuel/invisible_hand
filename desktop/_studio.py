@@ -2,7 +2,7 @@ from studio import WidgetMeta
 
 from commands import ComponentTree
 from scrolledframe import ScrolledFrame
-from tree import TreeView, MalleableTreeView
+from tree import TreeView
 
 
 class ScrolledFrameMeta(ScrolledFrame, metaclass=WidgetMeta):
@@ -18,15 +18,6 @@ class TreeViewMeta(TreeView, metaclass=WidgetMeta):
     display_name = 'TreeView'
     # impl is not necessary and can be inferred from the inheritance list
     impl = TreeView
-    icon = "treeview"
-    is_container = False
-    initial_dimensions = 100, 100
-
-
-class MalleableTreeViewMeta(MalleableTreeView, metaclass=WidgetMeta):
-    display_name = 'MalleableTreeView'
-    # impl is not necessary and can be inferred from the inheritance list
-    impl = MalleableTreeView
     icon = "treeview"
     is_container = False
     initial_dimensions = 100, 100

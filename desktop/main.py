@@ -4,6 +4,7 @@ from tkinter import ttk
 
 import tree
 from commands import get_component
+from ui_utils import MouseWheelDispatcher
 
 
 def center_window(window, master=None):
@@ -51,6 +52,7 @@ class AddMacroDialog(Builder):
 class App(AppBuilder):
 
     def __init__(self):
+        self.main: tk.Tk = None
         self.package_list: ttk.Treeview = None
         self.package_box: ttk.Frame = None
         self.device_select: ttk.Frame = None
@@ -58,10 +60,11 @@ class App(AppBuilder):
         self.upload_btn: ttk.Button = None
         self.execute_btn: ttk.Button = None
         self.macro_name_lbl: ttk.Label = None
-        self.macro_canvas: tree.MalleableTreeView = None
+        self.macro_canvas: tree.TreeView = None
         super().__init__(self, path="layouts/app.json")
         self.device_select['font'] = None
         self.connect_callbacks(self)
+        MouseWheelDispatcher.set_up_mousewheel(self.main)
         s = ttk.Style()
         s.configure('Treeview', rowheight=40)
         center_window(self._root)

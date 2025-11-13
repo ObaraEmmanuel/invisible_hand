@@ -2,11 +2,10 @@ from tkinter import ttk, Frame
 import tkinter as tk
 import time
 
-from platform_utils import platform_is, LINUX, MAC, WINDOWS
-from ui_utils import EventMask
+from ui_utils import ScrollableInterface
 
 
-class ScrolledFrame(tk.Frame):
+class ScrolledFrame(tk.Frame, ScrollableInterface):
 
     def __init__(self, master=None, **cnf):
         super().__init__(master, **cnf)
@@ -187,23 +186,6 @@ class ScrolledFrame(tk.Frame):
 
     def yview_moveto(self, fraction):
         return self._canvas.yview_moveto(fraction)
-
-    def handle_wheel(self, widget, event):
-        # perform cross-platform mousewheel handling
-        delta = 0
-        if platform_is(LINUX):
-            delta = 1 if event.num == 5 else -1
-        elif platform_is(MAC):
-            # For mac delta remains unmodified
-            delta = -1 * event.delta
-        elif platform_is(WINDOWS):
-            delta = -1 * (event.delta // 120)
-
-        if event.state & EventMask.CONTROL:
-            # scroll horizontally when control is held down
-            widget.xview_scroll(delta, "units")
-        else:
-            widget.yview_scroll(delta, "units")
 
     def scroll_transfer(self) -> bool:
         # Override this method and return true to allow scroll transfers
