@@ -67,20 +67,17 @@ class Tree:
             self._name = config.get("name", "unknown")
             self.strip = f = TreeView.Strip(self, takefocus=True)
             f.pack(side="top", fill="x")
-            self._spacer = Frame(f, width=0)
-            self._spacer.grid(row=0, column=0)
             self.expander = Label(f, compound=tk.TOP, image=self.BLANK)
             self.expander.grid(row=0, column=1)
             self.expander.bind("<Button-1>", self.toggle)
-            if not config.get("icon"):
+            if "icon" in config:
                 self.icon_pad = Label(f, image=self._icon)
                 self.icon_pad.grid(row=0, column=2)
-            if not config.get("name"):
+            if "name" in config:
                 self.name_pad = Label(f, text=self._name)
                 self.name_pad.grid(row=0, column=3)
             f.columnconfigure(3, uniform=1)
-            self.body = Frame(self)
-            self.body.pack(side="top", fill="x")
+            self._body = None
             self._visible = True
             self._expanded = False
             self._selected = False
@@ -93,6 +90,19 @@ class Tree:
             # if true prevents node from being dragged to another tree
             self.strict_mode = False
             self.configuration = config
+
+        @property
+        def body(self):
+            if self._is_terminal:
+                return None
+            if not self._body:
+                self._body = Frame(self)
+                self._body.pack(side="top", fill="x")
+            return self._body
+
+        @body.setter
+        def body(self, value):
+            pass
 
         def _bind_widgets(self):
             widgets = [self.strip]
@@ -127,7 +137,7 @@ class Tree:
         @depth.setter
         def depth(self, value):
             self._depth = value
-            self._spacer["width"] = 30 * (value - 1) + 1  # width cannot be set to completely 0 so add 1 just in case
+            self.expander.grid_configure(padx=f"{30 * (value - 1)} 0")
             # Update depth even for the children
             for node in self.nodes:
                 node.depth = self._depth + 1
@@ -185,6 +195,15 @@ class Tree:
             else:
                 self.select(event)
 
+        def lift_all(self, above_this=None):
+            try:
+                self.lift(above_this)
+            except tk.TclError:
+                pass
+            if self._expanded:
+                for node in self.nodes:
+                    node.lift_all(self.body)
+
         @chain  # This just makes the method returns the object instance to allow method chaining
         def add(self, node):
             if self.is_descendant(node) or node == self:
@@ -193,7 +212,7 @@ class Tree:
             self.nodes.append(node)
             node.parent_node = self
             node.depth = self.depth + 1
-            node.lift(self.body)
+            node.lift_all(self.body)
             if self._expanded:
                 node.pack(in_=self.body, fill="x", side="top", pady=self.PADDING)
             else:
@@ -228,18 +247,27 @@ class Tree:
                 if self.is_descendant(node) or node == self:
                     # You cannot add a node to its descendant/ child or itself
                     continue
+                if node in self.nodes:
+                    old_index = self.nodes.index(node)
+                    index = index if old_index >= index else index - 1
                 node.remove()  # Remove node from whatever parent it belongs to
-                self.nodes.insert(index, node)
-                index += 1
                 node.parent_node = self
                 node.depth = self.depth + 1
-                node.lift(self.body)
-            if self._expanded:
-                self.collapse()
-                self.expand()
-            if len(self.nodes) > 0:
+                if self._expanded:
+                    insert_index = len(self.nodes)
+                    if len(self.nodes):
+                        insert_index = index - 1 if index > 0 else index
+                    insert_index = min(insert_index, len(self.nodes) - 1)
+                    spec = {}
+                    if self.nodes:
+                        spec = {"after": self.nodes[insert_index]} if index > 0 else {"before": self.nodes[insert_index]}
+                    node.pack(in_=self.body, **spec, fill="x", side="top", pady=self.PADDING)
+                    node.lift_all(self.body)
+                self.nodes.insert(index, node)
+                index += 1
+
+            if len(self.nodes) > 0 and not self._expanded:
                 self._set_expander(self.COLLAPSED_ICON)
-                self.expand()
 
         def add_as_node(self, **options):
             """
@@ -269,15 +297,10 @@ class Tree:
                 self.parent_node.remove(self)
             elif node in self.nodes:
                 # We need a local copy of the expanded flag since calling collapse resets
-                was_expanded = self._expanded
-                # Collapse parent so that layout changes caused by removal of a node can be applied
-                self.collapse()
                 self.nodes.remove(node)
                 node.pack_forget()
-                if was_expanded and len(self.nodes) > 0:
-                    # If the parent was expanded when we began removal we expand it again
-                    self.expand()
                 if not self.nodes:
+                    self.collapse()
                     # remove the expansion icon
                     self._set_expander(self.BLANK)
 
@@ -286,6 +309,7 @@ class Tree:
                 return
             self.pack_propagate(True)
             for node in filter(lambda n: n._visible, self.nodes):
+                node.lift_all(self.body)
                 node.pack(in_=self.body, fill="x", side="top", pady=self.PADDING)
             self._set_expander(self.EXPANDED_ICON)
             self._expanded = True
@@ -693,6 +717,9 @@ class Tree:
         if index is None:
             index = len(self.nodes)
         for node in nodes:
+            if node in self.nodes:
+                old_index = self.nodes.index(node)
+                index = index if old_index >= index else index - 1
             node.remove()  # Remove node from whatever parent it belongs to
             self.nodes.insert(index, node)
             index += 1

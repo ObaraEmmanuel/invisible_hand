@@ -303,8 +303,6 @@ class ComponentTree(tree.TreeView):
             super().__init__(master, **config)
             klass = get_component(config.get("key"))
             self.command = klass(self.strip, *config.get("args", ()), **config.get("kwargs", {}))
-            self.name_pad.grid_forget()
-            self.icon_pad.grid_forget()
             self.expander.grid(row=0, column=1, padx=3)
             self.command.base.grid(row=0, column=3)
             self._init_binding()
