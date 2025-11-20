@@ -1,5 +1,6 @@
 import functools
 import tkinter as tk
+from typing import Union
 
 from platform_utils import platform_is, MAC, LINUX, WINDOWS
 
@@ -77,6 +78,18 @@ def clean_styles(widget, styles) -> dict:
         if style in allowed_styles:
             cleaned_styles[style] = styles[style]
     return cleaned_styles
+
+
+def config_all(widget, **styles):
+    widget.configure(**clean_styles(widget, styles))
+    for child in widget.winfo_children():
+        config_all(child, **styles)
+
+
+def bind_all(widget, *args, **kwargs):
+    widget.bind(*args, **kwargs)
+    for child in widget.winfo_children():
+        bind_all(child, *args, **kwargs)
 
 
 class DragWindow(tk.Toplevel):
@@ -169,7 +182,7 @@ class WidgetTree:
         return x1 < x < x2 and y1 < y < y2
 
     @staticmethod
-    def event_first(event, widget, class_: type, ignore=None):
+    def event_first(event, widget, class_: type | tuple[type, ...], ignore=None):
         """
         Gets the first widget belonging to `class\\_` at the event position. This widget
         may be the top widget or it's parents and grandparents deep down the hierarchy.
@@ -188,6 +201,126 @@ class WidgetTree:
                 return check
             check = check.nametowidget(check.winfo_parent())  # noqa
         return None
+
+
+class DraggableMixin:
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._allow_drag = False
+        self._drag_setup = False
+
+    @property
+    def allow_drag(self):
+        """
+        Determines whether widgets can be dragged in-case of a drag drop event
+        """
+        return self._allow_drag
+
+    @allow_drag.setter
+    def allow_drag(self: Union['tk.Misc', 'DraggableMixin'], flag: bool):
+        """
+        Call this method to make the widget allow or disallow drag and drop
+
+        :param flag: set to True to allow drag drop and False to disallow
+        """
+        self._allow_drag = flag
+        if self._allow_drag and not self._drag_setup:
+            bind_all(self, '<Motion>', self._drag_handler)
+            bind_all(self, '<ButtonRelease-1>', self._drag_handler)
+            self._drag_setup = True
+
+    @property
+    def window(self: tk.Misc):
+        window = self.winfo_toplevel()
+        if not hasattr(window, 'drag_window'):
+            window.drag_window = None
+        return window
+
+    def _drag_handler(self, event):
+        """
+        Handle drag drop events
+        :param event: tk event
+        """
+        if not self.allow_drag:
+            return
+        if event.type.value == "6":
+            # Event is of Motion type
+            if event.state & EventMask.MOUSE_BUTTON_1 and self.window.drag_window is None:
+                self.window.drag_context = self
+                self.window.drag_window = DragWindow(self.window)
+                self.render_drag(self.window.drag_window)
+                self.window.drag_pos = event.x_root, event.y_root
+                self.window.drag_window.set_position(*self.drag_start_pos(event))
+                self.on_drag_start(event)
+            elif self.window.drag_window is not None:
+                x, y = self.window.drag_pos
+                delta_x, delta_y = event.x_root - x, event.y_root - y
+                self.window.drag_window.move(delta_x, delta_y)
+                self.window.drag_pos = event.x_root, event.y_root
+                self.on_drag(event)
+        elif event.type.value == "5":
+            # Event is of Button release type so end drag
+            if self.window.drag_window:
+                # sometimes the window handle changes when
+                # wm_manage/wm_forget is called on the on_drag_end method,
+                # so we need to keep a reference to the drag window
+                window = self.window
+                try:
+                    self.on_drag_end(event)
+                finally:
+                    window.drag_window.destroy()
+                    window.drag_window = None
+                    # Get the first widget at release position that supports drag manager and pass the context to it
+                    event_position = WidgetTree.event_first(event, self, DraggableMixin)
+                    if isinstance(event_position, DraggableMixin):
+                        event_position.accept_context(window.drag_context)
+                    window.drag_context = None
+
+    def accept_context(self, context):
+        """
+        This method is called when a drag drop operation is completed to allow the dropped object to be handled
+
+        :param context: Object being dropped at the widget
+        """
+        pass
+
+    def render_drag(self, window):
+        """
+        Override this method to create and position widgets on the drag shadow window (The object displayed
+        as the widget is dragged around). Create your custom widget hierarchy and position
+        it in window.
+
+        :param window: The drag window provided by the drag manager that should be used as the widget master
+        :return: None
+        """
+        tk.Label(window, text="Item", bg="#f7f7f7").pack()  # Default render
+
+    def on_drag_start(self, *args):
+        """
+        Called whe the widget is first dragged
+        """
+        pass
+
+    def on_drag_end(self, event):
+        """
+        Called when widget is dropped and dragging ends
+        """
+        pass
+
+    def on_drag(self, event):
+        """
+        Called when widget is dragged. This is called on each motion event so
+        it's best to keep computation in this function at a minimum
+        """
+        pass
+
+    def drag_start_pos(self: tk.Misc, event):
+        """
+        Override and return the preferred drag start position as a tuple (x, y).
+        Default is the current widget position
+        """
+        return event.x_root + 2, event.y_root + 2
 
 
 class ScrollableInterface:

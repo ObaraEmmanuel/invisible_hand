@@ -1,5 +1,6 @@
 from studio import WidgetMeta
 
+from catalogue import CatalogueList
 from commands import ComponentTree
 from scrolledframe import ScrolledFrame
 from tree import TreeView
@@ -24,9 +25,18 @@ class TreeViewMeta(TreeView, metaclass=WidgetMeta):
 
 
 class ComponentTreeMeta(ComponentTree, metaclass=WidgetMeta):
-    display_name = 'MalleableTreeView'
+    display_name = 'ComponentTree'
     # impl is not necessary and can be inferred from the inheritance list
     impl = ComponentTree
     icon = "treeview"
+    is_container = False
+    initial_dimensions = 100, 100
+
+
+class CatalogueListMeta(CatalogueList, metaclass=WidgetMeta):
+    display_name = 'CatalogueList'
+    # impl is not necessary and can be inferred from the inheritance list
+    impl = CatalogueList
+    icon = "listbox"
     is_container = False
     initial_dimensions = 100, 100

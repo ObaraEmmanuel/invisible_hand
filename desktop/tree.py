@@ -8,6 +8,12 @@ from scrolledframe import ScrolledFrame
 from ui_utils import chain, EventMask, DragWindow, WidgetTree
 
 
+class InsertType(enum.IntEnum):
+    INSERT_BEFORE = 0
+    INSERT_INTO = 1
+    INSERT_AFTER = 2
+
+
 class Tree:
     """
     Tree Abstraction for management of tree_views and similar
@@ -52,12 +58,6 @@ class Tree:
         BLANK = None
         __icons_loaded = False
         PADDING = 0
-        
-        class InsertType(enum.IntEnum):
-
-            INSERT_BEFORE = 0
-            INSERT_INTO = 1
-            INSERT_AFTER = 2
 
         def __init__(self, tree, **config):
             super().__init__(tree.get_body())
@@ -137,7 +137,7 @@ class Tree:
         @depth.setter
         def depth(self, value):
             self._depth = value
-            self.expander.grid_configure(padx=f"{30 * (value - 1)} 0")
+            self.expander.grid_configure(padx=f"{30 * (value - 1)} 5")
             # Update depth even for the children
             for node in self.nodes:
                 node.depth = self._depth + 1
@@ -466,14 +466,14 @@ class Tree:
             if Tree.drag_active:
                 if Tree.drag_select is not None:
                     action = node.react(event)
-                    if action == self.InsertType.INSERT_BEFORE:
+                    if action == InsertType.INSERT_BEFORE:
                         node.insert_before(*Tree.drag_components)
-                    elif action == self.InsertType.INSERT_INTO:
+                    elif action == InsertType.INSERT_INTO:
                         node.insert(None, *Tree.drag_components)
-                    elif action == self.InsertType.INSERT_AFTER:
+                    elif action == InsertType.INSERT_AFTER:
                         node.insert_after(*Tree.drag_components)
                     # else there is no viable action to take.
-                    if action in [i.value for i in self.InsertType]:
+                    if action in [i.value for i in InsertType]:
                         # These actions means tree structure changed
                         self._change_structure()
                 # Reset all drag related attributes
@@ -502,22 +502,22 @@ class Tree:
             # The cursor is at the top edge of the node so we can attempt to insert before it
             if event.y_root < self.strip.winfo_rooty() + 5:
                 self.tree.edge_indicator.top(upscale_bounds(bounds(self.strip), self))
-                return self.InsertType.INSERT_BEFORE
+                return InsertType.INSERT_BEFORE
             # The cursor is at the center of the node so we can attempt a direct insert into the node
             if self.strip.winfo_rooty() + 5 < event.y_root < self.strip.winfo_rooty() + self.strip.winfo_reqheight() - 5:
                 if not self._is_terminal:
                     # If node is terminal then id does not support children and consequently insertion
                     self.highlight()
-                    return self.InsertType.INSERT_INTO
+                    return InsertType.INSERT_INTO
             # The cursor is at the bottom edge of the node so we attempt to insert immediately after the node
             elif self._expanded:  # --- Case * ---
                 # If the node is expanded we would want to edge indicate at the very bottom after its last child
                 if event.y_root > self.winfo_rooty() + self.winfo_reqheight() - 5:
                     self.tree.edge_indicator.bottom(bounds(self))
-                    return self.InsertType.INSERT_AFTER
+                    return InsertType.INSERT_AFTER
             else:
                 self.tree.edge_indicator.bottom(upscale_bounds(bounds(self.strip), self))
-                return self.InsertType.INSERT_AFTER
+                return InsertType.INSERT_AFTER
 
         def clear_highlight(self):
             # Remove the rectangular highlight around the node
@@ -819,16 +819,16 @@ class Tree:
     def react(self, *_):
         self.clear_indicators()
         self.highlight()
-        # always perform a direct insert hence return 1
-        return 1
+        # always perform a direct insert
+        return InsertType.INSERT_INTO
 
     def highlight(self):
         Tree.drag_highlight = self
-        # TODO add style
+        self.get_body().configure(highlightthickness=1, highlightbackground="#3d8aff")
 
     def clear_highlight(self):
         # Remove the rectangular highlight around the node
-        # TODO add style
+        self.get_body().configure(highlightthickness=0, highlightbackground="#3d8aff")
         pass
 
     def clear_indicators(self):

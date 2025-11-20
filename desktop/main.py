@@ -1,7 +1,10 @@
-from formation import AppBuilder, Builder
 import tkinter as tk
 from tkinter import ttk
 
+from formation import AppBuilder, Builder
+
+import catalogue
+import itemlist
 import tree
 from commands import get_component
 from ui_utils import MouseWheelDispatcher
@@ -54,13 +57,14 @@ class App(AppBuilder):
     def __init__(self):
         self.main: tk.Tk = None
         self.package_list: ttk.Treeview = None
-        self.package_box: ttk.Frame = None
+        self.package_box: tk.Frame = None
         self.device_select: ttk.Frame = None
         self.device: tk.StringVar = None
         self.upload_btn: ttk.Button = None
         self.execute_btn: ttk.Button = None
         self.macro_name_lbl: ttk.Label = None
         self.macro_canvas: tree.TreeView = None
+        self.catalogue: catalogue.CatalogueList = None
         super().__init__(self, path="layouts/app.json")
         self.device_select['font'] = None
         self.connect_callbacks(self)
@@ -75,12 +79,14 @@ class App(AppBuilder):
         self._items = {}
         self.load_packages()
         self._set_selection()
+        self.catalogue.load()
         self.macro_canvas.add_as_node(key="KeyPress")
         self.macro_canvas.add_as_node(key="KeyHold")
         self.macro_canvas.add_as_node(key="KeyRelease")
         self.macro_canvas.add_as_node(key="ButtonPress")
         self.macro_canvas.add_as_node(key="KeyHold")
-        self.macro_canvas.add_as_node(key="Randomize")
+        n = self.macro_canvas.add_as_node(key="Randomize")
+        n.add_as_node(key="ButtonRelease")
         self.macro_canvas.add_as_node(key="DelayRandom")
         self.macro_canvas.add_as_node(key="ButtonHold")
         self.macro_canvas.add_as_node(key="LoopFor")

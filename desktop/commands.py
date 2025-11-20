@@ -31,6 +31,9 @@ class WidgetFactory:
 
 
 class CommandComponent:
+    color = to_hex(from_hsl((140, 55, 20)))
+    image = ""
+    type = ""
 
     def __init__(self, *args, **kwargs):
         self.base: tk.Frame = None
@@ -107,10 +110,13 @@ class KeyPressBase(Builder, CommandComponent):
 
 
 class KeyPress(KeyPressBase):
+    color = to_hex(from_hsl((140, 55, 20)))
+    image = "keypress"
+    type = "keypress"
 
     def __init__(self, master):
         super().__init__(master)
-        self.set_color(to_hex(from_hsl((140, 55, 20))))
+        self.set_color(self.color)
 
     def on_keypress(self, event):
         modifiers = get_modifiers(event.state)
@@ -126,11 +132,11 @@ class KeyPress(KeyPressBase):
 
 
 class KeyHold(KeyPress):
+    image = "keypress"
 
     def __init__(self, master):
         super().__init__(master)
         self.set_label("Key Hold")
-        self.set_color(to_hex(from_hsl((140, 55, 20))))
 
     def on_keypress(self, event):
         key = get_key(event.keycode)
@@ -142,16 +148,21 @@ class KeyHold(KeyPress):
 
 
 class KeyRelease(KeyHold):
+    image = "keypress"
+
     def __init__(self, master):
         super().__init__(master)
-        self.set_color(to_hex(from_hsl((140, 55, 20))))
         self.set_label("Key Release")
 
 
 class ButtonPress(KeyPressBase):
+    color = to_hex(from_hsl((40, 55, 20)))
+    image = "mouse"
+    type = "button"
+
     def __init__(self, master):
         super().__init__(master)
-        self.set_color(to_hex(from_hsl((40, 55, 20))))
+        self.set_color(self.color)
         self.set_label("Button Press")
         self.img = PhotoImage(file="resources/mouse.png")
         self.set_label_img(self.img)
@@ -176,45 +187,14 @@ class ButtonPress(KeyPressBase):
         self.update_text()
 
 
-class Loop(Builder, CommandComponent):
-
-    def __init__(self, master):
-        super().__init__(master, path="layouts/command.json")
-        self.set_color(to_hex(from_hsl((300, 55, 20))))
-        self.set_label("Loop forever")
-        self.img = PhotoImage(file="resources/loop.png")
-        self.set_label_img(self.img)
-
-    @property
-    def is_block(self):
-        return True
-
-
-class Randomize(Loop):
-
-    def __init__(self, master):
-        super().__init__(master)
-        self.img = PhotoImage(file="resources/random.png")
-        self.set_label_img(self.img)
-        self.set_label("Randomize")
-        self.set_color(to_hex(from_hsl((220, 55, 20))))
-
-
-class LoopFor(Builder, CommandComponent):
-
-    def __init__(self, master):
-        super().__init__(master, path="layouts/loopfor.json")
-
-    @property
-    def is_block(self):
-        return True
-
-
 class ButtonHold(KeyPressBase):
+    color = to_hex(from_hsl((40, 55, 20)))
+    image = "mouse"
+    type = "button"
 
     def __init__(self, master):
         super().__init__(master)
-        self.set_color(to_hex(from_hsl((40, 55, 20))))
+        self.set_color(self.color)
         self.set_label("Button Hold")
         self.img = PhotoImage(file="resources/mouse.png")
         self.set_label_img(self.img)
@@ -239,6 +219,9 @@ class ButtonRelease(ButtonHold):
 
 
 class MouseWheel(Builder, CommandComponent):
+    color = to_hex(from_hsl((75, 55, 20)))
+    image = "mouse"
+    type = "mouse"
 
     def __init__(self, master):
         self.base: tk.Frame = None
@@ -246,10 +229,14 @@ class MouseWheel(Builder, CommandComponent):
         self.label: tk.Label = None
         super().__init__(master, path="layouts/mousewheel.json")
         self.delta.set(1)
-        self.set_color(to_hex(from_hsl((75, 55, 20))))
+        self.set_color(self.color)
 
 
 class MouseMove(Builder, CommandComponent):
+    color = to_hex(from_hsl((75, 55, 20)))
+    image = "mouse"
+    type = "mouse"
+
     def __init__(self, master):
         self.base: tk.Frame = None
         self.delta_x: tk.IntVar = None
@@ -258,15 +245,65 @@ class MouseMove(Builder, CommandComponent):
         super().__init__(master, path="layouts/mousemove.json")
         self.delta_x.set(1)
         self.delta_y.set(1)
-        self.set_color(to_hex(from_hsl((75, 55, 20))))
+        self.set_color(self.color)
+
+
+class Loop(Builder, CommandComponent):
+    color = to_hex(from_hsl((300, 55, 20)))
+    image = "loop"
+    type = "control"
+
+    def __init__(self, master):
+        super().__init__(master, path="layouts/command.json")
+        self.set_color(self.color)
+        self.set_label("Loop forever")
+        self.img = PhotoImage(file="resources/loop.png")
+        self.set_label_img(self.img)
+
+    @property
+    def is_block(self):
+        return True
+
+
+class LoopFor(Builder, CommandComponent):
+    color = to_hex(from_hsl((300, 55, 20)))
+    image = "loop"
+    type = "control"
+
+    def __init__(self, master):
+        super().__init__(master, path="layouts/loopfor.json")
+
+    @property
+    def is_block(self):
+        return True
+
+
+class Randomize(Loop):
+    color = to_hex(from_hsl((220, 55, 20)))
+    image = "random"
+    type = "control"
+
+    def __init__(self, master):
+        super().__init__(master)
+        self.img = PhotoImage(file="resources/random.png")
+        self.set_label_img(self.img)
+        self.set_label("Randomize")
 
 
 class Delay(Builder, CommandComponent):
+    color = to_hex(from_hsl((75, 55, 20)))
+    image = "time"
+    type = "time"
+
     def __init__(self, master):
         super().__init__(master, path="layouts/delay.json")
 
 
 class DelayRandom(Builder, CommandComponent):
+    color = to_hex(from_hsl((75, 55, 20)))
+    image = "time"
+    type = "time"
+
     def __init__(self, master):
         super().__init__(master, path="layouts/delayrandom.json")
 
