@@ -1,7 +1,7 @@
 from tkinter import Frame, Label
 
 from scrolledframe import ScrolledFrame
-from ui_utils import EventMask, config_all
+from ui_utils import EventMask, config_all, clear_children, bind_all
 
 
 class CompoundList(ScrolledFrame):
@@ -47,12 +47,13 @@ class CompoundList(ScrolledFrame):
             self._parent: CompoundList = master
             self._index = index
             self._selected = False
+            self._allow_selection = True
             self._isolated = isolated
             self.render()
             if not self._isolated:
-                self.bind("<Enter>", self._on_hover)
-                self.bind("<Leave>", self._on_hover_ended)
-                # self.bind_all("<Button-1>", self.select_self, add="+")
+                bind_all(self, "<Enter>", self._on_hover)
+                bind_all(self, "<Leave>", self._on_hover_ended)
+                bind_all(self, "<Button-1>", self.select_self, add="+")
 
         def render(self):
             """
@@ -79,6 +80,8 @@ class CompoundList(ScrolledFrame):
 
             :param event: event causing the selection. Default is ``None``
             """
+            if not self._allow_selection:
+                return
             self._parent.select(self._index, event)
 
         def select(self, *_):
@@ -201,10 +204,11 @@ class CompoundList(ScrolledFrame):
 
         :param values: an iterable containing the item values to be displayed
         """
-        self.body.clear_children()
+        clear_children(self.body)
         self._items.clear()
         self._current_indices.clear()
-        self._values = values
+        # make a copy
+        self._values = list(values)
         self._render(values)
 
     def _render(self, values):

@@ -1,8 +1,8 @@
 from collections import defaultdict
 from tkinter import Label, PhotoImage
+
 import commands
 import itemlist
-import tree
 from commands import CommandComponent, ComponentTree
 from tree import InsertType
 from ui_utils import DraggableMixin, WidgetTree
@@ -24,7 +24,7 @@ class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
             self._text = Label(self, text=f"  {self.command.__name__}", anchor="w", image=self._image, compound="left")
             self._text.pack(fill="both", padx=10, pady="0 5")
         else:
-            self._text = Label(self, text=self.command.title(), anchor="w")
+            self._text = Label(self, text=self.command.title(), anchor="w", fg="#aaaaaa")
             self._text.pack(fill="both", padx=10, pady="5")
 
     def render_drag(self, window):
@@ -72,7 +72,6 @@ class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
                     node.insert(None, new_node)
                 case InsertType.INSERT_AFTER:
                     node.insert_after(new_node)
-
 
 
 class CatalogueList(itemlist.CompoundList):

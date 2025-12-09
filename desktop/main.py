@@ -4,25 +4,25 @@ from tkinter import ttk
 from formation import AppBuilder, Builder
 
 import catalogue
-import itemlist
-import tree
-from commands import get_component
+from commands import ComponentTree
+from macro import MacroList, Macro
 from ui_utils import MouseWheelDispatcher
 
 
 def center_window(window, master=None):
     if master is None:
+        window.update_idletasks()
         width = window.winfo_screenwidth()
         height = window.winfo_screenheight()
         x, y = 0, 0
     else:
         master.update_idletasks()
-        width = master.winfo_reqwidth()
-        height = master.winfo_reqheight()
+        width = master.winfo_width()
+        height = master.winfo_height()
         x, y = master.winfo_x(), master.winfo_y()
     # window.update_idletasks()
-    sub_width = window.winfo_reqwidth()
-    sub_height = window.winfo_reqheight()
+    sub_width = window.winfo_width()
+    sub_height = window.winfo_height()
     window.geometry(f"+{x + (width - sub_width)//2}+{y + (height - sub_height)//2}")
 
 
@@ -63,7 +63,8 @@ class App(AppBuilder):
         self.upload_btn: ttk.Button = None
         self.execute_btn: ttk.Button = None
         self.macro_name_lbl: ttk.Label = None
-        self.macro_canvas: tree.TreeView = None
+        self.macro_canvas: ComponentTree = None
+        self.macro_list: MacroList = None
         self.catalogue: catalogue.CatalogueList = None
         super().__init__(self, path="layouts/app.json")
         self.device_select['font'] = None
@@ -74,90 +75,34 @@ class App(AppBuilder):
         center_window(self._root)
         self.device_select["values"] = ("Local PC",)
         self.device.set("Local PC")
-        self.package_list.heading('#0', text="Macros", anchor=tk.CENTER)
         self._package_image = tk.PhotoImage(file="resources/package.png")
         self._items = {}
-        self.load_packages()
-        self._set_selection()
+        self.active_macro: Macro = None
+        self.macro_canvas.load_macro(None)
+
         self.catalogue.load()
-        self.macro_canvas.add_as_node(key="KeyPress")
-        self.macro_canvas.add_as_node(key="KeyHold")
-        self.macro_canvas.add_as_node(key="KeyRelease")
-        self.macro_canvas.add_as_node(key="ButtonPress")
-        self.macro_canvas.add_as_node(key="KeyHold")
-        n = self.macro_canvas.add_as_node(key="Randomize")
-        n.add_as_node(key="ButtonRelease")
-        self.macro_canvas.add_as_node(key="DelayRandom")
-        self.macro_canvas.add_as_node(key="ButtonHold")
-        self.macro_canvas.add_as_node(key="LoopFor")
-        self.macro_canvas.add_as_node(key="ButtonRelease")
-        self.macro_canvas.add_as_node(key="KeyHold")
-        self.macro_canvas.add_as_node(key="MouseMove")
-        self.macro_canvas.add_as_node(key="MouseWheel")
-        self.macro_canvas.add_as_node(key="Loop")
-        self.macro_canvas.add_as_node(key="Delay")
+        self.macro_list.on_change(self.macro_changed)
+        self.macro_list.load()
+        self.main.wm_protocol("WM_DELETE", lambda: [print("exiting"), self.main.destroy()])
 
-    def load_packages(self):
-        packages = [
-            ("Macro 1", [
-                ("KeyPress", ('', ''), {}),
-                # ("Loop", (), {}),
-                ("KeyPress", ('', ''), {}),
-                ("KeyRelease", ('', ''), {}),
-                ("ButtonPress", (), {}),
-                ("MouseWheel", (), {}),
-                ("KeyHold", (), {}),
-                ("MouseMove", (), {}),
-            ]),
-            ("Macro 2", []),
-            ("Macro 3", []),
-            ("Macro 4", []),
-        ]
+    def macro_changed(self, item):
+        if not item:
+            self.macro_canvas.load_macro(None)
+            self.active_macro = None
 
-        for package in packages:
-            self._insert_macro(*package)
-
-    def _set_selection(self, iid=None):
-        children = self.package_list.get_children()
-        if not len(children):
-            return
-        iid = iid if iid is not None else children[0]
-        self.package_list.focus(iid)
-        self.package_list.selection_set(iid)
-
-    def _insert_macro(self, name, body):
-        iid = self.package_list.insert('', tk.END, text="   " + name, image=self._package_image)
-        self._items[iid] = (name, body, [])
-        return iid
-
-    def on_selection_change(self, event):
-        selected = self.package_list.focus()
-        if not selected:
-            return
-        self.select_macro(*self._items[selected])
-
-    def select_macro(self, name, body: list, data: list):
-        return
-        self.macro_name_lbl['text'] = name
-
-        if not data:
-            for command in body:
-                # data.append(CommandWidget.create(self.macro_canvas, command[0], *command[1], **command[2]))
-                klass = get_component(command[0])
-                data.append(klass(self.macro_canvas))
-
-        for widget in self.macro_canvas.winfo_children():
-            widget.pack_forget()
-
-        for widget in data:
-            widget.base.pack(side=tk.TOP, anchor=tk.W, pady='5 0', padx=5)
+        self.active_macro = item.value
+        self.macro_canvas.load_macro(self.active_macro)
+        self.macro_name_lbl.config(text=self.active_macro.name)
 
     def add_macro(self):
         name = AddMacroDialog.get_name(self._root)
         if not name:
             return
-        iid = self._insert_macro(name, [])
-        self._set_selection(iid)
+        self.macro_list.add_macro(name)
+
+    def save_macro(self):
+        if self.active_macro:
+            self.active_macro.update(self.macro_canvas.build_tree())
 
     def upload_macro(self):
         pass

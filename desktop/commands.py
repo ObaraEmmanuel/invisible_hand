@@ -7,27 +7,8 @@ from formation import Builder
 import tree
 from color import to_hex, from_hsl
 from keymaps import get_key, get_modifiers, is_modifier, Key, get_button
-
-
-class WidgetFactory:
-    _pool = defaultdict(set)
-
-    def release(self, *_):
-        self._pool[self.master].add(self)
-
-    def acquire(self, *_):
-        if self in self._pool[self.master]:
-            return self._pool[self.master].remove(self)
-
-    @classmethod
-    def create(cls, master, *args, **kwargs):
-        if pool := cls._pool[master]:
-            print("cache hit")
-            return pool.pop()
-        obj = cls(master, *args, **kwargs)
-        obj.bind("<Map>", obj.acquire)
-        obj.bind("<Unmap>", obj.release)
-        return obj
+from macro import Macro
+from ui_utils import EmptyScreen
 
 
 class CommandComponent:
@@ -65,6 +46,14 @@ class CommandComponent:
 
     def set_label_img(self, img):
         self.label['image'] = img
+
+    def load_data(self, data):
+        pass
+
+    def to_data(self):
+        return {
+            "type": self.__class__.__name__,
+        }
 
 
 class KeyPressBase(Builder, CommandComponent):
@@ -107,6 +96,17 @@ class KeyPressBase(Builder, CommandComponent):
 
     def as_text(self, *_):
         return f"{self.label['text']} <{self.get_key_text()}>"
+
+    def load_data(self, data):
+        if data:
+            self.keys = data["keys"]
+            self.update_text()
+
+    def to_data(self):
+        return {
+            "type": self.__class__.__name__,
+            "keys": list(self.keys),
+        }
 
 
 class KeyPress(KeyPressBase):
@@ -231,6 +231,10 @@ class MouseWheel(Builder, CommandComponent):
         self.delta.set(1)
         self.set_color(self.color)
 
+    def load_data(self, data):
+        if data:
+            self.delta.set(data.get("delta", 1))
+
 
 class MouseMove(Builder, CommandComponent):
     color = to_hex(from_hsl((75, 55, 20)))
@@ -246,6 +250,18 @@ class MouseMove(Builder, CommandComponent):
         self.delta_x.set(1)
         self.delta_y.set(1)
         self.set_color(self.color)
+
+    def load_data(self, data):
+        if data:
+            self.delta_x.set(data.get("delta_x", 1))
+            self.delta_x.set(data.get("delta_y", 1))
+
+    def to_data(self):
+        return {
+            "type": self.__class__.__name__,
+            "delta_x": self.delta_x.get(),
+            "delta_y": self.delta_y.get(),
+        }
 
 
 class Loop(Builder, CommandComponent):
@@ -271,11 +287,22 @@ class LoopFor(Builder, CommandComponent):
     type = "control"
 
     def __init__(self, master):
+        self.count: tk.IntVar = None
         super().__init__(master, path="layouts/loopfor.json")
 
     @property
     def is_block(self):
         return True
+
+    def load_data(self, data):
+        if data:
+            self.count.set(data.get("count", 1))
+
+    def to_data(self):
+        return {
+            "type": self.__class__.__name__,
+            "count": self.count.get(),
+        }
 
 
 class Randomize(Loop):
@@ -296,7 +323,18 @@ class Delay(Builder, CommandComponent):
     type = "time"
 
     def __init__(self, master):
+        self.duration: tk.IntVar = None
         super().__init__(master, path="layouts/delay.json")
+
+    def load_data(self, data):
+        if data:
+            self.duration.set(data.get("duration", 1000))
+
+    def to_data(self):
+        return {
+            "type": self.__class__.__name__,
+            "duration": self.duration.get(),
+        }
 
 
 class DelayRandom(Builder, CommandComponent):
@@ -305,7 +343,21 @@ class DelayRandom(Builder, CommandComponent):
     type = "time"
 
     def __init__(self, master):
+        self.upper: tk.IntVar = None
+        self.lower: tk.IntVar = None
         super().__init__(master, path="layouts/delayrandom.json")
+
+    def load_data(self, data):
+        if data:
+            self.upper.set(data.get("upper", 0))
+            self.lower.set(data.get("lower", 1))
+
+    def to_data(self):
+        return {
+            "type": self.__class__.__name__,
+            "upper": self.upper.get(),
+            "lower": self.lower.get(),
+        }
 
 
 _components = (
@@ -339,7 +391,8 @@ class ComponentTree(tree.TreeView):
         def __init__(self, master=None, **config):
             super().__init__(master, **config)
             klass = get_component(config.get("key"))
-            self.command = klass(self.strip, *config.get("args", ()), **config.get("kwargs", {}))
+            self.command = klass(self.strip)
+            self.command.load_data(config.get("data", {}))
             self.expander.grid(row=0, column=1, padx=3)
             self.command.base.grid(row=0, column=3)
             self._init_binding()
@@ -374,3 +427,103 @@ class ComponentTree(tree.TreeView):
     def __init__(self, master=None, **config):
         super().__init__(master, **config)
         self.allow_multi_select(True)
+        self._empty_screen = None
+        self._node_cache = {}
+        self._active_macro = None
+
+    @property
+    def empty_screen(self):
+        if self._empty_screen:
+            return self._empty_screen
+        self._no_file_image = PhotoImage(file="resources/empty.png")
+        self._no_command_image = PhotoImage(file="resources/add.png")
+        self._empty_screen = EmptyScreen(self)
+        return self._empty_screen
+
+    def remove(self, node):
+        if not self._active_macro:
+            return
+        super().remove(node)
+        if not self.nodes:
+            self._show_empty_command()
+
+    def add(self, node):
+        if not self._active_macro:
+            return
+        super().add(node)
+        self.empty_screen.hide()
+
+    def insert(self, index=None, *nodes):
+        if not self._active_macro:
+            return
+        super().insert(index, *nodes)
+        self.empty_screen.hide()
+
+    def _show_empty_file(self):
+        self.empty_screen.show(
+            text="Select macro file to start",
+            image=self._no_file_image
+        )
+
+    def _show_empty_command(self):
+        self.empty_screen.show(
+            text="Drag action from command list",
+            image=self._no_command_image
+        )
+
+    def _generate_tree(self, parent_node=None, parent_data=None):
+        if parent_node is None:
+            parent_node = self
+        if parent_data is None:
+            parent_data = {}
+        for node in parent_node.nodes:
+            node_data = node.command.to_data()
+            if "nodes" not in parent_data:
+                parent_data["nodes"] = []
+            self._generate_tree(node, node_data)
+            parent_data["nodes"].append(node_data)
+
+    def build_tree(self):
+        data = []
+        for node in self.nodes:
+            node_data = node.command.to_data()
+            self._generate_tree(node, node_data)
+            data.append(node_data)
+        return data
+
+    def _load_node(self, parent_node: 'ComponentTree.Node', data):
+        node = parent_node.add_as_node(key=data.get("type"), data=data)
+
+        for sub_node_data in data.get("nodes", []):
+            self._load_node(node, sub_node_data)
+
+    def load_macro(self, macro: Macro):
+        if macro == self._active_macro:
+            return
+
+        if self._active_macro:
+            self._node_cache[self._active_macro] = list(self.nodes)
+
+        self.clear()
+        self._active_macro = macro
+
+        if not macro:
+            self._show_empty_file()
+            return
+
+        if macro in self._node_cache:
+            for node in self._node_cache[macro]:
+                self.add(node)
+        else:
+            # Load afresh
+            for sub_node_data in macro.get():
+                self._load_node(self, sub_node_data)
+
+        if not self.nodes:
+            self._show_empty_command()
+        else:
+            self.empty_screen.hide()
+
+
+
+

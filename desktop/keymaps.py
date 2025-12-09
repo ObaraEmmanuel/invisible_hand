@@ -1,4 +1,5 @@
-from enum import IntEnum, Enum
+import json
+from enum import Enum
 
 
 class Button(Enum):
@@ -250,3 +251,28 @@ def get_modifiers(mask):
 
 def get_button(number):
     return BUTTONS[number]
+
+
+# Source - https://stackoverflow.com/a
+# Posted by Zero Piraeus, modified by community. See post 'Timeline' for change history
+# Retrieved 2025-12-09, License - CC BY-SA 4.0
+
+PUBLIC_ENUMS = {
+    'Key': Key,
+    'Button': Button,
+}
+
+
+class EnumEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if type(obj) in PUBLIC_ENUMS.values():
+            return {"__enum__": str(obj)}
+        return json.JSONEncoder.default(self, obj)
+
+
+def as_enum(d):
+    if "__enum__" in d:
+        name, member = d["__enum__"].split(".")
+        return getattr(PUBLIC_ENUMS[name], member)
+    else:
+        return d

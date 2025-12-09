@@ -34,8 +34,17 @@
         {
             "attrib": {
                 "attr": {
-                    "name": "count", 
+                    "name": "lower", 
                     "value": 1
+                }
+            }, 
+            "type": "tkinter.IntVar"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "name": "upper", 
+                    "value": 0
                 }
             }, 
             "type": "tkinter.IntVar"
@@ -142,6 +151,7 @@
                     "to": 127.0
                 }, 
                 "layout": {
+                    "fill": "y", 
                     "side": "right", 
                     "width": 6
                 }, 

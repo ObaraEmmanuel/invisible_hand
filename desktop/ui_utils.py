@@ -92,6 +92,31 @@ def bind_all(widget, *args, **kwargs):
         bind_all(child, *args, **kwargs)
 
 
+def clear_children(widget):
+    for child in widget.winfo_children():
+        child.pack_forget()
+        child.grid_forget()
+        child.place_forget()
+
+
+class EmptyScreen(tk.Label):
+
+    def __init__(self, master, **kwargs):
+        if "fg" not in kwargs:
+            kwargs["fg"] = "#aaaaaa"
+        if "compound" not in kwargs:
+            kwargs["compound"] = tk.TOP
+        super().__init__(master, **kwargs)
+
+    def show(self, **kwargs):
+        self.config(**kwargs)
+        self.lift()
+        self.place(x=0, y=0, relwidth=1, relheight=1)
+
+    def hide(self):
+        self.place_forget()
+
+
 class DragWindow(tk.Toplevel):
 
     def __init__(self, master, **cnf):
