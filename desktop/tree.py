@@ -57,7 +57,7 @@ class Tree:
         COLLAPSED_ICON = None
         BLANK = None
         __icons_loaded = False
-        PADDING = 0
+        PADDING = 1
 
         def __init__(self, tree, **config):
             super().__init__(tree.get_body())

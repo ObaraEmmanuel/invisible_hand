@@ -116,8 +116,7 @@
                     "attrib": {
                         "attr": {
                             "background": "#1c1c1c", 
-                            "exportselection": 0, 
-                            "font": "SunValleyBodyFont", 
+                            "exportselection": 0,
                             "foreground": "#fafafa", 
                             "state": "readonly", 
                             "textvariable": "device"
