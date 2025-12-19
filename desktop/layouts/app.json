@@ -116,7 +116,7 @@
                     "attrib": {
                         "attr": {
                             "background": "#1c1c1c", 
-                            "exportselection": 0,
+                            "exportselection": 0, 
                             "foreground": "#fafafa", 
                             "state": "readonly", 
                             "textvariable": "device"
@@ -308,8 +308,8 @@
                                 }, 
                                 "layout": {
                                     "fill": "x", 
-                                    "height": "40", 
-                                    "width": "0"
+                                    "height": 40, 
+                                    "width": 0
                                 }, 
                                 "name": "frame_1"
                             }, 
@@ -375,6 +375,37 @@
                                 }, 
                                 "name": "macro_canvas"
                             }, 
+                            "children": [
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "activebackground": "#2f60d8", 
+                                            "activeborderwidth": 1, 
+                                            "activeforeground": "#ffffff", 
+                                            "background": "#1c1c1c", 
+                                            "borderwidth": 1, 
+                                            "disabledforeground": "#535353", 
+                                            "font": "{Segoe UI} 9", 
+                                            "foreground": "#fafafa", 
+                                            "tearoff": 0
+                                        }, 
+                                        "name": "macro_menu"
+                                    }, 
+                                    "children": [
+                                        {
+                                            "attrib": {
+                                                "menu": {
+                                                    "compound": "none", 
+                                                    "label": "Delete", 
+                                                    "state": "normal"
+                                                }
+                                            }, 
+                                            "type": "command"
+                                        }
+                                    ], 
+                                    "type": "tkinter.Menu"
+                                }
+                            ], 
                             "type": "commands.ComponentTree"
                         }
                     ], 

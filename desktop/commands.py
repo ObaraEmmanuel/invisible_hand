@@ -8,6 +8,7 @@ import tree
 from color import to_hex, from_hsl
 from keymaps import get_key, get_modifiers, is_modifier, Key, get_button
 from macro import Macro
+from menu import MenuUtils
 from ui_utils import EmptyScreen
 
 
@@ -399,6 +400,7 @@ class ComponentTree(tree.TreeView):
             self.editable = True
             self.strict_mode = True
             self.is_terminal = not self.command.is_block
+            self.tree.on_node_created(self)
 
         def _bind_widgets(self):
             return self.strip, self.command.label
@@ -430,6 +432,10 @@ class ComponentTree(tree.TreeView):
         self._empty_screen = None
         self._node_cache = {}
         self._active_macro = None
+        self._menu: tk.Menu = None
+
+    def on_node_created(self, node):
+        MenuUtils.bind_all_context(node, lambda event: MenuUtils.popup(event, self._menu))
 
     @property
     def empty_screen(self):

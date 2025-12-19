@@ -6,6 +6,7 @@ from formation import AppBuilder, Builder
 import catalogue
 from commands import ComponentTree
 from macro import MacroList, Macro
+from menu import MenuUtils
 from ui_utils import MouseWheelDispatcher
 
 
@@ -65,6 +66,7 @@ class App(AppBuilder):
         self.macro_name_lbl: ttk.Label = None
         self.macro_canvas: ComponentTree = None
         self.macro_list: MacroList = None
+        self.macro_menu: tk.Menu = None
         self.catalogue: catalogue.CatalogueList = None
         super().__init__(self, path="layouts/app.json")
         self.device_select['font'] = None
@@ -78,6 +80,7 @@ class App(AppBuilder):
         self._package_image = tk.PhotoImage(file="resources/package.png")
         self._items = {}
         self.active_macro: Macro = None
+        self.macro_canvas._menu = self.macro_menu
         self.macro_canvas.load_macro(None)
 
         self.catalogue.load()
