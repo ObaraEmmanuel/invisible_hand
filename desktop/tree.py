@@ -42,12 +42,6 @@ class Tree:
             super().__init__(master, **config)
             self.parent_node: TreeView = master
 
-        def select(self):
-            self.parent_node.select()
-
-        def deselect(self):
-            self.parent_node.deselect()
-
         def config_all(self, **kw):
             pass
 

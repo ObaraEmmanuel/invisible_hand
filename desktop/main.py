@@ -6,7 +6,6 @@ from formation import AppBuilder, Builder
 import catalogue
 from commands import ComponentTree
 from macro import MacroList, Macro
-from menu import MenuUtils
 from ui_utils import MouseWheelDispatcher
 
 
@@ -63,30 +62,33 @@ class App(AppBuilder):
         self.device: tk.StringVar = None
         self.upload_btn: ttk.Button = None
         self.execute_btn: ttk.Button = None
+        self.command_delete: ttk.Button = None
         self.macro_name_lbl: ttk.Label = None
         self.macro_canvas: ComponentTree = None
         self.macro_list: MacroList = None
         self.macro_menu: tk.Menu = None
         self.catalogue: catalogue.CatalogueList = None
         super().__init__(self, path="layouts/app.json")
-        self.device_select['font'] = None
         self.connect_callbacks(self)
         MouseWheelDispatcher.set_up_mousewheel(self.main)
         s = ttk.Style()
         s.configure('Treeview', rowheight=40)
         center_window(self._root)
         self.device_select["values"] = ("Local PC",)
+        self.device_select["font"] = None
         self.device.set("Local PC")
         self._package_image = tk.PhotoImage(file="resources/package.png")
         self._items = {}
         self.active_macro: Macro = None
         self.macro_canvas._menu = self.macro_menu
+        self.macro_canvas.on_select(self.on_command_select)
+        self.on_command_select()
         self.macro_canvas.load_macro(None)
 
         self.catalogue.load()
         self.macro_list.on_change(self.macro_changed)
         self.macro_list.load()
-        self.main.wm_protocol("WM_DELETE", lambda: [print("exiting"), self.main.destroy()])
+        self.main.wm_protocol("WM_DELETE_WINDOW", lambda: [print("exiting"), self.main.destroy()])
 
     def macro_changed(self, item):
         if not item:
@@ -118,6 +120,22 @@ class App(AppBuilder):
 
     def clear_macro(self):
         pass
+
+    def on_command_select(self):
+        if self.macro_canvas.get():
+            self.command_delete.pack(side="right")
+        else:
+            self.command_delete.pack_forget()
+
+    def delete_command(self):
+        if not self.macro_canvas.get():
+            return
+        to_delete = list(self.macro_canvas.get())
+        for node in to_delete:
+            self.macro_canvas.deselect(node)
+            node.remove()
+        self.on_command_select()
+
 
 
 if __name__ == "__main__":

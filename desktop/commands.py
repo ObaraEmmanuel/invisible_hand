@@ -1,5 +1,4 @@
 import tkinter as tk
-from collections import defaultdict
 from tkinter import PhotoImage
 
 from formation import Builder
@@ -28,11 +27,9 @@ class CommandComponent:
         return False
 
     def select(self, *_):
-        # self.base.configure(highlightbackground="#2f60d8")
         pass
 
     def deselect(self, *_):
-        # self.base.configure(highlightbackground="#1c1c1c")
         pass
 
     def as_text(self, *_):
@@ -431,6 +428,7 @@ class ComponentTree(tree.TreeView):
         self.allow_multi_select(True)
         self._empty_screen = None
         self._node_cache = {}
+        self._selection_cache = {}
         self._active_macro = None
         self._menu: tk.Menu = None
 
@@ -509,8 +507,10 @@ class ComponentTree(tree.TreeView):
 
         if self._active_macro:
             self._node_cache[self._active_macro] = list(self.nodes)
+            self._selection_cache[self._active_macro] = self.get()
 
         self.clear()
+        self.clear_selection()
         self._active_macro = macro
 
         if not macro:
@@ -520,6 +520,9 @@ class ComponentTree(tree.TreeView):
         if macro in self._node_cache:
             for node in self._node_cache[macro]:
                 self.add(node)
+        if macro in self._selection_cache:
+            for node in self._selection_cache[macro]:
+                node.select()
         else:
             # Load afresh
             for sub_node_data in macro.get():
@@ -529,7 +532,3 @@ class ComponentTree(tree.TreeView):
             self._show_empty_command()
         else:
             self.empty_screen.hide()
-
-
-
-
