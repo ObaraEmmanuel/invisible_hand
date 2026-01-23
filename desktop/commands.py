@@ -97,7 +97,7 @@ class KeyPressBase(Builder, CommandComponent):
 
     def load_data(self, data):
         if data:
-            self.keys = data["keys"]
+            self.keys = set(data["keys"])
             self.update_text()
 
     def to_data(self):

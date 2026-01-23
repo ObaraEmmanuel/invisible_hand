@@ -7,7 +7,7 @@
             "layout": "grid"
         }, 
         "layout": {
-            "height": "881", 
+            "height": "783", 
             "width": "1000", 
             "x": "30", 
             "y": "30"
@@ -63,7 +63,7 @@
             "children": [
                 {
                     "attrib": {
-                        "value": "1000x848+0+0"
+                        "value": "1000x750+0+0"
                     }, 
                     "type": "arg"
                 }
