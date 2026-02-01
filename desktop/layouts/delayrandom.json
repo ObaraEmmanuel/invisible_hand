@@ -34,7 +34,7 @@
         {
             "attrib": {
                 "attr": {
-                    "name": "lower", 
+                    "name": "start", 
                     "value": 1
                 }
             }, 
@@ -43,7 +43,7 @@
         {
             "attrib": {
                 "attr": {
-                    "name": "upper", 
+                    "name": "stop", 
                     "value": 0
                 }
             }, 
@@ -94,7 +94,7 @@
                     "relief": "flat", 
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
-                    "textvariable": "delta", 
+                    "textvariable": "stop", 
                     "to": 127.0
                 }, 
                 "layout": {
@@ -116,7 +116,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "upper (ms): "
+                    "text": "stop (us): "
                 }, 
                 "layout": {
                     "height": 0, 
@@ -147,7 +147,7 @@
                     "relief": "flat", 
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
-                    "textvariable": "delta", 
+                    "textvariable": "start", 
                     "to": 127.0
                 }, 
                 "layout": {
@@ -169,7 +169,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "lower (ms): "
+                    "text": "start(us): "
                 }, 
                 "layout": {
                     "height": 0, 

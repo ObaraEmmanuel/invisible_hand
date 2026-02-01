@@ -85,7 +85,7 @@
                     "relief": "flat", 
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
-                    "textvariable": "delta", 
+                    "textvariable": "duration", 
                     "to": 127.0
                 }, 
                 "layout": {
@@ -107,7 +107,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "ms: "
+                    "text": "us: "
                 }, 
                 "layout": {
                     "height": 0, 

@@ -5,7 +5,7 @@ from formation import Builder
 
 import tree
 from color import to_hex, from_hsl
-from keymaps import get_key, get_modifiers, is_modifier, Key, get_button
+from keymaps import get_key, is_modifier, Key, get_button
 from macro import Macro
 from menu import MenuUtils
 from ui_utils import EmptyScreen
@@ -55,7 +55,14 @@ class CommandComponent:
 
 
 class KeyPressBase(Builder, CommandComponent):
-    order = [Key.SHIFT, Key.ALT, Key.CONTROL]
+    order = [
+        Key.RIGHT_SHIFT,
+        Key.LEFT_SHIFT,
+        Key.RIGHT_ALT,
+        Key.LEFT_ALT,
+        Key.RIGHT_CONTROL,
+        Key.LEFT_CONTROL
+    ]
 
     def __init__(self, master):
         super().__init__(master, path="layouts/keypress.json")
@@ -117,15 +124,19 @@ class KeyPress(KeyPressBase):
         self.set_color(self.color)
 
     def on_keypress(self, event):
-        modifiers = get_modifiers(event.state)
-        if modifiers:
-            self.keys.clear()
-            self.keys = {*modifiers, *self.keys}
-        key = get_key(event.keycode)
-        if any(not is_modifier(k) for k in self.keys) and not is_modifier(key):
-            self.keys.clear()
+        key = get_key(event.keycode, event.keysym)
+        if key in self.keys:
+            self.keys.remove(key)
+            print(self.keys)
+            self.update_text()
+            return
+        # clear the non-modifier key
+        if not is_modifier(key):
+            self.keys = {k for k in self.keys if is_modifier(k)}
         if key:
             self.keys.add(key)
+
+        print(self.keys)
         self.update_text()
 
 
@@ -137,7 +148,7 @@ class KeyHold(KeyPress):
         self.set_label("Key Hold")
 
     def on_keypress(self, event):
-        key = get_key(event.keycode)
+        key = get_key(event.keycode, event.keysym)
         if key in self.keys:
             self.keys.remove(key)
         else:
@@ -166,22 +177,16 @@ class ButtonPress(KeyPressBase):
         self.set_label_img(self.img)
 
     def on_keypress(self, event):
-        key = get_key(event.keycode)
-        if is_modifier(key) and self.keys:
-            if key in self.keys:
-                self.keys.remove(key)
-            else:
-                self.keys.add(key)
-            self.update_text()
+        # ignore
+        pass
 
     def on_buttonpress(self, event):
         super().on_buttonpress(event)
         if self.clicks_since_focus <= 1:
             return
-        modifiers = get_modifiers(event.state)
         button = get_button(event.num)
         self.keys.clear()
-        self.keys.update({*modifiers, button})
+        self.keys.update({button})
         self.update_text()
 
 
@@ -223,15 +228,25 @@ class MouseWheel(Builder, CommandComponent):
 
     def __init__(self, master):
         self.base: tk.Frame = None
-        self.delta: tk.IntVar = None
+        self.delta_x: tk.IntVar = None
+        self.delta_y: tk.IntVar = None
         self.label: tk.Label = None
         super().__init__(master, path="layouts/mousewheel.json")
-        self.delta.set(1)
+        self.delta_x.set(1)
+        self.delta_y.set(1)
         self.set_color(self.color)
 
     def load_data(self, data):
         if data:
-            self.delta.set(data.get("delta", 1))
+            self.delta_x.set(data.get("delta_x", 1))
+            self.delta_x.set(data.get("delta_y", 1))
+
+    def to_data(self):
+        return {
+            "type": self.__class__.__name__,
+            "delta_x": self.delta_x.get(),
+            "delta_y": self.delta_y.get(),
+        }
 
 
 class MouseMove(Builder, CommandComponent):
@@ -299,7 +314,7 @@ class LoopFor(Builder, CommandComponent):
     def to_data(self):
         return {
             "type": self.__class__.__name__,
-            "count": self.count.get(),
+            "count": abs(self.count.get()),
         }
 
 
@@ -341,20 +356,20 @@ class DelayRandom(Builder, CommandComponent):
     type = "time"
 
     def __init__(self, master):
-        self.upper: tk.IntVar = None
-        self.lower: tk.IntVar = None
+        self.stop: tk.IntVar = None
+        self.start: tk.IntVar = None
         super().__init__(master, path="layouts/delayrandom.json")
 
     def load_data(self, data):
         if data:
-            self.upper.set(data.get("upper", 0))
-            self.lower.set(data.get("lower", 1))
+            self.stop.set(data.get("stop", 0))
+            self.start.set(data.get("start", 1))
 
     def to_data(self):
         return {
             "type": self.__class__.__name__,
-            "upper": self.upper.get(),
-            "lower": self.lower.get(),
+            "stop": self.stop.get(),
+            "start": self.start.get(),
         }
 
 
@@ -365,13 +380,13 @@ _components = (
     ButtonPress,
     ButtonHold,
     ButtonRelease,
-    MouseMove,
     MouseWheel,
+    MouseMove,
+    Delay,
+    DelayRandom,
     Loop,
     LoopFor,
     Randomize,
-    Delay,
-    DelayRandom,
 )
 
 _components_map = {
