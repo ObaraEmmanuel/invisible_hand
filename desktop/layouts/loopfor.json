@@ -85,7 +85,7 @@
                     "relief": "flat", 
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
-                    "textvariable": "delta", 
+                    "textvariable": "count", 
                     "to": 127.0
                 }, 
                 "layout": {

@@ -91,7 +91,7 @@ class IVHPackage:
         if dx == 0:
             return b'\x21' + dy.to_bytes(1, signed=True)
 
-        return b'\x24' + dx.to_bytes(1, signed=True) + dx.to_bytes(1, signed=True)
+        return b'\x24' + dx.to_bytes(1, signed=True) + dy.to_bytes(1, signed=True)
 
     def _emit_mousemove(self, data: dict) -> bytes:
         dx = data.get("delta_x", 0)
@@ -104,7 +104,7 @@ class IVHPackage:
         if dx == 0:
             return b'\x23' + dy.to_bytes(1, signed=True)
 
-        return b'\x25' + dx.to_bytes(1, signed=True) + dx.to_bytes(1, signed=True)
+        return b'\x25' + dx.to_bytes(1, signed=True) + dy.to_bytes(1, signed=True)
 
     def _bytes_required(self, n: int, max_bytes: int = 8) -> int:
         if n < 0:
@@ -160,7 +160,7 @@ class IVHPackage:
         output = bytearray([0xE0])
         output.extend(body)
         # append block end
-        output.extend([0xEF])
+        output.append(0xEF)
         return output
 
     def _emit_loopfor(self, data: dict) -> bytearray:
@@ -176,7 +176,7 @@ class IVHPackage:
         output.extend(count.to_bytes(2, byteorder='little'))
         output.extend(body)
         # append block end
-        output.extend([0xEF])
+        output.append(0xEF)
         return output
 
     def _emit_loopforrandom(self, data: dict) -> bytearray:
@@ -196,7 +196,7 @@ class IVHPackage:
         output.extend(stop.to_bytes(2, byteorder='little'))
         output.extend(body)
         # append block end
-        output.extend([0xEF])
+        output.append(0xEF)
         return output
 
     def _emit_break(self, _) -> bytes:
@@ -213,5 +213,5 @@ class IVHPackage:
         output = bytearray([0xE3])
         output.extend(body)
         # append block end
-        output.extend([0xEF])
+        output.append(0xEF)
         return output

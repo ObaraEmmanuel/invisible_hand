@@ -239,7 +239,7 @@ class MouseWheel(Builder, CommandComponent):
     def load_data(self, data):
         if data:
             self.delta_x.set(data.get("delta_x", 1))
-            self.delta_x.set(data.get("delta_y", 1))
+            self.delta_y.set(data.get("delta_y", 1))
 
     def to_data(self):
         return {
@@ -267,7 +267,7 @@ class MouseMove(Builder, CommandComponent):
     def load_data(self, data):
         if data:
             self.delta_x.set(data.get("delta_x", 1))
-            self.delta_x.set(data.get("delta_y", 1))
+            self.delta_y.set(data.get("delta_y", 1))
 
     def to_data(self):
         return {
