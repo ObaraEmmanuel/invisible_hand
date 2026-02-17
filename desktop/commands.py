@@ -318,6 +318,33 @@ class LoopFor(Builder, CommandComponent):
         }
 
 
+class LoopForRandom(Builder, CommandComponent):
+    color = to_hex(from_hsl((300, 55, 20)))
+    image = "loop"
+    type = "control"
+
+    def __init__(self, master):
+        self.start: tk.IntVar = None
+        self.stop: tk.IntVar = None
+        super().__init__(master, path="layouts/loopforrandom.json")
+
+    @property
+    def is_block(self):
+        return True
+
+    def load_data(self, data):
+        if data:
+            self.start.set(data.get("start", 1))
+            self.stop.set(data.get("stop", 1))
+
+    def to_data(self):
+        return {
+            "type": self.__class__.__name__,
+            "start": abs(self.start.get()),
+            "stop": abs(self.stop.get()),
+        }
+
+
 class Randomize(Loop):
     color = to_hex(from_hsl((220, 55, 20)))
     image = "random"
@@ -386,6 +413,7 @@ _components = (
     DelayRandom,
     Loop,
     LoopFor,
+    LoopForRandom,
     Randomize,
 )
 

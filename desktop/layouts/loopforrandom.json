@@ -1,0 +1,185 @@
+{
+    "attrib": {
+        "attr": {
+            "background": "#4f174f", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "pack"
+        }, 
+        "layout": {
+            "height": 32, 
+            "width": 370, 
+            "x": 139, 
+            "y": 156
+        }, 
+        "name": "base"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "name": "theme", 
+                "sub_theme": "dark", 
+                "theme": "sun-valley"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "name": "stop", 
+                    "value": 1
+                }
+            }, 
+            "type": "tkinter.IntVar"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "name": "start", 
+                    "value": 0
+                }
+            }, 
+            "type": "tkinter.IntVar"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#4f174f", 
+                    "compound": "left", 
+                    "disabledforeground": "#535353", 
+                    "foreground": "#fafafa", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "image": "..\\resources\\loop.png", 
+                    "text": "   Loop For Random"
+                }, 
+                "layout": {
+                    "anchor": "w", 
+                    "height": 0, 
+                    "padx": 5, 
+                    "side": "left", 
+                    "width": 0
+                }, 
+                "name": "label"
+            }, 
+            "type": "tkinter.Label"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "background": "#363636", 
+                    "buttonbackground": "#363636", 
+                    "buttondownrelief": "flat", 
+                    "buttonuprelief": "flat", 
+                    "disabledforeground": "#535353", 
+                    "font": "SunValleyBodyFont", 
+                    "foreground": "#fafafa", 
+                    "from": 1.0, 
+                    "highlightbackground": "#363636", 
+                    "highlightcolor": "#2f60d8", 
+                    "highlightthickness": 1, 
+                    "increment": 1.0, 
+                    "insertbackground": "#fafafa", 
+                    "relief": "flat", 
+                    "selectbackground": "#2f60d8", 
+                    "selectforeground": "#ffffff", 
+                    "textvariable": "stop", 
+                    "to": 127.0
+                }, 
+                "layout": {
+                    "fill": "y", 
+                    "side": "right", 
+                    "width": 6
+                }, 
+                "name": "spinbox_2"
+            }, 
+            "type": "tkinter.Spinbox"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#4f174f", 
+                    "disabledforeground": "#535353", 
+                    "foreground": "#fafafa", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "text": "stop: "
+                }, 
+                "layout": {
+                    "height": 0, 
+                    "side": "right", 
+                    "width": 0
+                }, 
+                "name": "label_2"
+            }, 
+            "type": "tkinter.Label"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "background": "#363636", 
+                    "buttonbackground": "#363636", 
+                    "buttondownrelief": "flat", 
+                    "buttonuprelief": "flat", 
+                    "disabledforeground": "#535353", 
+                    "font": "SunValleyBodyFont", 
+                    "foreground": "#fafafa", 
+                    "from": 1.0, 
+                    "highlightbackground": "#363636", 
+                    "highlightcolor": "#2f60d8", 
+                    "highlightthickness": 1, 
+                    "increment": 1.0, 
+                    "insertbackground": "#fafafa", 
+                    "relief": "flat", 
+                    "selectbackground": "#2f60d8", 
+                    "selectforeground": "#ffffff", 
+                    "textvariable": "start", 
+                    "to": 127.0
+                }, 
+                "layout": {
+                    "fill": "y", 
+                    "side": "right", 
+                    "width": 6
+                }, 
+                "name": "spnbx"
+            }, 
+            "type": "tkinter.Spinbox"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#4f174f", 
+                    "disabledforeground": "#535353", 
+                    "foreground": "#fafafa", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "text": "start: "
+                }, 
+                "layout": {
+                    "height": 0, 
+                    "side": "right", 
+                    "width": 0
+                }, 
+                "name": "label_1"
+            }, 
+            "type": "tkinter.Label"
+        }
+    ], 
+    "type": "tkinter.Frame"
+}

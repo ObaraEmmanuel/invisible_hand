@@ -182,9 +182,11 @@ class IVHPackage:
     def _emit_loopforrandom(self, data: dict) -> bytearray:
         start = data.get("start", 0)
         stop = data.get("stop", 0)
-        if start >= stop:
-            raise ValueError("Start should be greater than Stop")
         nodes = data.get('nodes', [])
+        if start > stop:
+            raise ValueError("Start should be greater than Stop")
+        if start == stop:
+            return self._emit_loopfor({"count": start, "nodes": nodes})
         if not nodes:
             return b''
 
