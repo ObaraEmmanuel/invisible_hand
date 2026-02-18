@@ -357,6 +357,19 @@ class Randomize(Loop):
         self.set_label("Randomize")
 
 
+class Break(Builder, CommandComponent):
+    color = to_hex(from_hsl((340, 55, 20)))
+    image = "break"
+    type = "control"
+
+    def __init__(self, master):
+        super().__init__(master, path="layouts/command.json")
+        self.set_color(self.color)
+        self.set_label("Break")
+        self.img = PhotoImage(file="resources/break.png")
+        self.set_label_img(self.img)
+
+
 class Delay(Builder, CommandComponent):
     color = to_hex(from_hsl((75, 55, 20)))
     image = "time"
@@ -415,6 +428,7 @@ _components = (
     LoopFor,
     LoopForRandom,
     Randomize,
+    Break,
 )
 
 _components_map = {
