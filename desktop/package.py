@@ -170,6 +170,9 @@ class IVHPackage:
             return b''
 
         body = self._generate(nodes)
+        if count == 1:
+            # unroll the loop if it only loops once
+            return body
         if not body:
             return b''
         output = bytearray([0xE1])
@@ -210,6 +213,9 @@ class IVHPackage:
             return b''
 
         body = self._generate(nodes)
+        if len(nodes) == 1:
+            # unroll block if it contains only one command
+            return body
         if not body:
             return b''
         output = bytearray([0xE3])
