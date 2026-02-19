@@ -8,7 +8,7 @@
         }, 
         "layout": {
             "height": 32, 
-            "width": 414, 
+            "width": 503, 
             "x": 139, 
             "y": 156
         }, 
@@ -35,19 +35,19 @@
             "attrib": {
                 "attr": {
                     "name": "start", 
-                    "value": 1
+                    "value": 1.0
                 }
             }, 
-            "type": "tkinter.IntVar"
+            "type": "tkinter.DoubleVar"
         }, 
         {
             "attrib": {
                 "attr": {
                     "name": "stop", 
-                    "value": 0
+                    "value": 10.0
                 }
             }, 
-            "type": "tkinter.IntVar"
+            "type": "tkinter.DoubleVar"
         }, 
         {
             "attrib": {
@@ -100,7 +100,7 @@
                 "layout": {
                     "fill": "y", 
                     "side": "right", 
-                    "width": 6
+                    "width": 9
                 }, 
                 "name": "spnbx"
             }, 
@@ -116,7 +116,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "stop (us): "
+                    "text": "stop (ms): "
                 }, 
                 "layout": {
                     "height": 0, 
@@ -138,7 +138,7 @@
                     "disabledforeground": "#535353", 
                     "font": "SunValleyBodyFont", 
                     "foreground": "#fafafa", 
-                    "from": 1.0, 
+                    "from": 0.001, 
                     "highlightbackground": "#363636", 
                     "highlightcolor": "#2f60d8", 
                     "highlightthickness": 1, 
@@ -148,12 +148,12 @@
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
                     "textvariable": "start", 
-                    "to": 127.0
+                    "to": 1000000000.0
                 }, 
                 "layout": {
                     "fill": "y", 
                     "side": "right", 
-                    "width": 6
+                    "width": 9
                 }, 
                 "name": "spinbox_1"
             }, 
@@ -169,7 +169,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "start(us): "
+                    "text": "start(ms): "
                 }, 
                 "layout": {
                     "height": 0, 

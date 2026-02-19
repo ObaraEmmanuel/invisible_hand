@@ -35,10 +35,10 @@
             "attrib": {
                 "attr": {
                     "name": "duration", 
-                    "value": 1
+                    "value": 1.0
                 }
             }, 
-            "type": "tkinter.IntVar"
+            "type": "tkinter.DoubleVar"
         }, 
         {
             "attrib": {
@@ -76,7 +76,7 @@
                     "disabledforeground": "#535353", 
                     "font": "SunValleyBodyFont", 
                     "foreground": "#fafafa", 
-                    "from": 1.0, 
+                    "from": 0.001, 
                     "highlightbackground": "#363636", 
                     "highlightcolor": "#2f60d8", 
                     "highlightthickness": 1, 
@@ -86,12 +86,12 @@
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
                     "textvariable": "duration", 
-                    "to": 127.0
+                    "to": 10000000000.0
                 }, 
                 "layout": {
                     "fill": "y", 
                     "side": "right", 
-                    "width": 4
+                    "width": 12
                 }, 
                 "name": "spnbx"
             }, 
@@ -107,7 +107,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "text": "us: "
+                    "text": "ms: "
                 }, 
                 "layout": {
                     "height": 0, 

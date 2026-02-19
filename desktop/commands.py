@@ -376,17 +376,17 @@ class Delay(Builder, CommandComponent):
     type = "time"
 
     def __init__(self, master):
-        self.duration: tk.IntVar = None
+        self.duration: tk.DoubleVar = None
         super().__init__(master, path="layouts/delay.json")
 
     def load_data(self, data):
         if data:
-            self.duration.set(data.get("duration", 1000))
+            self.duration.set(round(data.get("duration", 1) / 1000, 3))
 
     def to_data(self):
         return {
             "type": self.__class__.__name__,
-            "duration": self.duration.get(),
+            "duration": int(self.duration.get() * 1000),
         }
 
 
@@ -396,20 +396,20 @@ class DelayRandom(Builder, CommandComponent):
     type = "time"
 
     def __init__(self, master):
-        self.stop: tk.IntVar = None
-        self.start: tk.IntVar = None
+        self.stop: tk.DoubleVar = None
+        self.start: tk.DoubleVar = None
         super().__init__(master, path="layouts/delayrandom.json")
 
     def load_data(self, data):
         if data:
-            self.stop.set(data.get("stop", 0))
-            self.start.set(data.get("start", 1))
+            self.stop.set(round(data.get("stop", 0) / 1000, 3))
+            self.start.set(round(data.get("start", 1) / 1000, 3))
 
     def to_data(self):
         return {
             "type": self.__class__.__name__,
-            "stop": self.stop.get(),
-            "start": self.start.get(),
+            "stop": int(self.stop.get() * 1000),
+            "start": int(self.start.get() * 1000),
         }
 
 
