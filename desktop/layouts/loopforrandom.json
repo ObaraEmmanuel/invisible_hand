@@ -44,7 +44,7 @@
             "attrib": {
                 "attr": {
                     "name": "start", 
-                    "value": 0
+                    "value": 1
                 }
             }, 
             "type": "tkinter.IntVar"
@@ -66,7 +66,7 @@
                 "layout": {
                     "anchor": "w", 
                     "height": 0, 
-                    "padx": 5, 
+                    "padx": "5 15", 
                     "side": "left", 
                     "width": 0
                 }, 
@@ -95,7 +95,7 @@
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
                     "textvariable": "stop", 
-                    "to": 127.0
+                    "to": 65535.0
                 }, 
                 "layout": {
                     "fill": "y", 
@@ -148,12 +148,12 @@
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
                     "textvariable": "start", 
-                    "to": 127.0
+                    "to": 65535.0
                 }, 
                 "layout": {
                     "fill": "y", 
                     "side": "right", 
-                    "width": 6
+                    "width": 8
                 }, 
                 "name": "spnbx"
             }, 

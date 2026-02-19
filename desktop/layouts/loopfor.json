@@ -86,12 +86,12 @@
                     "selectbackground": "#2f60d8", 
                     "selectforeground": "#ffffff", 
                     "textvariable": "count", 
-                    "to": 127.0
+                    "to": 65535.0
                 }, 
                 "layout": {
                     "fill": "y", 
                     "side": "right", 
-                    "width": 4
+                    "width": 7
                 }, 
                 "name": "spnbx"
             }, 
