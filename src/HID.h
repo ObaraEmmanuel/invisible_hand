@@ -1,14 +1,27 @@
 #pragma once
 #include <cstdint>
 
-
 class HID {
-    public:
+public:
     virtual ~HID() = default;
+
     virtual bool connected();
-    virtual void pressAndHold(uint8_t key, uint8_t modifier);
-    virtual void press(uint8_t key, uint8_t modifier);
-    virtual void releaseKey(uint8_t key, uint8_t modifier);
+
+    virtual bool begin();
+
+    virtual void holdKey(uint8_t *keys, uint8_t len, uint8_t modifier);
+
+    virtual void releaseKey(uint8_t *keys, uint8_t len, uint8_t modifier);
+
     virtual void releaseAll();
-    virtual void mouseMove(signed char x, signed char y, signed char wheel, signed char hWheel);
+
+    virtual void buttonHold(uint8_t buttons);
+
+    virtual void buttonRelease(uint8_t buttons);
+
+    virtual void buttonReleaseAll();
+
+    virtual void mouseMove(int8_t x, int8_t y);
+
+    virtual void mouseWheel(int8_t hWheel, int8_t vWheel);
 };
