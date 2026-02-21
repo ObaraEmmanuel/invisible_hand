@@ -1,13 +1,14 @@
-import os
-from tkinter import Label, PhotoImage
-import platformdirs
-import constants
-from itemlist import CompoundList
-import pathlib
 import json
+import os
+import pathlib
+from tkinter import Label, PhotoImage
 
+import platformdirs
+
+import constants
 from keymaps import EnumEncoder, as_enum
-from ui_utils import EmptyScreen
+from ui.itemlist import CompoundList
+from ui.utils import EmptyScreen
 
 
 class Macro:
@@ -71,7 +72,7 @@ class MacroList(CompoundList):
         self._image = PhotoImage(file="resources/add_file.png")
         self._empty_screen = EmptyScreen(self, text="Add new macro file", image=self._image)
         return self._empty_screen
-        
+
     def set_values(self, values):
         if not values:
             self.empty_screen.show()

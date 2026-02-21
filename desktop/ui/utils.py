@@ -2,7 +2,7 @@ import functools
 import tkinter as tk
 from typing import Union
 
-from platform_utils import platform_is, MAC, LINUX, WINDOWS
+from utils.platform import platform_is, MAC, LINUX, WINDOWS
 
 
 class EventMask:

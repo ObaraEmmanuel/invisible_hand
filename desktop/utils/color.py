@@ -11,9 +11,9 @@ __all__ = [
     "to_hsv", "from_hsv",
 ]
 
-import re
-import functools
 import colorsys
+import functools
+import re
 from collections.abc import Iterable
 
 # color #xxxxxx format where x lies from 0 to f
@@ -46,6 +46,7 @@ def _enforce_tuple_format(*constraints):
     :param c:
     :return: wrapped function
     """
+
     def decor(func):
         @functools.wraps(func)  # Pass the functions attributes to the returned wrapped function
         def wrap(abc: tuple, *args):
@@ -56,7 +57,9 @@ def _enforce_tuple_format(*constraints):
             if any(abc[i] < 0 or abc[i] > constraints[i] for i in range(len(abc))):
                 raise ValueError("All values for the tuple should lie within the constraints {}".format(constraints))
             return func(abc, *args)
+
         return wrap
+
     return decor
 
 
@@ -114,7 +117,7 @@ def _(hex_str: str) -> str:
     if re.match(_HEX_FORMAT, hex_str):
         return hex_str
     match = re.search(_HEX_FORMAT_SHORT, hex_str).groups()
-    hex_str = "#" + "".join(list(map(lambda x: x+x, match)))
+    hex_str = "#" + "".join(list(map(lambda x: x + x, match)))
     return hex_str
 
 
@@ -154,7 +157,7 @@ def to_fractional_rgb(rgb: tuple) -> tuple:
     :param rgb: rgb tuple (h, s, l) where h s and l lie between 0 and 255
     :return: rgb tuple (fr, foreground, fb) where h s and l are floats lying between 0 and 1
     """
-    return tuple([x/255 for x in rgb])
+    return tuple([x / 255 for x in rgb])
 
 
 @_enforce_tuple_format(255, 255, 255)
@@ -166,7 +169,7 @@ def from_fractional_rgb(rgb: tuple) -> tuple:
     :param rgb: rgb tuple (fr, foreground, fb) where h s and l are floats lying between 0 and 1
     :return: rgb tuple (h, s, l) where h s and l are integers lying between 0 and 255
     """
-    return tuple([round(x*255) for x in rgb])
+    return tuple([round(x * 255) for x in rgb])
 
 
 # HLS: Hue, Luminance, Saturation
@@ -185,7 +188,7 @@ def to_hsl(rgb: tuple) -> tuple:
     # convert rgb values to fractional for colorsys to work
     # perform the switch from colorsys's hls to required hsl
     h, l, s = colorsys.rgb_to_hls(*to_fractional_rgb(rgb))
-    return h*360, s*100, l*100
+    return h * 360, s * 100, l * 100
 
 
 # HSV: Hue, Saturation, Value
@@ -203,7 +206,7 @@ def to_hsv(rgb: tuple) -> tuple:
     """
     # convert rgb values to fractional for colorsys to work
     h, s, v = colorsys.rgb_to_hsv(*to_fractional_rgb(rgb))
-    return h*360, s*100, v*100
+    return h * 360, s * 100, v * 100
 
 
 @_enforce_tuple_format(360, 100, 100)
@@ -217,7 +220,7 @@ def from_hsl(hsl: tuple) -> tuple:
     """
     # convert hls values to fractional for colorsys to work then convert back integer
     h, s, l = hsl
-    return from_fractional_rgb(colorsys.hls_to_rgb(h/360, l/100, s/100))
+    return from_fractional_rgb(colorsys.hls_to_rgb(h / 360, l / 100, s / 100))
 
 
 @_enforce_tuple_format(360, 100, 100)
@@ -231,7 +234,7 @@ def from_hsv(hsv: tuple) -> tuple:
     """
     # convert hsv values to fractional for colorsys to work then convert back integer
     h, s, v = hsv
-    return from_fractional_rgb(colorsys.hsv_to_rgb(h/360, s/100, v/100))
+    return from_fractional_rgb(colorsys.hsv_to_rgb(h / 360, s / 100, v / 100))
 
 
 @_enforce_tuple_format(255, 255, 255, 255)

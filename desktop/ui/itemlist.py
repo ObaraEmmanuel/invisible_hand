@@ -1,7 +1,7 @@
 from tkinter import Frame, Label
 
-from scrolledframe import ScrolledFrame
-from ui_utils import EventMask, config_all, clear_children, bind_all
+from ui.scrolledframe import ScrolledFrame
+from ui.utils import EventMask, config_all, clear_children, bind_all
 
 
 class CompoundList(ScrolledFrame):

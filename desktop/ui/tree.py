@@ -2,10 +2,10 @@ import enum
 import tkinter as tk
 from tkinter import Frame, Label, PhotoImage
 
-from geometry import absolute_bounds, upscale_bounds, bounds
-from highlight import EdgeIndicator
-from scrolledframe import ScrolledFrame
-from ui_utils import chain, EventMask, DragWindow, WidgetTree
+from ui.highlight import EdgeIndicator
+from ui.scrolledframe import ScrolledFrame
+from ui.utils import chain, EventMask, DragWindow, WidgetTree
+from utils.geometry import absolute_bounds, upscale_bounds, bounds
 
 
 class InsertType(enum.IntEnum):
@@ -254,7 +254,8 @@ class Tree:
                     insert_index = min(insert_index, len(self.nodes) - 1)
                     spec = {}
                     if self.nodes:
-                        spec = {"after": self.nodes[insert_index]} if index > 0 else {"before": self.nodes[insert_index]}
+                        spec = {"after": self.nodes[insert_index]} if index > 0 else {
+                            "before": self.nodes[insert_index]}
                     node.pack(in_=self.body, **spec, fill="x", side="top", pady=self.PADDING)
                     node.lift_all(self.body)
                 self.nodes.insert(index, node)
@@ -370,7 +371,7 @@ class Tree:
             else:
                 self.expand()
             return match or (query.lower() in self.name_pad["text"].lower())
-        
+
         def on_structure_change(self, callback, *args, **kwargs):
             self._on_structure_change = lambda: callback(*args, **kwargs)
 
@@ -403,7 +404,7 @@ class Tree:
             # only initialize if not initialized
             if not Tree.drag_popup:
                 Tree.drag_popup = DragWindow(self.winfo_toplevel()).set_position(event.x_root,
-                                                                                          event.y_root + 20)
+                                                                                 event.y_root + 20)
                 Tree.drag_components = self.tree._selected
                 Tree.drag_instance = self.tree
                 count = 0
@@ -418,7 +419,8 @@ class Tree:
                         break
                     Label(
                         Tree.drag_popup,
-                        text=component.name, image=component.icon, compound="left", anchor='w').pack(side="top", fill="x")
+                        text=component.name, image=component.icon, compound="left", anchor='w').pack(side="top",
+                                                                                                     fill="x")
                     count += 1
             self._edge_scroll(event)
             widget = WidgetTree.containing(event.x_root, event.y_root, self)
@@ -790,7 +792,7 @@ class Tree:
                 node.pack_forget()
                 node._visible = False
         return match
-    
+
     def on_structure_change(self, callback, *args, **kwargs):
         self._on_structure_change = lambda: callback(*args, **kwargs)
 

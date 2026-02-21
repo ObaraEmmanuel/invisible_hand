@@ -2,10 +2,10 @@ from collections import defaultdict
 from tkinter import Label, PhotoImage
 
 import commands
-import itemlist
 from commands import CommandComponent, ComponentTree
-from tree import InsertType
-from ui_utils import DraggableMixin, WidgetTree
+from ui import itemlist
+from ui.tree import InsertType
+from ui.utils import DraggableMixin, WidgetTree
 
 
 class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):

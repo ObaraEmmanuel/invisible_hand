@@ -1,8 +1,8 @@
-from tkinter import ttk, Frame
-import tkinter as tk
 import time
+import tkinter as tk
+from tkinter import ttk, Frame
 
-from ui_utils import ScrollableInterface
+from ui.utils import ScrollableInterface
 
 
 class ScrolledFrame(tk.Frame, ScrollableInterface):

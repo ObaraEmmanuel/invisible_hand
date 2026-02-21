@@ -1,3 +1,7 @@
+# ======================================================================= #
+# Copyright (C) 2019 Hoverset Group.                                      #
+# ======================================================================= #
+
 """
 Helper geometry functionality. The following terms will be used:
 
@@ -15,10 +19,6 @@ The following modifiers may be used together with the terms described above:
     * **relative**: Relative to a widget or toplevel window
 
 """
-
-# ======================================================================= #
-# Copyright (C) 2019 Hoverset Group.                                      #
-# ======================================================================= #
 
 import re
 

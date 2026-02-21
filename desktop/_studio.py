@@ -3,13 +3,12 @@ from studio import WidgetMeta
 from catalogue import CatalogueList
 from commands import ComponentTree
 from macro import MacroList
-from scrolledframe import ScrolledFrame
-from tree import TreeView
+from ui.scrolledframe import ScrolledFrame
+from ui.tree import TreeView
 
 
 class ScrolledFrameMeta(ScrolledFrame, metaclass=WidgetMeta):
     display_name = 'ScrolledFrame'
-    # impl is not necessary and can be inferred from the inheritance list
     impl = ScrolledFrame
     icon = "frame"
     is_container = False
@@ -18,7 +17,6 @@ class ScrolledFrameMeta(ScrolledFrame, metaclass=WidgetMeta):
 
 class TreeViewMeta(TreeView, metaclass=WidgetMeta):
     display_name = 'TreeView'
-    # impl is not necessary and can be inferred from the inheritance list
     impl = TreeView
     icon = "treeview"
     is_container = False
@@ -27,7 +25,6 @@ class TreeViewMeta(TreeView, metaclass=WidgetMeta):
 
 class ComponentTreeMeta(ComponentTree, metaclass=WidgetMeta):
     display_name = 'ComponentTree'
-    # impl is not necessary and can be inferred from the inheritance list
     impl = ComponentTree
     icon = "treeview"
     is_container = False
@@ -36,7 +33,6 @@ class ComponentTreeMeta(ComponentTree, metaclass=WidgetMeta):
 
 class CatalogueListMeta(CatalogueList, metaclass=WidgetMeta):
     display_name = 'CatalogueList'
-    # impl is not necessary and can be inferred from the inheritance list
     impl = CatalogueList
     icon = "listbox"
     is_container = False
@@ -45,7 +41,6 @@ class CatalogueListMeta(CatalogueList, metaclass=WidgetMeta):
 
 class MacroListMeta(MacroList, metaclass=WidgetMeta):
     display_name = 'MacroList'
-    # impl is not necessary and can be inferred from the inheritance list
     impl = MacroList
     icon = "listbox"
     is_container = False

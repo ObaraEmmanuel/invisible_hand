@@ -3,12 +3,12 @@ from tkinter import PhotoImage
 
 from formation import Builder
 
-import tree
-from color import to_hex, from_hsl
+import ui.tree
 from keymaps import get_key, is_modifier, Key, get_button
 from macro import Macro
-from menu import MenuUtils
-from ui_utils import EmptyScreen
+from ui.menu import MenuUtils
+from ui.utils import EmptyScreen
+from utils.color import to_hex, from_hsl
 
 
 class CommandComponent:
@@ -440,8 +440,8 @@ def get_component(key):
     return _components_map[key]
 
 
-class ComponentTree(tree.TreeView):
-    class Node(tree.Tree.Node):
+class ComponentTree(ui.tree.TreeView):
+    class Node(ui.tree.Tree.Node):
 
         def __init__(self, master=None, **config):
             super().__init__(master, **config)

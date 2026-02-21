@@ -6,7 +6,7 @@ from formation import AppBuilder, Builder
 import catalogue
 from commands import ComponentTree
 from macro import MacroList, Macro
-from ui_utils import MouseWheelDispatcher
+from ui.utils import MouseWheelDispatcher
 
 
 def center_window(window, master=None):
@@ -23,7 +23,7 @@ def center_window(window, master=None):
     # window.update_idletasks()
     sub_width = window.winfo_width()
     sub_height = window.winfo_height()
-    window.geometry(f"+{x + (width - sub_width)//2}+{y + (height - sub_height)//2}")
+    window.geometry(f"+{x + (width - sub_width) // 2}+{y + (height - sub_height) // 2}")
 
 
 class AddMacroDialog(Builder):
@@ -135,7 +135,6 @@ class App(AppBuilder):
             self.macro_canvas.deselect(node)
             node.remove()
         self.on_command_select()
-
 
 
 if __name__ == "__main__":

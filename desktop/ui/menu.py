@@ -1,7 +1,7 @@
 import functools
 import tkinter as tk
 
-from platform_utils import windowing_is, AQUA, platform_is, MAC, LINUX
+from utils.platform import windowing_is, AQUA, platform_is, MAC, LINUX
 
 
 class Manipulator:
@@ -136,7 +136,7 @@ class MenuUtils:
             bind_func("<Button-3>", callback, add)
 
     @classmethod
-    def _make_menu(cls, templates, menu, style = None):
+    def _make_menu(cls, templates, menu, style=None):
         # populate the menu by following the templates
         raw_templates = []
         # expand any manipulators to their constituent templates
