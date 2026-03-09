@@ -2,8 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 
 from formation import AppBuilder, Builder
+from serial.tools.list_ports_common import ListPortInfo
 
 import catalogue
+from comm import COMManger, DeviceEventType
 from commands import ComponentTree
 from macro import MacroList, Macro
 from ui.utils import MouseWheelDispatcher
@@ -53,6 +55,7 @@ class AddMacroDialog(Builder):
 
 
 class App(AppBuilder):
+    NO_DEVICE = "No device"
 
     def __init__(self):
         self.main: tk.Tk = None
@@ -61,7 +64,7 @@ class App(AppBuilder):
         self.device_select: ttk.Frame = None
         self.device: tk.StringVar = None
         self.upload_btn: ttk.Button = None
-        self.execute_btn: ttk.Button = None
+        self.flash_btn: ttk.Button = None
         self.command_delete: ttk.Button = None
         self.macro_name_lbl: ttk.Label = None
         self.macro_canvas: ComponentTree = None
@@ -74,9 +77,10 @@ class App(AppBuilder):
         s = ttk.Style()
         s.configure('Treeview', rowheight=40)
         center_window(self._root)
-        self.device_select["values"] = ("Local PC",)
+        self._devices = []
+        self.device_select["values"] = (self.NO_DEVICE,)
         self.device_select["font"] = None
-        self.device.set("Local PC")
+        self.device.set(self.NO_DEVICE)
         self._package_image = tk.PhotoImage(file="resources/package.png")
         self._items = {}
         self.active_macro: Macro = None
@@ -89,6 +93,41 @@ class App(AppBuilder):
         self.macro_list.on_change(self.macro_changed)
         self.macro_list.load()
         self.main.wm_protocol("WM_DELETE_WINDOW", lambda: [print("exiting"), self.main.destroy()])
+        self._update_state()
+
+        self.comm: COMManger = COMManger()
+        self.comm.bind(self.main)
+        self.comm.start()
+        self.comm.add_listener(self._on_device_added, DeviceEventType.ADDED)
+        self.comm.add_listener(self._on_device_removed, DeviceEventType.REMOVED)
+
+    def _on_device_added(self, device: ListPortInfo):
+        if device in self._devices:
+            return
+
+        self._devices.append(device)
+        self.device_select["values"] = [d.device for d in self._devices]
+        if self.device.get() == self.NO_DEVICE:
+            self.device.set(device.device)
+            self._update_state()
+
+    def _on_device_removed(self, device: ListPortInfo):
+        if device not in self._devices:
+            return
+        self._devices.remove(device)
+        self.device_select["values"] = [d.device for d in self._devices]
+        if self.device.get() == device.device:
+            if self._devices:
+                self.device.set(self._devices[0].device)
+            else:
+                self.device.set(self.NO_DEVICE)
+            self._update_state()
+
+    def _update_state(self):
+        if (not self.active_macro) or self.device.get() == self.NO_DEVICE:
+            self.upload_btn.grid_remove()
+        else:
+            self.upload_btn.grid()
 
     def macro_changed(self, item):
         if not item:
@@ -98,6 +137,7 @@ class App(AppBuilder):
         self.active_macro = item.value
         self.macro_canvas.load_macro(self.active_macro)
         self.macro_name_lbl.config(text=self.active_macro.name)
+        self._update_state()
 
     def add_macro(self):
         name = AddMacroDialog.get_name(self._root)

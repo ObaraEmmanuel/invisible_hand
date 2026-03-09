@@ -7,10 +7,10 @@
             "layout": "grid"
         }, 
         "layout": {
-            "height": "783", 
-            "width": "1000", 
-            "x": "30", 
-            "y": "30"
+            "height": 783, 
+            "width": 1000, 
+            "x": 30, 
+            "y": 30
         }, 
         "name": "main"
     }, 
@@ -101,13 +101,13 @@
                     "layout": "pack"
                 }, 
                 "layout": {
-                    "column": "0", 
-                    "height": "0", 
-                    "ipadx": "5", 
-                    "ipady": "5", 
-                    "row": "0", 
+                    "column": 0, 
+                    "height": 0, 
+                    "ipadx": 5, 
+                    "ipady": 5, 
+                    "row": 0, 
                     "sticky": "nesw", 
-                    "width": "0"
+                    "width": 0
                 }, 
                 "name": "header"
             }, 
@@ -116,16 +116,18 @@
                     "attrib": {
                         "attr": {
                             "background": "#1c1c1c", 
-                            "exportselection": "0", 
+                            "exportselection": 0, 
                             "foreground": "#fafafa", 
                             "state": "readonly", 
                             "textvariable": "device"
                         }, 
                         "layout": {
-                            "height": "10", 
-                            "padx": "5", 
+                            "anchor": "nw", 
+                            "height": 10, 
+                            "padx": 5, 
+                            "pady": 5, 
                             "side": "left", 
-                            "width": "20"
+                            "width": 20
                         }, 
                         "name": "device_select"
                     }, 
@@ -134,35 +136,60 @@
                 {
                     "attrib": {
                         "attr": {
-                            "command": "execute_macro", 
-                            "compound": "left", 
-                            "image": "../resources/play.png", 
-                            "text": "Execute"
+                            "background": "#1c1c1c", 
+                            "highlightbackground": "#1c1c1c", 
+                            "highlightcolor": "#2f60d8", 
+                            "layout": "grid"
                         }, 
                         "layout": {
-                            "padx": "5", 
+                            "anchor": "e", 
+                            "expand": 1, 
+                            "height": 0, 
+                            "padx": 5, 
                             "side": "right", 
-                            "width": ""
+                            "width": 0
                         }, 
-                        "name": "execute_btn"
+                        "name": "frame_3"
                     }, 
-                    "type": "tkinter.ttk.Button"
-                }, 
-                {
-                    "attrib": {
-                        "attr": {
-                            "command": "upload_macro", 
-                            "compound": "left", 
-                            "image": "../resources/firmware.png", 
-                            "text": "Upload"
+                    "children": [
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "command": "execute_macro", 
+                                    "compound": "left", 
+                                    "image": "../resources/play.png", 
+                                    "text": "Upload"
+                                }, 
+                                "layout": {
+                                    "column": 0, 
+                                    "padx": "5 0", 
+                                    "row": 0, 
+                                    "width": ""
+                                }, 
+                                "name": "upload_btn"
+                            }, 
+                            "type": "tkinter.ttk.Button"
                         }, 
-                        "layout": {
-                            "side": "right", 
-                            "width": ""
-                        }, 
-                        "name": "upload_btn"
-                    }, 
-                    "type": "tkinter.ttk.Button"
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "command": "upload_macro", 
+                                    "compound": "left", 
+                                    "image": "../resources/firmware.png", 
+                                    "text": "Flash"
+                                }, 
+                                "layout": {
+                                    "column": 1, 
+                                    "padx": "5 0", 
+                                    "row": 0, 
+                                    "width": ""
+                                }, 
+                                "name": "fllash_btn"
+                            }, 
+                            "type": "tkinter.ttk.Button"
+                        }
+                    ], 
+                    "type": "tkinter.Frame"
                 }
             ], 
             "type": "tkinter.ttk.Frame"
@@ -174,9 +201,9 @@
                     "proxyrelief": "flat"
                 }, 
                 "layout": {
-                    "column": "0", 
+                    "column": 0, 
                     "height": "", 
-                    "row": "1", 
+                    "row": 1, 
                     "sticky": "nesw", 
                     "width": ""
                 }, 
@@ -189,12 +216,12 @@
                             "background": "#1c1c1c", 
                             "highlightbackground": "#2a2a2a", 
                             "highlightcolor": "#2a2a2a", 
-                            "highlightthickness": "1", 
+                            "highlightthickness": 1, 
                             "layout": "pack"
                         }, 
                         "layout": {
                             "height": "", 
-                            "minsize": "250", 
+                            "minsize": 250, 
                             "sticky": "nesw", 
                             "width": ""
                         }, 
@@ -211,8 +238,8 @@
                                 }, 
                                 "layout": {
                                     "fill": "x", 
-                                    "height": "40", 
-                                    "width": "0"
+                                    "height": 40, 
+                                    "width": 0
                                 }, 
                                 "name": "frame_2"
                             }, 
@@ -232,11 +259,11 @@
                                         }, 
                                         "layout": {
                                             "anchor": "nw", 
-                                            "height": "0", 
-                                            "padx": "5", 
-                                            "pady": "5", 
+                                            "height": 0, 
+                                            "padx": 5, 
+                                            "pady": 5, 
                                             "side": "left", 
-                                            "width": "0"
+                                            "width": 0
                                         }, 
                                         "name": "label_2"
                                     }, 
@@ -251,8 +278,8 @@
                                             "text": "Add"
                                         }, 
                                         "layout": {
-                                            "padx": "5", 
-                                            "pady": "5", 
+                                            "padx": 5, 
+                                            "pady": 5, 
                                             "side": "right", 
                                             "width": ""
                                         }, 
@@ -271,10 +298,10 @@
                                     "highlightcolor": "#2f60d8"
                                 }, 
                                 "layout": {
-                                    "expand": "1", 
+                                    "expand": 1, 
                                     "fill": "both", 
-                                    "height": "0", 
-                                    "width": "0"
+                                    "height": 0, 
+                                    "width": 0
                                 }, 
                                 "name": "macro_list"
                             }, 
@@ -289,12 +316,12 @@
                             "background": "#1c1c1c", 
                             "highlightbackground": "#2a2a2a", 
                             "highlightcolor": "#2a2a2a", 
-                            "highlightthickness": "1", 
+                            "highlightthickness": 1, 
                             "layout": "pack"
                         }, 
                         "layout": {
                             "height": "", 
-                            "minsize": "500", 
+                            "minsize": 500, 
                             "sticky": "nesw", 
                             "width": ""
                         }, 
@@ -308,8 +335,8 @@
                                 }, 
                                 "layout": {
                                     "fill": "x", 
-                                    "height": "40", 
-                                    "width": "0"
+                                    "height": 40, 
+                                    "width": 0
                                 }, 
                                 "name": "frame_1"
                             }, 
@@ -329,11 +356,11 @@
                                         }, 
                                         "layout": {
                                             "anchor": "nw", 
-                                            "height": "0", 
-                                            "padx": "5", 
-                                            "pady": "5", 
+                                            "height": 0, 
+                                            "padx": 5, 
+                                            "pady": 5, 
                                             "side": "left", 
-                                            "width": "0"
+                                            "width": 0
                                         }, 
                                         "name": "macro_name_lbl"
                                     }, 
@@ -348,8 +375,8 @@
                                             "text": "Save"
                                         }, 
                                         "layout": {
-                                            "padx": "5", 
-                                            "pady": "5", 
+                                            "padx": 5, 
+                                            "pady": 5, 
                                             "side": "right", 
                                             "width": ""
                                         }, 
@@ -384,10 +411,10 @@
                                     "highlightcolor": "#2f60d8"
                                 }, 
                                 "layout": {
-                                    "expand": "1", 
+                                    "expand": 1, 
                                     "fill": "both", 
-                                    "height": "265", 
-                                    "width": "378"
+                                    "height": 265, 
+                                    "width": 378
                                 }, 
                                 "name": "macro_canvas"
                             }, 
@@ -396,14 +423,14 @@
                                     "attrib": {
                                         "attr": {
                                             "activebackground": "#2f60d8", 
-                                            "activeborderwidth": "1", 
+                                            "activeborderwidth": 1, 
                                             "activeforeground": "#ffffff", 
                                             "background": "#1c1c1c", 
-                                            "borderwidth": "1", 
+                                            "borderwidth": 1, 
                                             "disabledforeground": "#535353", 
                                             "font": "{Segoe UI} 9", 
                                             "foreground": "#fafafa", 
-                                            "tearoff": "0"
+                                            "tearoff": 0
                                         }, 
                                         "name": "macro_menu"
                                     }, 
@@ -433,12 +460,12 @@
                             "background": "#1c1c1c", 
                             "highlightbackground": "#2a2a2a", 
                             "highlightcolor": "#2a2a2a", 
-                            "highlightthickness": "1", 
+                            "highlightthickness": 1, 
                             "layout": "pack"
                         }, 
                         "layout": {
                             "height": "", 
-                            "minsize": "250", 
+                            "minsize": 250, 
                             "sticky": "nesw", 
                             "width": ""
                         }, 
@@ -460,10 +487,10 @@
                                 }, 
                                 "layout": {
                                     "fill": "x", 
-                                    "height": "0", 
-                                    "padx": "10", 
+                                    "height": 0, 
+                                    "padx": 10, 
                                     "pady": "5 15", 
-                                    "width": "0"
+                                    "width": 0
                                 }, 
                                 "name": "label_1"
                             }, 
@@ -477,10 +504,10 @@
                                     "highlightcolor": "#2f60d8"
                                 }, 
                                 "layout": {
-                                    "expand": "1", 
+                                    "expand": 1, 
                                     "fill": "both", 
-                                    "height": "0", 
-                                    "width": "0"
+                                    "height": 0, 
+                                    "width": 0
                                 }, 
                                 "name": "catalogue"
                             }, 
