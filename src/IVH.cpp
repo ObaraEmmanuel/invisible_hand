@@ -3,15 +3,25 @@
 #include <Arduino.h>
 #include <esp32-hal.h>
 
-IVH::IVH() {
-    stack.buffer = _stack;
-    stack.length = IVH_STACK_SIZE;
-    keys.buffer = _keys;
-    keys.length = IVH_KEY_BUF_SIZE;
+IVH::IVH() : IVH(nullptr) {
+}
+
+IVH::IVH(HID *device) {
+    if (device != nullptr)
+        setDevice(device);
+    board = BOARD_NAME;
 }
 
 void IVH::setDevice(HID *device) {
     hid_device = device;
+}
+
+void IVH::setPackageArea(uint8_t *area) {
+    _package = area;
+}
+
+void IVH::bind(IVHMachine *machine) {
+    machine->setStackBuffer(_stack, IVH_STACK_SIZE);
 }
 
 void IVH::buttonHold(uint8_t button) {
@@ -48,4 +58,8 @@ uint64_t IVH::getRandom(uint64_t min, uint64_t max) {
 
 uint64_t IVH::getMicros() {
     return micros();
+}
+
+void IVH::updatePackage(const uint8_t *data, uint32_t offset, uint32_t len) {
+    memcpy(_package + offset, data, len);
 }

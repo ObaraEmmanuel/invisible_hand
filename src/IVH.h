@@ -6,12 +6,16 @@
 #define IVH_KEY_BUF_SIZE 256
 
 
-class IVH final : public IVHMachine{
+class IVH final : public IVHMachineInterface{
 public:
     IVH();
+    explicit IVH(HID* device);
     void setDevice(HID* device);
+    void setPackageArea(uint8_t *area);
+    void bind(IVHMachine* machine);
 private:
     HID* hid_device{};
+    uint8_t *_package = nullptr;
     uint8_t _stack[IVH_STACK_SIZE] = {};
     uint8_t _keys[IVH_KEY_BUF_SIZE] = {};
 
@@ -24,4 +28,5 @@ protected:
     void mouseWheel(int8_t x, int8_t y) override;
     uint64_t getRandom(uint64_t min, uint64_t max) override;
     uint64_t getMicros() override;
+    void updatePackage(const uint8_t *data, uint32_t offset, uint32_t len) override;
 };

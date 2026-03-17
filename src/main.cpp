@@ -3,30 +3,19 @@
 #include "esp32/BLE_HID.h"
 #include "HID.h"
 #include "IVH.h"
+#include "IVHComm.h"
+#include "arduino/SerialComm.h"
 
-#define RANDOM_ANALOGUE 18
-#define BUFFER_SIZE 256
+#define RANDOM_ANALOGUE 25
+#define PACKAGE_SIZE 65536
 #define HEARTBEAT_INTERVAL 1000
 
-const unsigned char blob[49] =
-"\x49\x56\x48\x99\x01\x00\x22\x00\x00\x00\xe0\x32\x40\x42\x0f\xe1"
-"\x02\x00\x22\x7f\xef\x32\x40\x42\x0f\x23\x7f\x32\x40\x42\x0f\xe1"
-"\x02\x00\x22\x81\xef\x32\x40\x42\x0f\x23\x81\xef\x45\x22\x16\xc5";
-
-uint8_t buffer[BUFFER_SIZE]{};
-bool is_reading_package = false;
-unsigned long deadline = 0;
-
 BLEHID hid_device;
-IVH ivh_machine;
-
-void comm() {
-    if (millis() > deadline) {
-        Serial.write("\x99\x99\x03IVH\x99\x99");
-        deadline = millis() + HEARTBEAT_INTERVAL;
-    }
-    Serial.flush();
-}
+SerialComm serial_comm;
+IVH machineInterface(&hid_device);
+IVHMachine machine(&machineInterface, nullptr);
+IVHComm comm(&serial_comm, &machine);
+uint8_t *package;
 
 void setup() {
     Serial.begin(115200);
@@ -36,32 +25,31 @@ void setup() {
         Serial.println("HID device unable to start");
         return;
     }
-    ivh_machine.setDevice(&hid_device);
     pinMode(RANDOM_ANALOGUE, INPUT);
     randomSeed(analogRead(RANDOM_ANALOGUE));
-    ivh_machine.setPackage(blob);
-    IVHErr err = ivh_machine.start();
-    if (err != IVH_ERR_OK) {
-        Serial.print("Error starting IVH: ");
-        Serial.println(IVHErrToString(err));
-    }else {
-        Serial.println("IVH started");
+    package = new uint8_t[PACKAGE_SIZE];
+
+
+    machineInterface.setPackageArea(package);
+    machineInterface.bind(&machine);
+    machine.setPackage(package);
+
+    if (!comm.init()) {
+        Serial.println("Failed to start IVH comm");
     }
-    deadline = millis() + HEARTBEAT_INTERVAL;
 }
 
 void loop() {
-    comm();
+    comm.tick();
     if (!hid_device.connected())
         return;
-    IVHErr err = ivh_machine.execute();
+    IVHErr err = machine.execute();
     if (err == IVH_ERR_MACHINE_INVALID) {
-        delay(500);
+        delay(10);
         return;
     }
     if (err != IVH_ERR_OK) {
         Serial.print("IVH Runtime Error: ");
         Serial.println(IVHErrToString(err));
     }
-    delay(1);
 }

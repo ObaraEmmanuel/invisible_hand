@@ -6,15 +6,18 @@
 
 static bool CRC32IsValid(uint32_t expected, const uint8_t* data, size_t len);
 
-IVHMachine::IVHMachine() : IVHMachine(nullptr) {
-}
 
-IVHMachine::IVHMachine(const uint8_t *package) : package(package) {
+IVHMachine::IVHMachine(IVHMachineInterface *interface, const uint8_t *package) : _interface(interface), package(package) {
 }
 
 void IVHMachine::setPackage(const uint8_t *_package) {
     package = _package;
     machineReady = false;
+}
+
+void IVHMachine::setStackBuffer(uint8_t *_stack, uint64_t _length) {
+    stack.buffer = _stack;
+    stack.length = _length;
 }
 
 void IVHMachine::pause() {
@@ -36,6 +39,14 @@ void IVHMachine::setPressInterval(uint64_t _interval) {
 
 uint32_t IVHMachine::getCurrentOffset() const {
     return currentOffset;
+}
+
+IVHState_t IVHMachine::getState() const {
+    return state;
+}
+
+IVHMachineInterface * IVHMachine::getInterface() const {
+    return _interface;
 }
 
 IVHCommand_t IVHMachine::fetch() {
@@ -87,14 +98,14 @@ IVHCommand_t IVHMachine::_readKey(uint8_t key) {
         case 0x4:
         case 0x8:
         case 0xC: {
-            keys.buffer[0] = package[currentOffset++];
+            keys[0] = package[currentOffset++];
             param1.len = 1;;
             break;
         }
         case 0x5:
         case 0x9:
         case 0xD: {
-            keys.buffer[0] = package[currentOffset++];
+            keys[0] = package[currentOffset++];
             param1.len = 1;
             param2.modifier = package[currentOffset++];
             break;
@@ -104,8 +115,8 @@ IVHCommand_t IVHMachine::_readKey(uint8_t key) {
         case 0xE: {
             param1.len = package[currentOffset++];
             param2.modifier = package[currentOffset++];
-            const uint8_t n = std::min(keys.length, static_cast<uint64_t>(param1.len));
-            std::memcpy(keys.buffer, package + currentOffset, n);
+            const uint8_t n = std::min(IVH_KEY_BUF_SIZE, static_cast<int>(param1.len));
+            std::memcpy(keys, package + currentOffset, n);
             currentOffset += n;
             break;
         }
@@ -257,7 +268,7 @@ IVHCommand_t IVHMachine::_readRandomizeBlock() {
         if (currentDepth == 1) {
             // Reservoir sampling
             if (key != 0xEF)
-                if (getRandom(0, offsetCount) == 0)
+                if (_interface->getRandom(0, offsetCount) == 0)
                     selected = offset;
             offsetCount++;
         }
@@ -436,8 +447,6 @@ IVHErr_t IVHMachine::start() {
         return IVH_ERR_PACKAGE_UNSET;
     if (!isBufferValid(&stack))
         return IVH_ERR_STACK_UNSET;
-    if (!isBufferValid(&keys))
-        return IVH_ERR_KEY_BUF_UNSET;
 
     if (strncmp(reinterpret_cast<const char *>(package), IVH_MAGIC, 4) != 0)
         return IVH_ERR_INVALID_MAGIC;
@@ -452,8 +461,12 @@ IVHErr_t IVHMachine::start() {
     if (!CRC32IsValid(read(package + maxOffset, sizeof(uint32_t)), package, maxOffset))
         return IVH_ERR_PACKAGE_CORRUPT;
 
+    // reset machine state
     machineReady = true;
     state = IVH_ST_RUNNING;
+    _returnOffset = 0;
+    depth = 0;
+    stackPointer = 0;
     return IVH_ERR_OK;
 }
 
@@ -465,7 +478,7 @@ IVHErr_t IVHMachine::execute() {
     if (state == IVH_ST_STOPPED || state == IVH_ST_PAUSED)
         return IVH_ERR_OK;
 
-    currentMicro = getMicros();
+    currentMicro = _interface->getMicros();
     if (state == IVH_ST_WAITING || state == IVH_ST_WAITING_INTERNAL) {
         if (currentMicro < deadlineMicro) {
             return IVH_ERR_OK;
@@ -493,70 +506,70 @@ IVHErr_t IVHMachine::execute() {
     switch (command) {
         case IVH_COM_KEYHOLD:
             // Handle key hold
-            keyHold(keys.buffer, param1.len, param2.modifier);
+            _interface->keyHold(keys, param1.len, param2.modifier);
             break;
 
         case IVH_COM_KEYRELEASE:
             // Handle key release
-            keyRelease(keys.buffer, param1.len, param2.modifier);
+            _interface->keyRelease(keys, param1.len, param2.modifier);
             break;
 
         case IVH_COM_KEYPRESS:
             // Handle key press
             if (state == IVH_ST_RUNNING) {
-                keyHold(keys.buffer, param1.len, param2.modifier);
+                _interface->keyHold(keys, param1.len, param2.modifier);
                 // wait for a short duration before releasing the key
                 state = IVH_ST_WAITING_INTERNAL;
-                deadlineMicro = getMicros() + _pressInterval;
+                deadlineMicro = _interface->getMicros() + _pressInterval;
             } else if (state == IVH_ST_WAITING_INTERNAL) {
-                keyRelease(keys.buffer, param1.len, param2.modifier);
+                _interface->keyRelease(keys, param1.len, param2.modifier);
                 state = IVH_ST_RUNNING;
             }
             break;
 
         case IVH_COM_BUTTONHOLD:
             // Handle button hold
-            buttonHold(param1.button);
+            _interface->buttonHold(param1.button);
             break;
 
         case IVH_COM_BUTTONRELEASE:
             // Handle button release
-            buttonRelease(param1.button);
+            _interface->buttonRelease(param1.button);
             break;
 
         case IVH_COM_BUTTONPRESS:
             // Handle button press
             if (state == IVH_ST_RUNNING) {
-                buttonHold(param1.button);
+                _interface->buttonHold(param1.button);
                 // wait for a short duration before releasing the key
                 state = IVH_ST_WAITING_INTERNAL;
-                deadlineMicro = getMicros() + _pressInterval;
+                deadlineMicro = _interface->getMicros() + _pressInterval;
             } else if (state == IVH_ST_WAITING_INTERNAL) {
-                buttonRelease(param1.button);
+                _interface->buttonRelease(param1.button);
                 state = IVH_ST_RUNNING;
             }
             break;
 
         case IVH_COM_MOUSEMOVE:
             // Handle mouse move
-            mouseMove(param1.delta, param2.delta);
+            _interface->mouseMove(param1.delta, param2.delta);
             break;
 
         case IVH_COM_MOUSEWHEEL:
             // Handle mouse wheel
-            mouseWheel(param1.delta, param2.delta);
+            _interface->mouseWheel(param1.delta, param2.delta);
             break;
 
         case IVH_COM_DELAY:
             // Handle delay
             state = IVH_ST_WAITING;
-            deadlineMicro = getMicros() + param1.duration;
+            deadlineMicro = _interface->getMicros() + param1.duration;
             break;
 
         case IVH_COM_DELAYRANDOM:
             // Handle random
             state = IVH_ST_WAITING;
-            deadlineMicro = getMicros() + getRandom(param1.duration, param2.duration);
+            deadlineMicro = _interface->getMicros() + _interface->getRandom(param1.duration, param2.duration);
             break;
 
         case IVH_COM_LOOP:
@@ -566,7 +579,7 @@ IVHErr_t IVHMachine::execute() {
 
         case IVH_COM_LOOPRANDOM:
             // Handle random loop
-            beginLoop(getRandom(param1.count, param2.count));
+            beginLoop(_interface->getRandom(param1.count, param2.count));
             break;
 
         case IVH_COM_BREAK:
@@ -623,7 +636,6 @@ const char* IVHErrToString(IVHErr_t err) {
         case IVH_ERR_STACK_UNSET:         return "IVH_ERR_STACK_UNSET";
         case IVH_ERR_STACK_OVERFLOW:      return "IVH_ERR_STACK_OVERFLOW";
         case IVH_ERR_STACK_UNDERFLOW:     return "IVH_ERR_STACK_UNDERFLOW";
-        case IVH_ERR_KEY_BUF_UNSET:       return "IVH_ERR_KEY_BUF_UNSET";
         case IVH_ERR_OFFSET_BUF_UNSET:    return "IVH_ERR_OFFSET_BUF_UNSET";
         case IVH_ERR_INVALID_MAGIC:       return "IVH_ERR_INVALID_MAGIC";
         case IVH_ERR_UNSUPPORTED_VERSION: return "IVH_ERR_UNSUPPORTED_VERSION";

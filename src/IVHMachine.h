@@ -5,6 +5,7 @@
 #define IVH_MAGIC "IVH\x99"
 #define IVH_MAX_VERSION 1
 #define IVH_HEADER_SIZE 10
+#define IVH_KEY_BUF_SIZE 256
 
 static const uint8_t IVH_COMMAND_LEN[256] = {
     /*      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F */
@@ -30,13 +31,13 @@ static const uint8_t IVH_COMMAND_LEN[256] = {
 typedef enum IVHErr {
     IVH_ERR_OK = 0,
     IVH_ERR_MACHINE_INVALID,
+    IVH_ERR_INTERFACE_UNSET,
     IVH_ERR_BUFFER_UNSET,
     IVH_ERR_PACKAGE_UNSET,
     IVH_ERR_PACKAGE_CORRUPT,
     IVH_ERR_STACK_UNSET,
     IVH_ERR_STACK_OVERFLOW,
     IVH_ERR_STACK_UNDERFLOW,
-    IVH_ERR_KEY_BUF_UNSET,
     IVH_ERR_OFFSET_BUF_UNSET,
     IVH_ERR_INVALID_MAGIC,
     IVH_ERR_UNSUPPORTED_VERSION,
@@ -94,20 +95,57 @@ typedef struct IVHBuffer {
     uint64_t length;
 } IVHBuffer_t;
 
-const char* IVHCommandToString(IVHCommand_t cmd);
-const char* IVHErrToString(IVHErr_t err);
+typedef enum IVHInputType {
+    IVH_INPUT_NONE       = 0,
+    IVH_INPUT_USB        = 1,
+    IVH_INPUT_BLE        = 1 << 1,
+    IVH_INPUT_KEYBOARD   = 1 << 2,
+    IVH_INPUT_MOUSE      = 1 << 3,
+} IVHInputType_t;
+
+const char *IVHCommandToString(IVHCommand_t cmd);
+
+const char *IVHErrToString(IVHErr_t err);
+
+class IVHMachineInterface {
+public:
+    const char* board = nullptr;
+    uint8_t inputType = IVH_INPUT_NONE;
+
+    virtual ~IVHMachineInterface() = default;
+
+    virtual uint64_t getRandom(uint64_t min, uint64_t max) = 0;
+
+    virtual void keyHold(uint8_t *key, uint8_t len, uint8_t modifier) = 0;
+
+    virtual void keyRelease(uint8_t *key, uint8_t len, uint8_t modifier) = 0;
+
+    virtual void buttonHold(uint8_t button) = 0;
+
+    virtual void buttonRelease(uint8_t button) = 0;
+
+    virtual void mouseMove(int8_t x, int8_t y) = 0;
+
+    virtual void mouseWheel(int8_t x, int8_t y) = 0;
+
+    virtual uint64_t getMicros() = 0;
+
+    virtual void updatePackage(const uint8_t* data, uint32_t offset, uint32_t len) = 0;
+};
 
 class IVHMachine {
 public:
     IVHCommand_t lastCommand = IVH_COM_INVALID;
 
-    IVHMachine();
+    IVHMachine() = default;
 
-    explicit IVHMachine(const uint8_t *package);
+    IVHMachine(IVHMachineInterface *interface, const uint8_t *package);
 
     virtual ~IVHMachine() = default;
 
     void setPackage(const uint8_t *_package);
+
+    void setStackBuffer(uint8_t *_stack, uint64_t _length);
 
     void pause();
 
@@ -116,6 +154,10 @@ public:
     void setPressInterval(uint64_t _interval);
 
     [[nodiscard]] uint32_t getCurrentOffset() const;
+
+    [[nodiscard]] IVHState_t getState() const;
+
+    [[nodiscard]] IVHMachineInterface *getInterface() const;
 
     IVHCommand_t fetch();
 
@@ -127,6 +169,7 @@ private:
     bool machineReady = false;
     uint32_t _returnOffset = 0;
     uint64_t _pressInterval = 5000; //5ms
+    IVHMachineInterface* _interface = nullptr;
 
     IVHCommand_t _readKey(uint8_t key);
 
@@ -156,10 +199,9 @@ private:
 
     IVHErr_t endLoop();
 
-    IVHErr_t fastForwardBlock(uint32_t* finalOffset);
+    IVHErr_t fastForwardBlock(uint32_t *finalOffset);
 
     IVHErr_t breakLoop();
-
 
 protected:
     uint64_t packageLength = 0;
@@ -167,27 +209,11 @@ protected:
     uint32_t maxOffset = 0;
     uint32_t stackPointer = 0;
     uint16_t depth = 0;
-    const uint8_t *package;
-    IVHBuffer keys = {};
+    const uint8_t *package = nullptr;
+    uint8_t keys[IVH_KEY_BUF_SIZE] = {};
     IVHBuffer stack = {};
     IVHErr err = IVH_ERR_OK;
     IVHState state = IVH_ST_STOPPED, tempState = {};
     uint64_t currentMicro = 1, deadlineMicro = 0;
     IVHParam param1 = {}, param2 = {}, param3 = {};
-
-    virtual uint64_t getRandom(uint64_t min, uint64_t max) = 0;
-
-    virtual void keyHold(uint8_t *key, uint8_t len, uint8_t modifier) = 0;
-
-    virtual void keyRelease(uint8_t *key, uint8_t len, uint8_t modifier) = 0;
-
-    virtual void buttonHold(uint8_t button) = 0;
-
-    virtual void buttonRelease(uint8_t button) = 0;
-
-    virtual void mouseMove(int8_t x, int8_t y) = 0;
-
-    virtual void mouseWheel(int8_t x, int8_t y) = 0;
-
-    virtual uint64_t getMicros() = 0;
 };
