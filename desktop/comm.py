@@ -17,19 +17,171 @@ class DeviceEventType(Enum):
     REMOVED = 2
 
 
+class COMCommand(Enum):
+    INVALID = 0
+    PACKAGE = 0x10
+    RESTART = 0x11
+    PAUSE = 0x12
+    RESUME = 0x13
+    BOARD = 0x20
+    MEM = 0x21
+    INPUT_TYPE = 0x22
+    PACKAGE_PROGRESS = 0x30
+    PING = 0x99
+
+
 @dataclass
 class DeviceEvent:
     device: ListPortInfo
     type: DeviceEventType
 
 
-class COMManger:
-    BAUDRATE = 115200
+@dataclass
+class IVHFrame:
+    device: ListPortInfo
+    command: COMCommand
+    body: bytes
+
+
+class DeviceManager:
     WRITE_TIMEOUT = 0.5
     READ_TIMEOUT = 0.8
     POST_OPEN_DELAY = 0.25  # seconds (some boards reset on open; give them a moment)
-    PORT_POLL_INTERVAL = 0.5
-    DELIMITER = b"\x99\x99"
+    START_DELIMITER = b"\x99\x00"
+    END_DELIMITER = b"\x00\x99"
+    MAX_BODY_SIZE = 256
+
+    def __init__(self, device: ListPortInfo, baudrate: int = 115200):
+        self.device: ListPortInfo = device
+        self.port: str = device.device
+        self.baudrate: int = baudrate
+        self.buffer = bytearray()
+        self._send_queue: queue.Queue[bytes] = queue.Queue()
+        self._listening: bool = False
+        self._listeners: Callable[ListPortInfo, IVHFrame] = []
+
+    def _emit_event(self, frame: IVHFrame):
+        for listener in self._listeners:
+            listener(self.device, frame)
+
+    def _get_serial(self) -> serial.Serial:
+        return serial.Serial(
+            port=self.port,
+            baudrate=self.baudrate,
+            timeout=self.READ_TIMEOUT,
+            write_timeout=self.WRITE_TIMEOUT,
+            bytesize=serial.EIGHTBITS,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            dsrdtr=None,
+        )
+
+    def _feed(self, data: bytes):
+        """Feed new serial data and yield parsed frames."""
+        self.buffer.extend(data)
+
+        frames = []
+        s_delim_len = len(self.START_DELIMITER)
+        e_delim_len = len(self.END_DELIMITER)
+        payload_start = s_delim_len + 2  # delim + len + cmd
+        while True:
+            start = self.buffer.find(self.START_DELIMITER)
+            if start == -1:
+                # no delimiter at all: discard garbage before buffer end
+                self.buffer.clear()
+                break
+
+            if start > 0:
+                # discard leading noise
+                del self.buffer[:start]
+
+            # need at least: delim + len
+            if len(self.buffer) < s_delim_len + 1:
+                break
+
+            length = self.buffer[s_delim_len]
+
+            frame_len = payload_start + length + e_delim_len  # delim + len + cmd + payload + delim
+
+            if len(self.buffer) < frame_len:
+                break  # incomplete
+
+            # verify end delimiter
+            if self.buffer[payload_start + length:frame_len] != self.END_DELIMITER:
+                # bad frame: resync by dropping first byte
+                del self.buffer[0]
+                continue
+
+            cmd = self.buffer[s_delim_len + 1]
+            payload = self.buffer[payload_start:payload_start + length]
+
+            frames.append(IVHFrame(device=self.device, command=cmd, body=payload))
+
+            # remove parsed frame
+            del self.buffer[:frame_len]
+
+        return frames
+
+    def stop(self):
+        self._listening = False
+
+    def start(self):
+        threading.Thread(target=self.listen, args=(0,), daemon=True).start()
+
+    def send(self, command: COMCommand, data: bytes = b''):
+        if not self._listening:
+            raise RuntimeError("Device manager not listening")
+        if len(data) > self.MAX_BODY_SIZE:
+            raise ValueError("Data too long")
+        payload = bytearray()
+        payload.extend(self.START_DELIMITER)
+        payload.append(len(data))
+        payload.append(int(command.value))
+        payload.extend(data)
+        payload.extend(self.END_DELIMITER)
+        self._send_queue.put(payload)
+
+    def listen(self, timeout: float, max_frames: int = None) -> bool:
+        self._listening = True
+        frame_count = 0
+        success = False
+        try:
+            with self._get_serial() as ser:
+                ser.rts = False
+                ser.dtr = False
+                time.sleep(self.POST_OPEN_DELAY)
+                start = time.time()
+                deadline = start + timeout
+
+                while self._listening:
+                    while not self._send_queue.empty():
+                        ser.write(self._send_queue.get())
+                    response = ser.read(ser.in_waiting)
+                    if response:
+                        frames = self._feed(response)
+                        for frame in frames:
+                            self._emit_event(frame)
+                        frame_count += len(frames)
+                        if max_frames is not None and frame_count >= max_frames:
+                            success = True
+                            break
+                    if timeout > 0:
+                        tick = time.time()
+                        if tick > deadline or tick < start:
+                            success = False
+                            break
+                    time.sleep(0.3)
+        except (serial.SerialException, OSError):
+            success = False
+
+        self._listening = False
+        return success
+
+
+class COMManger:
+    BAUDRATE = 115200
+    PORT_POLL_INTERVAL = 0.3
+    PROBE_TIMEOUT = 5
 
     def __init__(self):
         self.devices: set[ListPortInfo] = set()
@@ -37,8 +189,10 @@ class COMManger:
         self._listener_thread: threading.Thread = None
         self._is_listening: bool = False
         self._event_queue: queue.Queue[DeviceEvent] = queue.Queue()
+        self._probe_queue: queue.Queue[ListPortInfo] = queue.Queue()
         self._listeners: dict[list[Callable[ListPortInfo]]] = defaultdict(list)
         self._widget = None
+        self.buffer = bytearray()
 
     def start(self) -> None:
         if self._listener_thread is not None and self._is_listening:
@@ -78,86 +232,25 @@ class COMManger:
 
             for dev in added:
                 self.devices.add(dev)
-                if self.probe(dev.device):
-                    self.ivh_devices.add(dev)
-                    self._event_queue.put(DeviceEvent(dev, DeviceEventType.ADDED))
+                threading.Thread(target=self.probe, args=(dev,), daemon=True).start()
+
             for dev in removed:
                 self.devices.remove(dev)
                 if dev in self.ivh_devices:
                     self.ivh_devices.remove(dev)
                     self._event_queue.put(DeviceEvent(dev, DeviceEventType.REMOVED))
 
+            while not self._probe_queue.empty():
+                dev = self._probe_queue.get()
+                if dev in self.devices:
+                    self.ivh_devices.add(dev)
+                    self._event_queue.put(DeviceEvent(dev, DeviceEventType.ADDED))
+
             time.sleep(self.PORT_POLL_INTERVAL)
 
         self._listener_thread = None
 
-    def probe(self, port: str) -> bool:
-        if self._wait_command(port, 5) == b"IVH":
-            return True
-        return False
-
-    def _serial_from_port(self, port) -> serial.Serial:
-        return serial.Serial(
-            port=port,
-            baudrate=self.BAUDRATE,
-            timeout=self.READ_TIMEOUT,
-            write_timeout=self.WRITE_TIMEOUT,
-            bytesize=serial.EIGHTBITS,
-            parity=serial.PARITY_NONE,
-            stopbits=serial.STOPBITS_ONE,
-            dsrdtr=None,
-        )
-
-    def _extract_frame(self, response: bytes) -> bytes:
-        offset = 0
-        delim_len = len(self.DELIMITER)
-        while True:
-            start = response.find(self.DELIMITER, offset)
-            if start == -1:
-                return None
-
-            length_pos = start + delim_len
-            if length_pos >= len(response):
-                # Too short to read length
-                return None
-
-            payload_length = response[length_pos]
-            payload_start = length_pos + 1
-            payload_end = payload_start + payload_length
-
-            if payload_end + delim_len > len(response):
-                # Too short to read full frame
-                offset = start + delim_len
-                continue
-
-            if response[payload_end: payload_end + delim_len] != self.DELIMITER:
-                # Invalid un-delimited frame, find next delimiter start
-                offset = start + delim_len
-                continue
-
-            return response[payload_start: payload_start + payload_length]
-
-    def _wait_command(self, port: str, timeout: float) -> bytes:
-        try:
-            with self._serial_from_port(port) as ser:
-                ser.rts = False
-                ser.dtr = False
-                time.sleep(self.POST_OPEN_DELAY)
-                full_response = bytearray()
-                start = time.time()
-                deadline = start + timeout
-                while True:
-                    response = ser.read(ser.in_waiting)
-                    if response:
-                        full_response.extend(response)
-                        frame = self._extract_frame(full_response)
-                        if frame:
-                            return frame
-                    tick = time.time()
-                    if tick > deadline or tick < start:
-                        break
-                    time.sleep(0.3)
-        except (serial.SerialException, OSError) as e:
-            # Port busy, permission denied, vanished, etc.
-            pass
-        return None
+    def probe(self, device: ListPortInfo):
+        if status := DeviceManager(device, self.BAUDRATE).listen(self.PROBE_TIMEOUT, 1):
+            self._probe_queue.put(device)
+        return status

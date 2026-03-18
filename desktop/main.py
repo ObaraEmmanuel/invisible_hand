@@ -5,9 +5,10 @@ from formation import AppBuilder, Builder
 from serial.tools.list_ports_common import ListPortInfo
 
 import catalogue
-from comm import COMManger, DeviceEventType
+from comm import COMManger, DeviceEventType, DeviceManager, COMCommand
 from commands import ComponentTree
 from macro import MacroList, Macro
+from package import IVHPackage
 from ui.utils import MouseWheelDispatcher
 
 
@@ -77,10 +78,12 @@ class App(AppBuilder):
         s = ttk.Style()
         s.configure('Treeview', rowheight=40)
         center_window(self._root)
-        self._devices = []
+        self._devices = {}
+        self._selected_device = None
         self.device_select["values"] = (self.NO_DEVICE,)
         self.device_select["font"] = None
         self.device.set(self.NO_DEVICE)
+        self.device.trace_add("write", self._on_device_selection)
         self._package_image = tk.PhotoImage(file="resources/package.png")
         self._items = {}
         self.active_macro: Macro = None
@@ -100,28 +103,41 @@ class App(AppBuilder):
         self.comm.start()
         self.comm.add_listener(self._on_device_added, DeviceEventType.ADDED)
         self.comm.add_listener(self._on_device_removed, DeviceEventType.REMOVED)
+        self.dev_manager: DeviceManager = None
 
     def _on_device_added(self, device: ListPortInfo):
         if device in self._devices:
             return
 
-        self._devices.append(device)
-        self.device_select["values"] = [d.device for d in self._devices]
+        self._devices[device.device] = device
+        self.device_select["values"] = [self.NO_DEVICE] + [d for d in self._devices]
         if self.device.get() == self.NO_DEVICE:
             self.device.set(device.device)
-            self._update_state()
 
     def _on_device_removed(self, device: ListPortInfo):
-        if device not in self._devices:
+        if device.device not in self._devices:
             return
-        self._devices.remove(device)
-        self.device_select["values"] = [d.device for d in self._devices]
+        self._devices.pop(device.device)
+        self.device_select["values"] = [self.NO_DEVICE] + [d for d in self._devices]
         if self.device.get() == device.device:
             if self._devices:
                 self.device.set(self._devices[0].device)
             else:
                 self.device.set(self.NO_DEVICE)
-            self._update_state()
+
+    def _on_device_selection(self, *args):
+        if self._selected_device == self.device.get():
+            return
+        self._selected_device = self.device.get()
+        self._update_state()
+        if self.dev_manager:
+            self.dev_manager.stop()
+            self.dev_manager = None
+        device = self._devices.get(self.device.get())
+        if device is None:
+            return
+        self.dev_manager = DeviceManager(device)
+        self.dev_manager.start()
 
     def _update_state(self):
         if (not self.active_macro) or self.device.get() == self.NO_DEVICE:
@@ -150,7 +166,8 @@ class App(AppBuilder):
             self.active_macro.update(self.macro_canvas.build_tree())
 
     def upload_macro(self):
-        pass
+        self.dev_manager.send(COMCommand.BOARD)
+        print(IVHPackage(self.macro_canvas.build_tree()).as_bytes())
 
     def execute_macro(self):
         pass

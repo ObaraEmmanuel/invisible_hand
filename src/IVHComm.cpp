@@ -39,7 +39,7 @@ void IVHComm::tick() {
         while (offset < len) {
             switch (state) {
                 case IVH_COMM_ST_WAITING_START:
-                    if (in[offset++] == reinterpret_cast<const uint8_t *>(IVH_COMM_FRAME_DELIMITER)[delimIndex])
+                    if (in[offset++] == reinterpret_cast<const uint8_t *>(IVH_COMM_FRAME_START_DELIMITER)[delimIndex])
                         delimIndex++;
                     else
                         delimIndex = 0;
@@ -67,7 +67,7 @@ void IVHComm::tick() {
                     break;
                 }
                 case IVH_COMM_ST_WAITING_END:
-                    if (in[offset++] == reinterpret_cast<const uint8_t *>(IVH_COMM_FRAME_DELIMITER)[delimIndex])
+                    if (in[offset++] == reinterpret_cast<const uint8_t *>(IVH_COMM_FRAME_END_DELIMITER)[delimIndex])
                         delimIndex++;
                     else {
                         delimIndex = 0;
@@ -170,15 +170,15 @@ void IVHComm::sendCommand(const IVHCommCommand command) {
 void IVHComm::sendCommand(const IVHCommCommand command, const uint8_t *data, const uint8_t len) {
     memset(out, 0, IVH_COMM_BUF_SIZE);
     size_t offset = 0;
-    memcpy(out + offset, IVH_COMM_FRAME_DELIMITER, IVH_COMM_FRAME_DELIMITER_LEN);
+    memcpy(out + offset, IVH_COMM_FRAME_START_DELIMITER, IVH_COMM_FRAME_DELIMITER_LEN);
     offset += IVH_COMM_FRAME_DELIMITER_LEN;
-    out[offset++] = len + 1;
+    out[offset++] = len;
     out[offset++] = command;
     if (data != nullptr) {
         memcpy(out + offset, data, len);
         offset += len;
     }
-    memcpy(out + offset, IVH_COMM_FRAME_DELIMITER, IVH_COMM_FRAME_DELIMITER_LEN);
+    memcpy(out + offset, IVH_COMM_FRAME_END_DELIMITER, IVH_COMM_FRAME_DELIMITER_LEN);
     offset += IVH_COMM_FRAME_DELIMITER_LEN;
     comm->send(out, offset);
 }

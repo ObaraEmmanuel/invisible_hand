@@ -7,7 +7,9 @@
 #define IVH_COMM_BUF_SIZE 256
 #define IVH_COMM_MAX_BODY_SIZE 128
 #define IVH_COMM_PING_INTERVAL 1000000 // us
-#define IVH_COMM_FRAME_DELIMITER "\x99\x99"
+#define IVH_COMM_FRAME_START_DELIMITER "\x99\x00"
+#define IVH_COMM_FRAME_END_DELIMITER "\x00\x99"
+// Delimiters should be of equal length
 #define IVH_COMM_FRAME_DELIMITER_LEN 2
 
 typedef enum IVHCommCommand {
@@ -23,7 +25,7 @@ typedef enum IVHCommCommand {
     IVH_COMM_INPUT_TYPE,
     // board to client
     IVH_COMM_PACKAGE_PROGRESS = 0x30,
-    IVH_COMM_PING = 0x99,
+    IVH_COMM_PING = 0x31,
 } IVHCommCommand_t;
 
 typedef enum IVHCommState {
