@@ -81,6 +81,13 @@ class DeviceManager:
         self._listening: bool = False
         self._listeners: Callable[IVHDevice, IVHFrame] = []
 
+    def add_listener(self, listener: Callable[IVHDevice, IVHFrame]):
+        self._listeners.append(listener)
+
+    def remove_listener(self, listener: Callable[IVHDevice, IVHFrame]):
+        if listener in self._listeners:
+            self._listeners.remove(listener)
+
     def _emit_event(self, frame: IVHFrame):
         for listener in self._listeners:
             listener(self.device, frame)

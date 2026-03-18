@@ -4,7 +4,7 @@ from tkinter import ttk
 from formation import AppBuilder, Builder
 
 import catalogue
-from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice
+from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame
 from commands import ComponentTree
 from macro import MacroList, Macro
 from package import IVHPackage
@@ -136,6 +136,19 @@ class App(AppBuilder):
             return
         self.dev_manager = DeviceManager(device)
         self.dev_manager.start()
+        self.dev_manager.add_listener(self._on_comm_event)
+        self.dev_manager.send(COMCommand.BOARD)
+        self.dev_manager.send(COMCommand.MEM)
+        self.dev_manager.send(COMCommand.INPUT_TYPE)
+
+    def _on_comm_event(self, device: IVHDevice, frame: IVHFrame):
+        match frame.command:
+            case COMCommand.BOARD:
+                device.board = frame
+            case COMCommand.MEM:
+                device.memory = frame.body.decode()
+            case COMCommand.INPUT_TYPE:
+                device.input_type = int.from_bytes(frame.body)
 
     def _update_state(self):
         if (not self.active_macro) or self.device.get() == self.NO_DEVICE:
