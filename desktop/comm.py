@@ -30,15 +30,33 @@ class COMCommand(Enum):
     PING = 0x99
 
 
+class IVHDevice:
+
+    def __init__(self, dev: ListPortInfo):
+        self.port = dev.device
+        self.name = dev.name
+        self.info = dev
+        self.board = "Unknown"
+        self.mem = 0
+        self.input_type = "Unknown"
+
+    def __eq__(self, other):
+        if isinstance(other, IVHDevice):
+            return self.port == other.port
+
+    def __hash__(self):
+        return hash(self.port)
+
+
 @dataclass
 class DeviceEvent:
-    device: ListPortInfo
+    device: IVHDevice
     type: DeviceEventType
 
 
 @dataclass
 class IVHFrame:
-    device: ListPortInfo
+    device: IVHDevice
     command: COMCommand
     body: bytes
 
@@ -51,14 +69,17 @@ class DeviceManager:
     END_DELIMITER = b"\x00\x99"
     MAX_BODY_SIZE = 256
 
-    def __init__(self, device: ListPortInfo, baudrate: int = 115200):
-        self.device: ListPortInfo = device
-        self.port: str = device.device
+    def __init__(self, device: IVHDevice | ListPortInfo, baudrate: int = 115200):
+        self.device: IVHDevice | ListPortInfo = device
+        if isinstance(device, IVHDevice):
+            self.port: str = device.port
+        else:
+            self.port: str = device.device
         self.baudrate: int = baudrate
         self.buffer = bytearray()
         self._send_queue: queue.Queue[bytes] = queue.Queue()
         self._listening: bool = False
-        self._listeners: Callable[ListPortInfo, IVHFrame] = []
+        self._listeners: Callable[IVHDevice, IVHFrame] = []
 
     def _emit_event(self, frame: IVHFrame):
         for listener in self._listeners:
@@ -185,12 +206,12 @@ class COMManger:
 
     def __init__(self):
         self.devices: set[ListPortInfo] = set()
-        self.ivh_devices: set[ListPortInfo] = set()
+        self.ivh_devices: dict[ListPortInfo: IVHDevice] = {}
         self._listener_thread: threading.Thread = None
         self._is_listening: bool = False
         self._event_queue: queue.Queue[DeviceEvent] = queue.Queue()
-        self._probe_queue: queue.Queue[ListPortInfo] = queue.Queue()
-        self._listeners: dict[list[Callable[ListPortInfo]]] = defaultdict(list)
+        self._probe_queue: queue.Queue[IVHDevice] = queue.Queue()
+        self._listeners: dict[list[Callable[IVHDevice]]] = defaultdict(list)
         self._widget = None
         self.buffer = bytearray()
 
@@ -217,10 +238,10 @@ class COMManger:
         if self._widget:
             self._widget.after(int(self.PORT_POLL_INTERVAL * 1000), self._emit_events)
 
-    def add_listener(self, listener: Callable[ListPortInfo], event_type: DeviceEventType) -> None:
+    def add_listener(self, listener: Callable[IVHDevice], event_type: DeviceEventType) -> None:
         self._listeners[event_type].append(listener)
 
-    def remove_listener(self, listener: Callable[ListPortInfo], event_type: DeviceEventType) -> None:
+    def remove_listener(self, listener: Callable[IVHDevice], event_type: DeviceEventType) -> None:
         if listener in self._listeners[type]:
             self._listeners[event_type].remove(listener)
 
@@ -237,14 +258,14 @@ class COMManger:
             for dev in removed:
                 self.devices.remove(dev)
                 if dev in self.ivh_devices:
-                    self.ivh_devices.remove(dev)
-                    self._event_queue.put(DeviceEvent(dev, DeviceEventType.REMOVED))
+                    ivh_dev = self.ivh_devices.pop(dev)
+                    self._event_queue.put(DeviceEvent(ivh_dev, DeviceEventType.REMOVED))
 
             while not self._probe_queue.empty():
                 dev = self._probe_queue.get()
                 if dev in self.devices:
-                    self.ivh_devices.add(dev)
-                    self._event_queue.put(DeviceEvent(dev, DeviceEventType.ADDED))
+                    self.ivh_devices[dev] = IVHDevice(dev)
+                    self._event_queue.put(DeviceEvent(self.ivh_devices[dev], DeviceEventType.ADDED))
 
             time.sleep(self.PORT_POLL_INTERVAL)
 

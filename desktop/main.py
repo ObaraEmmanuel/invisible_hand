@@ -2,10 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 
 from formation import AppBuilder, Builder
-from serial.tools.list_ports_common import ListPortInfo
 
 import catalogue
-from comm import COMManger, DeviceEventType, DeviceManager, COMCommand
+from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice
 from commands import ComponentTree
 from macro import MacroList, Macro
 from package import IVHPackage
@@ -105,21 +104,20 @@ class App(AppBuilder):
         self.comm.add_listener(self._on_device_removed, DeviceEventType.REMOVED)
         self.dev_manager: DeviceManager = None
 
-    def _on_device_added(self, device: ListPortInfo):
-        if device in self._devices:
+    def _on_device_added(self, device: IVHDevice):
+        if device.port in self._devices:
             return
-
-        self._devices[device.device] = device
+        self._devices[device.port] = device
         self.device_select["values"] = [self.NO_DEVICE] + [d for d in self._devices]
         if self.device.get() == self.NO_DEVICE:
-            self.device.set(device.device)
+            self.device.set(device.port)
 
-    def _on_device_removed(self, device: ListPortInfo):
-        if device.device not in self._devices:
+    def _on_device_removed(self, device: IVHDevice):
+        if device.port not in self._devices:
             return
-        self._devices.pop(device.device)
+        self._devices.pop(device.port)
         self.device_select["values"] = [self.NO_DEVICE] + [d for d in self._devices]
-        if self.device.get() == device.device:
+        if self.device.get() == device.port:
             if self._devices:
                 self.device.set(self._devices[0].device)
             else:
