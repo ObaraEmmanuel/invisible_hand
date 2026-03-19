@@ -114,13 +114,6 @@
             "children": [
                 {
                     "attrib": {
-                        "attr": {
-                            "background": "#1c1c1c", 
-                            "exportselection": 0, 
-                            "foreground": "#fafafa", 
-                            "state": "readonly", 
-                            "textvariable": "device"
-                        }, 
                         "layout": {
                             "anchor": "nw", 
                             "height": 10, 
@@ -131,7 +124,7 @@
                         }, 
                         "name": "device_select"
                     }, 
-                    "type": "tkinter.ttk.Combobox"
+                    "type": "device_select.DeviceSelector"
                 }, 
                 {
                     "attrib": {

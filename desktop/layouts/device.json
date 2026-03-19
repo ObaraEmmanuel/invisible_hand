@@ -1,0 +1,112 @@
+{
+    "attrib": {
+        "attr": {
+            "background": "#1c1c1c", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "grid"
+        }, 
+        "layout": {
+            "height": 58, 
+            "width": 204, 
+            "x": 192, 
+            "y": 157
+        }, 
+        "name": "main"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "column": "1", 
+                "weight": "1"
+            }, 
+            "type": "grid"
+        }, 
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        },
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#1c1c1c", 
+                    "disabledforeground": "#535353", 
+                    "foreground": "#fafafa", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "image": "..\\resources\\firmware.png", 
+                    "text": ""
+                }, 
+                "layout": {
+                    "column": 0, 
+                    "height": 0, 
+                    "padx": "5 0", 
+                    "row": 0, 
+                    "rowspan": 2, 
+                    "width": 0
+                }, 
+                "name": "img"
+            }, 
+            "type": "tkinter.Label"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#1c1c1c", 
+                    "disabledforeground": "#535353", 
+                    "font": "{Segoe UI} 10 {}", 
+                    "foreground": "#fafafa", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "text": "NodeMCU-32s"
+                }, 
+                "layout": {
+                    "column": 1, 
+                    "height": 0, 
+                    "padx": 5, 
+                    "pady": 3, 
+                    "row": 0, 
+                    "sticky": "w", 
+                    "width": 0
+                }, 
+                "name": "board"
+            }, 
+            "type": "tkinter.Label"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "activebackground": "#2f60d8", 
+                    "activeforeground": "#ffffff", 
+                    "background": "#1c1c1c", 
+                    "disabledforeground": "#535353", 
+                    "font": "{Segoe UI} 9 {}", 
+                    "foreground": "#22d17f", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "text": "COM 3"
+                }, 
+                "layout": {
+                    "column": 1, 
+                    "height": 0, 
+                    "padx": 5, 
+                    "pady": 3, 
+                    "row": 1, 
+                    "sticky": "w", 
+                    "width": 0
+                }, 
+                "name": "port"
+            }, 
+            "type": "tkinter.Label"
+        }
+    ], 
+    "type": "tkinter.Frame"
+}

@@ -2,6 +2,7 @@ from studio import WidgetMeta
 
 from catalogue import CatalogueList
 from commands import ComponentTree
+from device_select import DeviceSelector
 from macro import MacroList
 from ui.scrolledframe import ScrolledFrame
 from ui.tree import TreeView
@@ -43,5 +44,13 @@ class MacroListMeta(MacroList, metaclass=WidgetMeta):
     display_name = 'MacroList'
     impl = MacroList
     icon = "listbox"
+    is_container = False
+    initial_dimensions = 100, 100
+
+
+class DeviceSelectorMeta(DeviceSelector, metaclass=WidgetMeta):
+    display_name = 'DeviceSelector'
+    impl = DeviceSelector
+    icon = "menubutton"
     is_container = False
     initial_dimensions = 100, 100

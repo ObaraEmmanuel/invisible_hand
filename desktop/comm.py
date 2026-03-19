@@ -27,18 +27,21 @@ class COMCommand(Enum):
     MEM = 0x21
     INPUT_TYPE = 0x22
     PACKAGE_PROGRESS = 0x30
-    PING = 0x99
+    PING = 0x31
 
 
 class IVHDevice:
 
     def __init__(self, dev: ListPortInfo):
-        self.port = dev.device
-        self.name = dev.name
-        self.info = dev
+        self.port = self.name = self.info = None
+        if dev:
+            self.port = dev.device
+            self.name = dev.name
+            self.info = dev
         self.board = "Unknown"
         self.mem = 0
         self.input_type = "Unknown"
+        self.valid = True
 
     def __eq__(self, other):
         if isinstance(other, IVHDevice):
@@ -46,6 +49,16 @@ class IVHDevice:
 
     def __hash__(self):
         return hash(self.port)
+
+
+class BlankDevice(IVHDevice):
+
+    def __init__(self):
+        super().__init__(None)
+        self.valid = False
+        self.port = "----"
+        self.board = "No device"
+        self.name = "No device"
 
 
 @dataclass
@@ -143,7 +156,7 @@ class DeviceManager:
             cmd = self.buffer[s_delim_len + 1]
             payload = self.buffer[payload_start:payload_start + length]
 
-            frames.append(IVHFrame(device=self.device, command=cmd, body=payload))
+            frames.append(IVHFrame(device=self.device, command=COMCommand(cmd), body=payload))
 
             # remove parsed frame
             del self.buffer[:frame_len]

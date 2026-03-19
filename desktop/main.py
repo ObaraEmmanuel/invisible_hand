@@ -4,8 +4,9 @@ from tkinter import ttk
 from formation import AppBuilder, Builder
 
 import catalogue
-from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame
+from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame, BlankDevice
 from commands import ComponentTree
+from device_select import DeviceSelector
 from macro import MacroList, Macro
 from package import IVHPackage
 from ui.utils import MouseWheelDispatcher
@@ -55,14 +56,13 @@ class AddMacroDialog(Builder):
 
 
 class App(AppBuilder):
-    NO_DEVICE = "No device"
+    NO_DEVICE = BlankDevice()
 
     def __init__(self):
         self.main: tk.Tk = None
         self.package_list: ttk.Treeview = None
         self.package_box: tk.Frame = None
-        self.device_select: ttk.Frame = None
-        self.device: tk.StringVar = None
+        self.device_select: DeviceSelector = None
         self.upload_btn: ttk.Button = None
         self.flash_btn: ttk.Button = None
         self.command_delete: ttk.Button = None
@@ -77,12 +77,16 @@ class App(AppBuilder):
         s = ttk.Style()
         s.configure('Treeview', rowheight=40)
         center_window(self._root)
-        self._devices = {}
+        self._devices = [None]
         self._selected_device = None
-        self.device_select["values"] = (self.NO_DEVICE,)
-        self.device_select["font"] = None
-        self.device.set(self.NO_DEVICE)
-        self.device.trace_add("write", self._on_device_selection)
+        self.device_select.on_change(self._on_device_selection)
+        # dev = NamedTuple("IVHDevice_", [("port", str), ("board", str)])
+        # self.device_select.set_values([
+        #     dev(port="COM5", board="NodeMCU32-s"),
+        #     dev(port="COM5", board="Arduino Pro-Micro"),
+        #     None,
+        # ])
+        self.device_select.set_values((self.NO_DEVICE,))
         self._package_image = tk.PhotoImage(file="resources/package.png")
         self._items = {}
         self.active_macro: Macro = None
@@ -105,36 +109,32 @@ class App(AppBuilder):
         self.dev_manager: DeviceManager = None
 
     def _on_device_added(self, device: IVHDevice):
-        if device.port in self._devices:
+        if device in self._devices:
             return
-        self._devices[device.port] = device
-        self.device_select["values"] = [self.NO_DEVICE] + [d for d in self._devices]
-        if self.device.get() == self.NO_DEVICE:
-            self.device.set(device.port)
+        self._devices.append(device)
+        self.device_select.add_values(device)
+        if self.device_select.get() == self.NO_DEVICE:
+            self.device_select.set(device)
+            self._on_device_selection()
 
     def _on_device_removed(self, device: IVHDevice):
-        if device.port not in self._devices:
+        if device not in self._devices:
             return
-        self._devices.pop(device.port)
-        self.device_select["values"] = [self.NO_DEVICE] + [d for d in self._devices]
-        if self.device.get() == device.port:
-            if self._devices:
-                self.device.set(self._devices[0].device)
-            else:
-                self.device.set(self.NO_DEVICE)
+        self._devices.remove(device)
+        self.device_select.remove_value(device)
 
-    def _on_device_selection(self, *args):
-        if self._selected_device == self.device.get():
+    def _on_device_selection(self, *_):
+        if self._selected_device == self.device_select.get():
             return
-        self._selected_device = self.device.get()
+        self._selected_device = self.device_select.get()
         self._update_state()
         if self.dev_manager:
             self.dev_manager.stop()
             self.dev_manager = None
-        device = self._devices.get(self.device.get())
-        if device is None:
+
+        if self._selected_device is None:
             return
-        self.dev_manager = DeviceManager(device)
+        self.dev_manager = DeviceManager(self._selected_device)
         self.dev_manager.start()
         self.dev_manager.add_listener(self._on_comm_event)
         self.dev_manager.send(COMCommand.BOARD)
@@ -144,14 +144,17 @@ class App(AppBuilder):
     def _on_comm_event(self, device: IVHDevice, frame: IVHFrame):
         match frame.command:
             case COMCommand.BOARD:
-                device.board = frame
+                device.board = frame.body.decode()
+                self.device_select.update_value(device)
             case COMCommand.MEM:
-                device.memory = frame.body.decode()
+                device.memory = int.from_bytes(frame.body, byteorder="little")
+                self.device_select.update_value(device)
             case COMCommand.INPUT_TYPE:
-                device.input_type = int.from_bytes(frame.body)
+                device.input_type = int.from_bytes(frame.body, byteorder="little")
+                self.device_select.update_value(device)
 
     def _update_state(self):
-        if (not self.active_macro) or self.device.get() == self.NO_DEVICE:
+        if (not self.active_macro) or self.device_select.get() is self.NO_DEVICE:
             self.upload_btn.grid_remove()
         else:
             self.upload_btn.grid()

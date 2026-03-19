@@ -153,6 +153,7 @@ class CompoundList(ScrolledFrame):
         self._items = []
         self._mode = CompoundList.SINGLE_MODE  # Default
         self._on_change = None
+        self.max_width = self.winfo_width()
 
     @property
     def items(self):
@@ -212,11 +213,13 @@ class CompoundList(ScrolledFrame):
         self._render(values)
 
     def _render(self, values):
+        self.max_width = self.winfo_width()
         for i, val in enumerate(values, start=len(self._items)):
             item = self._cls(self, val, i)
             self._items.append(item)
             item.pack(side="top", fill="x", pady=1)
             item.update_idletasks()
+            self.max_width = max(item.winfo_reqwidth(), self.max_width)
 
     def add_values(self, values):
         """

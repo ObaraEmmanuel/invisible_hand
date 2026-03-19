@@ -92,6 +92,14 @@ def bind_all(widget, *args, **kwargs):
         bind_all(child, *args, **kwargs)
 
 
+def disable_all(widget: tk.Widget, flag: bool):
+    config = {"state": tk.DISABLED} if not flag else {"state": tk.NORMAL}
+    if "state" in widget.keys():
+        widget.configure(**config)
+    for child in widget.winfo_children():
+        disable_all(child, flag)
+
+
 def clear_children(widget):
     for child in widget.winfo_children():
         child.pack_forget()
@@ -148,6 +156,140 @@ class DragWindow(tk.Toplevel):
 
     def set_transparency(self, alpha):
         self.attributes("-alpha", float(alpha))
+
+
+class Popup(tk.Toplevel):
+
+    def __init__(self, master, pos=None, **cnf):
+        super().__init__(master, **cnf)
+        if pos is not None:
+            self.set_geometry(pos)
+        self._close_func = None
+        self.overrideredirect(True)
+        self.attributes("-topmost", 1)
+        if platform_is(MAC):
+            # needed for proper positioning in mac
+            self.lift(master)
+        self._grabbed = self.grab_current()  # Store the widget that currently has the grab
+        # Grab all events so we can tell whether someone is clicking outside the popup
+        self.bind("<Visibility>", self._on_visibility)
+        self.bind("<Button-1>", self._exit)
+        self.body = self
+
+    def _on_visibility(self, _):
+        self.grab_set_global()
+
+    def _exit(self, event):
+        if not WidgetTree.event_in(event, self):
+            # Someone has clicked outside the popup so close it
+            self.destroy()
+
+    @chain
+    def set_geometry(self, rec):
+        x, y, width, height = rec if len(rec) == 4 else rec + (None, None)
+        try:
+            if width is None:
+                self.geometry("+{}+{}".format(x, y))
+            else:
+                self.geometry("{}x{}+{}+{}".format(width, height, x, y))
+        except tk.TclError:
+            pass
+
+    def hide(self):
+        self.attributes("-alpha", 0)
+
+    def show(self):
+        self.attributes("-alpha", 1)
+
+    def destroy(self):
+        self.grab_release()
+        if self._grabbed:
+            try:
+                self._grabbed.grab_set()  # Return the grab to whichever widget had it if any
+            except tk.TclError:
+                pass
+        super().destroy()
+        if self._close_func is not None:
+            self._close_func()
+
+    def re_calibrate(self):
+        pass
+
+    def on_close(self, func, *args, **kwargs):
+        self._close_func = lambda: func(*args, **kwargs)
+
+    def get_pos(self, widget, **kwargs):
+        """
+        Get the position of a popup window anchored around a widget
+
+        :param widget: A tk widget to be used as an anchor point
+        :param kwargs:
+            -side: a string value "nw", "ne", "sw", "se", "auto" representing where the
+              dialog is to be position relative the anchor widget
+            -padding: an integer indicating how much space to allow between the popup and the
+              anchor widget
+            -width: prospected width of the popup which can be used even before the
+              popup is initialized by tkinter. If not provided its obtained
+              from the popup hence the popup must have been initialized by tkinter
+            -height: prospected height of the popup. Same rules on ``width``
+              apply here
+
+        :return: None
+        """
+        side = kwargs.get("side", "auto")
+        padding = kwargs.get("padding", 2)
+        if "width" in kwargs and "height" in kwargs:
+            w_width = kwargs.get("width")
+            w_height = kwargs.get("height")
+        else:
+            self.re_calibrate()
+            self.update_idletasks()
+            w_width = self.winfo_width()
+            w_height = self.winfo_height()
+        widget.update_idletasks()
+        x, y, width, height = widget.winfo_rootx(), widget.winfo_rooty(), widget.winfo_width(), widget.winfo_height()
+        right = x
+        left = x - w_width + width
+        top = y - w_height - padding
+        bottom = y + height + padding
+        if side == "nw":
+            return left, top
+        if side == "ne":
+            return right, top
+        if side == "sw":
+            return left, bottom
+        if side == "se":
+            return right, bottom
+        # i.e. side == "auto"
+        # set the screen size as the boundary
+        win_bounds = 0, 0, widget.winfo_screenwidth(), widget.winfo_screenheight()
+        offset_b = win_bounds[3] - bottom
+        offset_t = y - win_bounds[1]
+        offset_l = x - win_bounds[0]
+        offset_r = win_bounds[2] - right
+        x_pos = left if offset_l >= offset_r or offset_l > w_width else right
+        y_pos = bottom if offset_b >= offset_t or offset_b > w_height else top
+        return x_pos, y_pos
+
+    def post(self, widget, **kwargs):
+        """
+        Display a popup window anchored around a widget
+
+        :param widget: A tk widget to be used as an anchor point
+        :param kwargs:
+            -side: a string value "nw", "ne", "sw", "se", "auto" representing where the
+              dialog is to be position relative the anchor widget
+            -padding: an integer indicating how much space to allow between the popup and the
+              anchor widget
+            -width: prospected width of the popup which can be used even before the
+              popup is initialized by tkinter. If not provided its obtained
+              from the popup hence the popup must have been initialized by tkinter
+            -height: prospected height of the popup. Same rules on ``width``
+              apply here
+
+        :return: None
+        """
+        self.set_geometry(self.get_pos(widget, **kwargs))
 
 
 class WidgetTree:
