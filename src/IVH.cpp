@@ -16,8 +16,9 @@ void IVH::setDevice(HID *device) {
     hid_device = device;
 }
 
-void IVH::setPackageArea(uint8_t *area) {
+void IVH::setPackageArea(uint8_t *area, size_t size) {
     _package = area;
+    maxPackageSize = size;
 }
 
 void IVH::bind(IVHMachine *machine) {

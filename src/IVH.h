@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #include "HID.h"
 #include "IVHMachine.h"
 
@@ -11,11 +12,12 @@ public:
     IVH();
     explicit IVH(HID* device);
     void setDevice(HID* device);
-    void setPackageArea(uint8_t *area);
+    void setPackageArea(uint8_t *area, size_t size);
     void bind(IVHMachine* machine);
 private:
     HID* hid_device{};
     uint8_t *_package = nullptr;
+    size_t _packageSize = 0;
     uint8_t _stack[IVH_STACK_SIZE] = {};
     uint8_t _keys[IVH_KEY_BUF_SIZE] = {};
 

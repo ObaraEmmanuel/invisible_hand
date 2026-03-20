@@ -111,6 +111,7 @@ class IVHMachineInterface {
 public:
     const char* board = nullptr;
     uint8_t inputType = IVH_INPUT_NONE;
+    uint64_t maxPackageSize = 0;
 
     virtual ~IVHMachineInterface() = default;
 

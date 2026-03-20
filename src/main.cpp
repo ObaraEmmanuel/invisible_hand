@@ -30,7 +30,7 @@ void setup() {
     package = new uint8_t[PACKAGE_SIZE];
 
 
-    machineInterface.setPackageArea(package);
+    machineInterface.setPackageArea(package, PACKAGE_SIZE);
     machineInterface.bind(&machine);
     machine.setPackage(package);
 
