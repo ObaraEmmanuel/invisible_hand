@@ -137,7 +137,7 @@ void IVHComm::handleCommand() {
         case IVH_COMM_MEM:
             sendCommand(
                 IVH_COMM_MEM,
-                reinterpret_cast<const uint8_t *>(machineInterface->maxPackageSize),
+                reinterpret_cast<const uint8_t *>(&machineInterface->maxPackageSize),
                 sizeof(machineInterface->maxPackageSize)
             );
             break;
@@ -145,7 +145,7 @@ void IVHComm::handleCommand() {
             sendCommand(
                 IVH_COMM_INPUT_TYPE,
                 &machineInterface->inputType,
-                sizeof(IVHInputType_t)
+                sizeof(machineInterface->inputType)
             );
             break;
         default:
