@@ -71,6 +71,7 @@ void BLEHID::onDisconnect(BLEServer *server) {
     cccDesc->setNotifications(false);
     cccDesc = (BLE2902 *) mouse_input->getDescriptorByUUID(BLEUUID(static_cast<uint16_t>(0x2902)));
     cccDesc->setNotifications(false);
+    _server->getAdvertising()->start();
     Serial.println("keyboard disconnected");
 }
 
