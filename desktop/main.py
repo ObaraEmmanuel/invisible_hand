@@ -55,6 +55,29 @@ class AddMacroDialog(Builder):
         return obj.value
 
 
+class UploadMacroDialog(Builder):
+    def __init__(self, master, text: str):
+        self._root: tk.Toplevel = None
+        self.msg_lbl: ttk.Label = None
+        self.progress: ttk.Progressbar = None
+        self.progress_lbl: tk.Label = None
+        super().__init__(master, path="layouts/upload_macro.json")
+        self.msg_lbl["text"] = text
+        self._root.transient(master)
+        self.connect_callbacks(self)
+        self.value = None
+        center_window(self._root, master)
+        self._root.grab_set()
+        self._root.focus_force()
+
+    def update_progress(self, done, total):
+        self.progress['value'] = int(done * 100 / total)
+        self.progress_lbl["text"] = f"{done}B / {total}B"
+
+    def destroy(self):
+        self._root.destroy()
+
+
 class App(AppBuilder):
     NO_DEVICE = BlankDevice()
 
@@ -77,15 +100,9 @@ class App(AppBuilder):
         s = ttk.Style()
         s.configure('Treeview', rowheight=40)
         center_window(self._root)
-        self._devices = [None]
-        self._selected_device = None
+        self._devices = [self.NO_DEVICE]
+        self._selected_device = self.NO_DEVICE
         self.device_select.on_change(self._on_device_selection)
-        # dev = NamedTuple("IVHDevice_", [("port", str), ("board", str)])
-        # self.device_select.set_values([
-        #     dev(port="COM5", board="NodeMCU32-s"),
-        #     dev(port="COM5", board="Arduino Pro-Micro"),
-        #     None,
-        # ])
         self.device_select.set_values((self.NO_DEVICE,))
         self._package_image = tk.PhotoImage(file="resources/package.png")
         self._items = {}
@@ -107,6 +124,9 @@ class App(AppBuilder):
         self.comm.add_listener(self._on_device_added, DeviceEventType.ADDED)
         self.comm.add_listener(self._on_device_removed, DeviceEventType.REMOVED)
         self.dev_manager: DeviceManager = None
+        self._upload_dialog = None
+        self._upload_package = b''
+        self._total_upload = 1
 
     def _on_device_added(self, device: IVHDevice):
         if device in self._devices:
@@ -122,6 +142,14 @@ class App(AppBuilder):
             return
         self._devices.remove(device)
         self.device_select.remove_value(device)
+        for dev in self._devices:
+            if dev != self.NO_DEVICE:
+                self.device_select.set(dev)
+                break
+        else:
+            self.device_select.set(self.NO_DEVICE)
+        self._on_device_selection()
+        self._update_state()
 
     def _on_device_selection(self, *_):
         if self._selected_device == self.device_select.get():
@@ -137,9 +165,9 @@ class App(AppBuilder):
         self.dev_manager = DeviceManager(self._selected_device)
         self.dev_manager.start()
         self.dev_manager.add_listener(self._on_comm_event)
-        self.dev_manager.send(COMCommand.BOARD)
-        self.dev_manager.send(COMCommand.MEM)
-        self.dev_manager.send(COMCommand.INPUT_TYPE)
+        self.dev_manager.send_command(COMCommand.BOARD)
+        self.dev_manager.send_command(COMCommand.MEM)
+        self.dev_manager.send_command(COMCommand.INPUT_TYPE)
 
     def _on_comm_event(self, device: IVHDevice, frame: IVHFrame):
         match frame.command:
@@ -152,6 +180,25 @@ class App(AppBuilder):
             case COMCommand.INPUT_TYPE:
                 device.input_type = int.from_bytes(frame.body, byteorder="little")
                 self.device_select.update_value(device)
+            case COMCommand.PACKAGE_PROGRESS:
+                uploaded = int.from_bytes(frame.body, byteorder="little")
+                if self._total_upload > uploaded:
+                    self.dev_manager.send(self._upload_package[uploaded: uploaded + 32])
+                else:
+                    self.dev_manager.send_command(COMCommand.RESTART)
+                self._update_progress(uploaded)
+
+    def _update_progress(self, uploaded):
+        if not self._upload_dialog:
+            return
+        self._upload_dialog.update_progress(uploaded, self._total_upload)
+        if self._total_upload <= uploaded:
+            self._upload_dialog._root.after(2000, self._close_upload_dialog)
+
+    def _close_upload_dialog(self):
+        if self._upload_dialog:
+            self._upload_dialog.destroy()
+            self._upload_dialog = None
 
     def _update_state(self):
         if (not self.active_macro) or self.device_select.get() is self.NO_DEVICE:
@@ -180,10 +227,17 @@ class App(AppBuilder):
             self.active_macro.update(self.macro_canvas.build_tree())
 
     def upload_macro(self):
-        self.dev_manager.send(COMCommand.BOARD)
-        print(IVHPackage(self.macro_canvas.build_tree()).as_bytes())
+        self._upload_package = IVHPackage(self.macro_canvas.build_tree()).as_bytes()
+        self._upload_dialog = UploadMacroDialog(
+            self.main,
+            f"Uploading macro to {self._selected_device.board}"
+        )
+        self._total_upload = len(self._upload_package)
+        self.dev_manager.send_command(COMCommand.PACKAGE, self._total_upload.to_bytes(byteorder="little"))
+        self.dev_manager.send(self._upload_package[:32])
+        self._upload_dialog.update_progress(0, self._total_upload)
 
-    def execute_macro(self):
+    def flash_board(self):
         pass
 
     def delete_macro(self):

@@ -114,6 +114,12 @@
             "children": [
                 {
                     "attrib": {
+                        "attr": {
+                            "background": "#1c1c1c", 
+                            "highlightbackground": "#2a2a2a", 
+                            "highlightcolor": "#2f60d8", 
+                            "highlightthickness": 1
+                        }, 
                         "layout": {
                             "anchor": "nw", 
                             "height": 10, 
@@ -148,7 +154,7 @@
                         {
                             "attrib": {
                                 "attr": {
-                                    "command": "execute_macro", 
+                                    "command": "upload_macro", 
                                     "compound": "left", 
                                     "image": "../resources/play.png", 
                                     "text": "Upload"
@@ -166,7 +172,7 @@
                         {
                             "attrib": {
                                 "attr": {
-                                    "command": "upload_macro", 
+                                    "command": "flash_board", 
                                     "compound": "left", 
                                     "image": "../resources/firmware.png", 
                                     "text": "Flash"

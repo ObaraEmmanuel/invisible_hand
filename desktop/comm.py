@@ -134,6 +134,7 @@ class DeviceManager:
 
             if start > 0:
                 # discard leading noise
+                print(self.buffer[:start].decode(errors='ignore'), end='')
                 del self.buffer[:start]
 
             # need at least: delim + len
@@ -150,12 +151,12 @@ class DeviceManager:
             # verify end delimiter
             if self.buffer[payload_start + length:frame_len] != self.END_DELIMITER:
                 # bad frame: resync by dropping first byte
+                print(chr(self.buffer[0]), end='')
                 del self.buffer[0]
                 continue
 
             cmd = self.buffer[s_delim_len + 1]
             payload = self.buffer[payload_start:payload_start + length]
-
             frames.append(IVHFrame(device=self.device, command=COMCommand(cmd), body=payload))
 
             # remove parsed frame
@@ -169,7 +170,7 @@ class DeviceManager:
     def start(self):
         threading.Thread(target=self.listen, args=(0,), daemon=True).start()
 
-    def send(self, command: COMCommand, data: bytes = b''):
+    def send_command(self, command: COMCommand, data: bytes = b''):
         if not self._listening:
             raise RuntimeError("Device manager not listening")
         if len(data) > self.MAX_BODY_SIZE:
@@ -181,6 +182,9 @@ class DeviceManager:
         payload.extend(data)
         payload.extend(self.END_DELIMITER)
         self._send_queue.put(payload)
+
+    def send(self, data: bytes = b''):
+        self._send_queue.put(data)
 
     def listen(self, timeout: float, max_frames: int = None) -> bool:
         self._listening = True

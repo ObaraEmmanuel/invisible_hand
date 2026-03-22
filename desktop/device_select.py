@@ -52,10 +52,14 @@ class DeviceSelector(Spinner):
     def __init__(self, parent, **kwargs):
         self._value_item: DeviceItem = None
         super().__init__(parent, **kwargs)
-        self.configure(highlightthickness=1, highlightbackground="#2a2a2a")
+        self.config(highlightthickness=1, highlightbackground="#2a2a2a")
         self._item_cls = DeviceItem
         self._button.pack_forget()
         bind_all(self, "<Button-3>", self._popup)
+
+    @classmethod
+    def _load_images(cls):
+        pass
 
     def set(self, value):
         if self.get() == value:
