@@ -10,6 +10,7 @@ from device_select import DeviceSelector
 from macro import MacroList, Macro
 from package import IVHPackage
 from ui.utils import MouseWheelDispatcher
+from utils.system import unsigned_to_bytes
 
 
 def center_window(window, master=None):
@@ -141,15 +142,17 @@ class App(AppBuilder):
         if device not in self._devices:
             return
         self._devices.remove(device)
+        if self.device_select.get() == device:
+            for dev in self._devices:
+                if dev != self.NO_DEVICE:
+                    self.device_select.set(dev)
+                    break
+            else:
+                self.device_select.set(self.NO_DEVICE)
+            self._on_device_selection()
+            self._on_active_device_removed()
+            self._update_state()
         self.device_select.remove_value(device)
-        for dev in self._devices:
-            if dev != self.NO_DEVICE:
-                self.device_select.set(dev)
-                break
-        else:
-            self.device_select.set(self.NO_DEVICE)
-        self._on_device_selection()
-        self._update_state()
 
     def _on_device_selection(self, *_):
         if self._selected_device == self.device_select.get():
@@ -168,6 +171,11 @@ class App(AppBuilder):
         self.dev_manager.send_command(COMCommand.BOARD)
         self.dev_manager.send_command(COMCommand.MEM)
         self.dev_manager.send_command(COMCommand.INPUT_TYPE)
+
+    def _on_active_device_removed(self):
+        if self._upload_dialog:
+            self._upload_dialog.destroy()
+            self._upload_dialog = None
 
     def _on_comm_event(self, device: IVHDevice, frame: IVHFrame):
         match frame.command:
@@ -233,7 +241,7 @@ class App(AppBuilder):
             f"Uploading macro to {self._selected_device.board}"
         )
         self._total_upload = len(self._upload_package)
-        self.dev_manager.send_command(COMCommand.PACKAGE, self._total_upload.to_bytes(byteorder="little"))
+        self.dev_manager.send_command(COMCommand.PACKAGE, unsigned_to_bytes(self._total_upload))
         self.dev_manager.send(self._upload_package[:32])
         self._upload_dialog.update_progress(0, self._total_upload)
 
