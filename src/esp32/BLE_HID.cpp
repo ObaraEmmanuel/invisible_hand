@@ -1,10 +1,13 @@
 #include "BLE_HID.h"
 #include "BLE_HID_report.h"
+#include "IVHMachine.h"
 
 BLEHID *BLEHID::instance = nullptr;
 
 
-BLEHID::BLEHID() = default;
+BLEHID::BLEHID() {
+    inputType = IVH_INPUT_BLE | IVH_INPUT_MOUSE | IVH_INPUT_KEYBOARD;
+};
 
 BLEHID *BLEHID::getInstance() {
     return instance;

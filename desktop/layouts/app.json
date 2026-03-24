@@ -141,10 +141,11 @@
                             "layout": "grid"
                         }, 
                         "layout": {
-                            "anchor": "e", 
+                            "anchor": "ne", 
                             "expand": 1, 
                             "height": 0, 
                             "padx": 5, 
+                            "pady": 5, 
                             "side": "right", 
                             "width": 0
                         }, 
@@ -156,7 +157,7 @@
                                 "attr": {
                                     "command": "upload_macro", 
                                     "compound": "left", 
-                                    "image": "../resources/play.png", 
+                                    "image": "..\\resources\\upload.png", 
                                     "text": "Upload"
                                 }, 
                                 "layout": {
@@ -184,6 +185,44 @@
                                     "width": ""
                                 }, 
                                 "name": "fllash_btn"
+                            }, 
+                            "type": "tkinter.ttk.Button"
+                        }
+                    ], 
+                    "type": "tkinter.Frame"
+                }, 
+                {
+                    "attrib": {
+                        "attr": {
+                            "background": "#1c1c1c",
+                            "highlightbackground": "#1c1c1c", 
+                            "highlightcolor": "#2f60d8", 
+                            "layout": "grid"
+                        }, 
+                        "layout": {
+                            "anchor": "n", 
+                            "height": 50, 
+                            "pady": 5, 
+                            "side": "left", 
+                            "width": 100
+                        }, 
+                        "name": "frame_4"
+                    }, 
+                    "children": [
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "command": "toggle_machine_state",
+                                    "compound": "left", 
+                                    "image": "../resources/play.png", 
+                                    "text": ""
+                                }, 
+                                "layout": {
+                                    "column": 0, 
+                                    "row": 0, 
+                                    "width": ""
+                                }, 
+                                "name": "play_btn"
                             }, 
                             "type": "tkinter.ttk.Button"
                         }

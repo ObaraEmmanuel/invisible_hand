@@ -19,6 +19,11 @@ bool IVHComm::init() {
     machineInterface = machine->getInterface();
 
     pingDeadline = machineInterface->getMicros() + IVH_COMM_PING_INTERVAL;
+
+    const char* board = getBoardName();
+    const auto boardLen = strlen(board);
+    identActualSize = sizeof(IVHIdent) - IVH_COMM_MAX_BOARD_NAME_LEN + boardLen;
+    strncpy(ident.boardName, board, IVH_COMM_MAX_BOARD_NAME_LEN);
     return true;
 }
 
@@ -29,7 +34,10 @@ void IVHComm::tick() {
     auto micros = machineInterface->getMicros();
     if (micros > pingDeadline) {
         pingDeadline = micros + IVH_COMM_PING_INTERVAL;
-        sendCommand(IVH_COMM_PING);
+        ident.inputType = machineInterface->inputType;
+        ident.memSize = machineInterface->maxPackageSize;
+        ident.state = machine->getState();
+        sendCommand(IVH_COMM_IDENT, reinterpret_cast<const uint8_t *>(&ident), identActualSize);
     }
     size_t available;
     while ((available = comm->available()) > 0) {
@@ -123,31 +131,6 @@ void IVHComm::handleCommand() {
         case IVH_COMM_RESUME:
             machine->resume();
             break;
-        case IVH_COMM_BOARD: {
-            const char* board = machineInterface->board;
-            if (board == nullptr)
-                board = DEFAULT_NAME;
-            sendCommand(
-                IVH_COMM_BOARD,
-                reinterpret_cast<const uint8_t *>(board),
-                strlen(board)
-            );
-            break;
-        }
-        case IVH_COMM_MEM:
-            sendCommand(
-                IVH_COMM_MEM,
-                reinterpret_cast<const uint8_t *>(&machineInterface->maxPackageSize),
-                sizeof(machineInterface->maxPackageSize)
-            );
-            break;
-        case IVH_COMM_INPUT_TYPE:
-            sendCommand(
-                IVH_COMM_INPUT_TYPE,
-                &machineInterface->inputType,
-                sizeof(machineInterface->inputType)
-            );
-            break;
         default:
             // unhandled command, do nothing
             break;
@@ -160,6 +143,13 @@ uint64_t IVHComm::readNumber(const uint8_t *data, size_t len) {
         result |= data[i] << (i * 8);
     }
     return result;
+}
+
+const char * IVHComm::getBoardName() const {
+    const char* board = machineInterface->board;
+    if (board == nullptr)
+        board = DEFAULT_NAME;
+    return board;
 }
 
 void IVHComm::setMachine(IVHMachine *_machine) {
@@ -195,14 +185,11 @@ const char * IVHCommCommandToString(IVHCommCommand command) {
     {
         case IVH_COMM_INVALID:           return "IVH_COMM_INVALID";
         case IVH_COMM_PACKAGE:           return "IVH_COMM_PACKAGE";
-        case IVH_COMM_BOARD:             return "IVH_COMM_BOARD";
         case IVH_COMM_RESTART:           return "IVH_COMM_RESTART";
         case IVH_COMM_PAUSE:             return "IVH_COMM_PAUSE";
         case IVH_COMM_RESUME:            return "IVH_COMM_RESUME";
-        case IVH_COMM_MEM:               return "IVH_COMM_MEM";
-        case IVH_COMM_INPUT_TYPE:        return "IVH_COMM_INPUT_TYPE";
         case IVH_COMM_PACKAGE_PROGRESS:  return "IVH_COMM_PACKAGE_PROGRESS";
-        case IVH_COMM_PING:              return "IVH_COMM_PING";
+        case IVH_COMM_IDENT:             return "IVH_COMM_IDENT";
     }
     return "IVH_COMM_UNKNOWN";
 }

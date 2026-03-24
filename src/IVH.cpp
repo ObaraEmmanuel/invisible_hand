@@ -14,6 +14,7 @@ IVH::IVH(HID *device) {
 
 void IVH::setDevice(HID *device) {
     hid_device = device;
+    inputType = hid_device->inputType;
 }
 
 void IVH::setPackageArea(uint8_t *area, size_t size) {

@@ -3,6 +3,8 @@
 
 class HID {
 public:
+    uint8_t inputType = 0;
+
     virtual ~HID() = default;
 
     virtual bool connected();

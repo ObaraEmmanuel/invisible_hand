@@ -11,6 +11,7 @@
 #define IVH_COMM_FRAME_END_DELIMITER "\x00\x99"
 // Delimiters should be of equal length
 #define IVH_COMM_FRAME_DELIMITER_LEN 2
+#define IVH_COMM_MAX_BOARD_NAME_LEN 32
 
 typedef enum IVHCommCommand {
     IVH_COMM_INVALID = 0,
@@ -19,13 +20,9 @@ typedef enum IVHCommCommand {
     IVH_COMM_RESTART,
     IVH_COMM_PAUSE,
     IVH_COMM_RESUME,
-    // client to board data request
-    IVH_COMM_BOARD = 0x20,
-    IVH_COMM_MEM,
-    IVH_COMM_INPUT_TYPE,
     // board to client
     IVH_COMM_PACKAGE_PROGRESS = 0x30,
-    IVH_COMM_PING = 0x31,
+    IVH_COMM_IDENT = 0x31,
 } IVHCommCommand_t;
 
 typedef enum IVHCommState {
@@ -36,6 +33,13 @@ typedef enum IVHCommState {
     IVH_COMM_ST_WAITING_DATA,
     IVH_COMM_ST_READING_PACKAGE,
 } IVHCommState_t;
+
+typedef struct IVHIdent {
+    uint8_t inputType;
+    uint8_t state;
+    uint64_t memSize;
+    char boardName[IVH_COMM_MAX_BOARD_NAME_LEN];
+} __attribute__((packed)) IVHIdent_t;
 
 class IVHCommInterface {
 public:
@@ -79,13 +83,17 @@ private:
     uint8_t body[IVH_COMM_BUF_SIZE] = {};
     uint64_t pingDeadline = 0;
     IVHCommState state = IVH_COMM_ST_WAITING_START;
+    IVHIdent_t ident = {};
     uint8_t delimIndex = 0;
     size_t bodyLen = 0;
     size_t packageLen = 0;
     size_t packageRead = 0;
+    uint8_t identActualSize = 0;
     IVHCommCommand currentCommand = IVH_COMM_INVALID;
 
     void handleCommand();
 
     static uint64_t readNumber(const uint8_t *data, size_t len);
+
+    const char *getBoardName() const;
 };

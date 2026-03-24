@@ -4,7 +4,7 @@ from tkinter import ttk
 from formation import AppBuilder, Builder
 
 import catalogue
-from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame, BlankDevice
+from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame, BlankDevice, IVHState
 from commands import ComponentTree
 from device_select import DeviceSelector
 from macro import MacroList, Macro
@@ -88,6 +88,7 @@ class App(AppBuilder):
         self.package_box: tk.Frame = None
         self.device_select: DeviceSelector = None
         self.upload_btn: ttk.Button = None
+        self.play_btn: ttk.Button = None
         self.flash_btn: ttk.Button = None
         self.command_delete: ttk.Button = None
         self.macro_name_lbl: ttk.Label = None
@@ -106,6 +107,8 @@ class App(AppBuilder):
         self.device_select.on_change(self._on_device_selection)
         self.device_select.set_values((self.NO_DEVICE,))
         self._package_image = tk.PhotoImage(file="resources/package.png")
+        self._play_image = tk.PhotoImage(file="resources/play.png")
+        self._pause_image = tk.PhotoImage(file="resources/pause.png")
         self._items = {}
         self.active_macro: Macro = None
         self.macro_canvas._menu = self.macro_menu
@@ -168,9 +171,6 @@ class App(AppBuilder):
         self.dev_manager = DeviceManager(self._selected_device)
         self.dev_manager.start()
         self.dev_manager.add_listener(self._on_comm_event)
-        self.dev_manager.send_command(COMCommand.BOARD)
-        self.dev_manager.send_command(COMCommand.MEM)
-        self.dev_manager.send_command(COMCommand.INPUT_TYPE)
 
     def _on_active_device_removed(self):
         if self._upload_dialog:
@@ -179,15 +179,8 @@ class App(AppBuilder):
 
     def _on_comm_event(self, device: IVHDevice, frame: IVHFrame):
         match frame.command:
-            case COMCommand.BOARD:
-                device.board = frame.body.decode()
-                self.device_select.update_value(device)
-            case COMCommand.MEM:
-                device.memory = int.from_bytes(frame.body, byteorder="little")
-                self.device_select.update_value(device)
-            case COMCommand.INPUT_TYPE:
-                device.input_type = int.from_bytes(frame.body, byteorder="little")
-                self.device_select.update_value(device)
+            case COMCommand.IDENT:
+                self._update_state()
             case COMCommand.PACKAGE_PROGRESS:
                 uploaded = int.from_bytes(frame.body, byteorder="little")
                 if self._total_upload > uploaded:
@@ -209,10 +202,17 @@ class App(AppBuilder):
             self._upload_dialog = None
 
     def _update_state(self):
-        if (not self.active_macro) or self.device_select.get() is self.NO_DEVICE:
+        dev = self.device_select.get()
+        if (not self.active_macro) or dev is self.NO_DEVICE:
             self.upload_btn.grid_remove()
+            self.play_btn.grid_remove()
         else:
             self.upload_btn.grid()
+            self.play_btn.grid()
+            if dev.state in (IVHState.PAUSED, IVHState.STOPPED):
+                self.play_btn['image'] = self._play_image
+            else:
+                self.play_btn['image'] = self._pause_image
 
     def macro_changed(self, item):
         if not item:
@@ -244,6 +244,15 @@ class App(AppBuilder):
         self.dev_manager.send_command(COMCommand.PACKAGE, unsigned_to_bytes(self._total_upload))
         self.dev_manager.send(self._upload_package[:32])
         self._upload_dialog.update_progress(0, self._total_upload)
+
+    def toggle_machine_state(self):
+        dev = self.device_select.get()
+        if not dev or dev is self.NO_DEVICE:
+            return
+        if dev.state in (IVHState.PAUSED, IVHState.STOPPED):
+            self.dev_manager.send_command(COMCommand.RESTART)
+        else:
+            self.dev_manager.send_command(COMCommand.PAUSE)
 
     def flash_board(self):
         pass

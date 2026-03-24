@@ -1,4 +1,5 @@
 import queue
+import struct
 import threading
 import time
 import tkinter
@@ -6,6 +7,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from symtable import Class
 
 import serial
 from serial.tools import list_ports
@@ -23,11 +25,32 @@ class COMCommand(Enum):
     RESTART = 0x11
     PAUSE = 0x12
     RESUME = 0x13
-    BOARD = 0x20
-    MEM = 0x21
-    INPUT_TYPE = 0x22
     PACKAGE_PROGRESS = 0x30
-    PING = 0x31
+    IDENT = 0x31
+
+
+class IVHState(Enum):
+    STOPPED = 0
+    WAITING = 1
+    WAITING_INTERNAL = 2
+    RUNNING = 3
+    PAUSED = 4
+
+
+class IVHInputTypes(Enum):
+    NONE = 0
+    USB = 1
+    BLE = 1 << 1
+    KEYBOARD = 1 << 2
+    MOUSE = 1 << 3
+
+
+@dataclass
+class IVHIdent:
+    input_type: int
+    state: IVHState
+    mem_size: int
+    board: str
 
 
 class IVHDevice:
@@ -40,8 +63,15 @@ class IVHDevice:
             self.info = dev
         self.board = "Unknown"
         self.mem = 0
-        self.input_type = "Unknown"
+        self.input_type = 0
         self.valid = True
+        self.state = 0
+
+    def update(self, ident: IVHIdent):
+        self.board = ident.board
+        self.mem = ident.mem_size
+        self.input_type = ident.input_type
+        self.state = ident.state
 
     def __eq__(self, other):
         if isinstance(other, IVHDevice):
@@ -93,6 +123,7 @@ class DeviceManager:
         self._send_queue: queue.Queue[bytes] = queue.Queue()
         self._listening: bool = False
         self._listeners: Callable[IVHDevice, IVHFrame] = []
+        self.last_ident: IVHIdent = None
 
     def add_listener(self, listener: Callable[IVHDevice, IVHFrame]):
         self._listeners.append(listener)
@@ -186,10 +217,10 @@ class DeviceManager:
     def send(self, data: bytes = b''):
         self._send_queue.put(data)
 
-    def listen(self, timeout: float, max_frames: int = None) -> bool:
+    def listen(self, timeout: float, wait_ident: bool = False) -> bool:
         self._listening = True
-        frame_count = 0
         success = False
+        ident_found = False
         try:
             with self._get_serial() as ser:
                 ser.rts = False
@@ -206,9 +237,19 @@ class DeviceManager:
                         frames = self._feed(response)
                         for frame in frames:
                             self._emit_event(frame)
-                        frame_count += len(frames)
-                        if max_frames is not None and frame_count >= max_frames:
-                            success = True
+                            if frame.command == COMCommand.IDENT:
+                                ident_found = True
+                                input_type, state, mem = struct.unpack(
+                                    "<BBQ", frame.body[:10]
+                                )
+                                self.last_ident = IVHIdent(
+                                    input_type, IVHState(state), mem,
+                                    frame.body[10:].decode(errors="ignore")
+                                )
+                                if isinstance(self.device, IVHDevice):
+                                    self.device.update(self.last_ident)
+                                success = True
+                        if ident_found and wait_ident:
                             break
                     if timeout > 0:
                         tick = time.time()
@@ -287,15 +328,18 @@ class COMManger:
 
             while not self._probe_queue.empty():
                 dev = self._probe_queue.get()
-                if dev in self.devices:
-                    self.ivh_devices[dev] = IVHDevice(dev)
-                    self._event_queue.put(DeviceEvent(self.ivh_devices[dev], DeviceEventType.ADDED))
+                if dev.info in self.devices:
+                    self.ivh_devices[dev.info] = dev
+                    self._event_queue.put(DeviceEvent(dev, DeviceEventType.ADDED))
 
             time.sleep(self.PORT_POLL_INTERVAL)
 
         self._listener_thread = None
 
     def probe(self, device: ListPortInfo):
-        if status := DeviceManager(device, self.BAUDRATE).listen(self.PROBE_TIMEOUT, 1):
-            self._probe_queue.put(device)
+        dev_manager = DeviceManager(device, self.BAUDRATE)
+        if status := dev_manager.listen(self.PROBE_TIMEOUT, True):
+            dev = IVHDevice(device)
+            dev.update(dev_manager.last_ident)
+            self._probe_queue.put(dev)
         return status
