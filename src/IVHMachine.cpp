@@ -443,6 +443,8 @@ IVHErr_t IVHMachine::fastForwardBlock(uint32_t* finalOffset) {
 
 
 IVHErr_t IVHMachine::start() {
+    machineReady = false;
+    state = IVH_ST_STOPPED;
     if (package == nullptr)
         return IVH_ERR_PACKAGE_UNSET;
     if (!isBufferValid(&stack))
@@ -455,6 +457,9 @@ IVHErr_t IVHMachine::start() {
         return IVH_ERR_UNSUPPORTED_VERSION;
 
     packageLength = read(package + 6, 4);
+    if (packageLength == 0)
+        return IVH_ERR_PACKAGE_EMPTY;
+
     currentOffset = IVH_HEADER_SIZE;
     maxOffset = IVH_HEADER_SIZE + packageLength;
 
@@ -633,6 +638,8 @@ const char* IVHErrToString(IVHErr_t err) {
         case IVH_ERR_MACHINE_INVALID:     return "IVH_ERR_MACHINE_INVALID";
         case IVH_ERR_BUFFER_UNSET:        return "IVH_ERR_BUFFER_UNSET";
         case IVH_ERR_PACKAGE_UNSET:       return "IVH_ERR_PACKAGE_UNSET";
+        case IVH_ERR_PACKAGE_CORRUPT:     return "IVH_ERR_PACKAGE_CORRUPT";
+        case IVH_ERR_PACKAGE_EMPTY:       return "IVH_ERR_PACKAGE_EMPTY";
         case IVH_ERR_STACK_UNSET:         return "IVH_ERR_STACK_UNSET";
         case IVH_ERR_STACK_OVERFLOW:      return "IVH_ERR_STACK_OVERFLOW";
         case IVH_ERR_STACK_UNDERFLOW:     return "IVH_ERR_STACK_UNDERFLOW";
@@ -640,6 +647,7 @@ const char* IVHErrToString(IVHErr_t err) {
         case IVH_ERR_INVALID_MAGIC:       return "IVH_ERR_INVALID_MAGIC";
         case IVH_ERR_UNSUPPORTED_VERSION: return "IVH_ERR_UNSUPPORTED_VERSION";
         case IVH_ERR_INVALID_COMMAND:     return "IVH_ERR_INVALID_COMMAND";
+        case IVH_ERR_INTERFACE_UNSET:     return "IVH_ERR_INTERFACE_UNSET";
         default:                          return "IVH_ERR_UNKNOWN_INTERNAL";
     }
 }

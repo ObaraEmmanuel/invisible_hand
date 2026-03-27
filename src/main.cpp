@@ -28,6 +28,7 @@ void setup() {
     pinMode(RANDOM_ANALOGUE, INPUT);
     randomSeed(analogRead(RANDOM_ANALOGUE));
     package = new uint8_t[PACKAGE_SIZE];
+    memset(package, 0, PACKAGE_SIZE);
 
 
     machineInterface.setPackageArea(package, PACKAGE_SIZE);
