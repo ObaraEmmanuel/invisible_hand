@@ -492,7 +492,7 @@ IVHErr_t IVHMachine::execute() {
             state = IVH_ST_RUNNING;
     }
 
-    if (currentOffset >= maxOffset) {
+    if (currentOffset >= maxOffset && state == IVH_ST_RUNNING) {
         state = IVH_ST_STOPPED;
         machineReady = false;
         return IVH_ERR_OK;
