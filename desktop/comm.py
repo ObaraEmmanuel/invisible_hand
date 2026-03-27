@@ -7,7 +7,6 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from symtable import Class
 
 import serial
 from serial.tools import list_ports
@@ -30,6 +29,7 @@ class COMCommand(Enum):
 
 
 class IVHState(Enum):
+    UNSET = -1
     STOPPED = 0
     WAITING = 1
     WAITING_INTERNAL = 2

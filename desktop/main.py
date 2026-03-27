@@ -131,6 +131,7 @@ class App(AppBuilder):
         self._upload_dialog = None
         self._upload_package = b''
         self._total_upload = 1
+        self._last_state = IVHState.UNSET
 
     def _on_device_added(self, device: IVHDevice):
         if device in self._devices:
@@ -180,7 +181,9 @@ class App(AppBuilder):
     def _on_comm_event(self, device: IVHDevice, frame: IVHFrame):
         match frame.command:
             case COMCommand.IDENT:
-                self._update_state()
+                if device.state != self._last_state:
+                    self._update_state()
+                self._last_state = device.state
             case COMCommand.PACKAGE_PROGRESS:
                 uploaded = int.from_bytes(frame.body, byteorder="little")
                 if self._total_upload > uploaded:
@@ -249,7 +252,10 @@ class App(AppBuilder):
         dev = self.device_select.get()
         if not dev or dev is self.NO_DEVICE:
             return
-        if dev.state in (IVHState.PAUSED, IVHState.STOPPED):
+
+        if dev.state == IVHState.PAUSED:
+            self.dev_manager.send_command(COMCommand.RESUME)
+        elif dev.state == IVHState.STOPPED:
             self.dev_manager.send_command(COMCommand.RESTART)
         else:
             self.dev_manager.send_command(COMCommand.PAUSE)
