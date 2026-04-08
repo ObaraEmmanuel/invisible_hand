@@ -2,7 +2,6 @@
 
 #define US_KEYBOARD 1
 
-#include <Arduino.h>
 #include "BLEDevice.h"
 #include "BLEHIDDevice.h"
 #include "HID.h"
@@ -22,6 +21,18 @@ struct KeyboardOutputReport {
     uint8_t LEDs;                          // bitmask: num lock = 1, caps lock = 2, scroll lock = 4, compose = 8, kana = 16
 };
 
+struct LEDReport {
+    uint8_t LEDs;            // bitmask: num lock = 1, caps lock = 2, scroll lock = 4, compose = 8, kana = 16
+};
+
+enum LEDs {
+    NuM_LOCK      = 1,
+    CAPS_LOCK     = 1 << 1,
+    SCROLL_LOCK   = 1 << 2,
+    COMPOSE       = 1 << 3,
+    KANA          = 1 << 4,
+};
+
 
 // Message (report) sent for mouse events
 struct MouseInputReport {
@@ -34,6 +45,8 @@ struct MouseInputReport {
 
 class BLEHID: public HID, public BLEServerCallbacks, public BLECharacteristicCallbacks{
 public:
+    uint8_t LEDs{};
+
     BLEHID();
     static BLEHID* getInstance();
 
@@ -43,14 +56,6 @@ public:
 
     void onDisconnect(BLEServer* server) override;
 
-    /**
-     * Called when the client (computer, smart phone) wants to turn on or off
-     * the LEDs in the keyboard.
-     *
-     * bit 0 - NUM LOCK
-     * bit 1 - CAPS LOCK
-     * bit 2 - SCROLL LOCK
-     */
     void onWrite(BLECharacteristic* characteristic) override;
 
     void setBatteryLevel(uint8_t level);

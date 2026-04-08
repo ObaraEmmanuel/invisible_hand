@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "BLE_HID.h"
 #include "BLE_HID_report.h"
 #include "IVHMachine.h"
@@ -79,8 +80,8 @@ void BLEHID::onDisconnect(BLEServer *server) {
 }
 
 void BLEHID::onWrite(BLECharacteristic *characteristic) {
-    // OutputReport* report = (OutputReport*) characteristic->getData();
-    // hasCapsLock = report->LEDs & 0x2;
+    auto* report = (LEDReport*) characteristic->getData();
+    LEDs = report->LEDs;
 }
 
 void BLEHID::setBatteryLevel(uint8_t level) {

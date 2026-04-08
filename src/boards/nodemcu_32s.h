@@ -22,4 +22,5 @@ private:
     IVHMachine machine;
     IVHComm comm;
     uint8_t* package = nullptr;
+    uint8_t LEDState = 0;
 };

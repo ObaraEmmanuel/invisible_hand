@@ -1,4 +1,5 @@
 #include "nodemcu_32s.h"
+#include <Arduino.h>
 
 #define RANDOM_ANALOGUE    25
 #define PACKAGE_SIZE       65536
@@ -35,6 +36,15 @@ void NodeMCU32s::setup() {
 
 void NodeMCU32s::loop() {
     IVHState state = machine.getState();
+    if ((LEDState ^ hid_device.LEDs) & CAPS_LOCK) {
+        // Caps Lock has been toggled
+        if (state == IVH_ST_PAUSED)
+            machine.resume();
+        else
+            machine.pause();
+
+    }
+    LEDState = hid_device.LEDs;
     if (state == IVH_ST_STOPPED || state == IVH_ST_PAUSED || !ready()) {
         digitalWrite(LED, LOW);
     }else {
