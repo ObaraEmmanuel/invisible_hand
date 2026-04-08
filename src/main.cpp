@@ -1,50 +1,39 @@
 #include <Arduino.h>
 
-#include "esp32/BLE_HID.h"
-#include "HID.h"
-#include "IVH.h"
-#include "IVHComm.h"
-#include "arduino/SerialComm.h"
+#include "boards/board.h"
 
-#define RANDOM_ANALOGUE 25
-#define PACKAGE_SIZE 65536
-#define HEARTBEAT_INTERVAL 1000
+#ifdef NODEMCU_32S
 
-BLEHID hid_device;
-SerialComm serial_comm;
-IVH machineInterface(&hid_device);
-IVHMachine machine(&machineInterface, nullptr);
-IVHComm comm(&serial_comm, &machine);
-uint8_t *package;
+#include "boards/nodemcu_32s.h"
+NodeMCU32s boardInstance;
+
+#else
+
+#include "boards/dummy_board.h"
+DummyBoard boardInstance;
+
+#endif
+
+Board *board = nullptr;
 
 void setup() {
     Serial.begin(115200);
-    BLEDevice::init("Hand");
-
-    if (!hid_device.begin()) {
-        Serial.println("HID device unable to start");
-        return;
-    }
-    pinMode(RANDOM_ANALOGUE, INPUT);
-    randomSeed(analogRead(RANDOM_ANALOGUE));
-    package = new uint8_t[PACKAGE_SIZE];
-    memset(package, 0, PACKAGE_SIZE);
-
-
-    machineInterface.setPackageArea(package, PACKAGE_SIZE);
-    machineInterface.bind(&machine);
-    machine.setPackage(package);
-
-    if (!comm.init()) {
-        Serial.println("Failed to start IVH comm");
-    }
+    board = &boardInstance;
+    board->setup();
 }
 
 void loop() {
-    comm.tick();
-    if (!hid_device.connected())
+    if (board == nullptr) {
+        delay(1000);
         return;
-    IVHErr err = machine.execute();
+    }
+    if (!board->ready()) {
+        delay(10);
+        return;
+    }
+    board->commHandle->tick();
+    board->loop();
+    IVHErr err = board->machineHandle->execute();
     if (err == IVH_ERR_MACHINE_INVALID) {
         delay(10);
         return;
