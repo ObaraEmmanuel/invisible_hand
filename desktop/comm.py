@@ -30,11 +30,12 @@ class COMCommand(Enum):
 
 class IVHState(Enum):
     UNSET = -1
-    STOPPED = 0
-    WAITING = 1
-    WAITING_INTERNAL = 2
-    RUNNING = 3
-    PAUSED = 4
+    INVALID = 0
+    STOPPED = 1
+    WAITING = 2
+    WAITING_INTERNAL = 3
+    RUNNING = 4
+    PAUSED = 5
 
 
 class IVHInputTypes(Enum):

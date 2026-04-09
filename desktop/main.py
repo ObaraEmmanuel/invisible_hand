@@ -211,11 +211,14 @@ class App(AppBuilder):
             self.play_btn.grid_remove()
         else:
             self.upload_btn.grid()
-            self.play_btn.grid()
-            if dev.state in (IVHState.PAUSED, IVHState.STOPPED):
-                self.play_btn['image'] = self._play_image
+            if dev.state != IVHState.INVALID:
+                self.play_btn.grid()
+                if dev.state in (IVHState.PAUSED, IVHState.STOPPED):
+                    self.play_btn['image'] = self._play_image
+                else:
+                    self.play_btn['image'] = self._pause_image
             else:
-                self.play_btn['image'] = self._pause_image
+                self.play_btn.grid_remove()
 
     def macro_changed(self, item):
         if not item:

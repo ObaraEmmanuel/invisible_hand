@@ -55,7 +55,8 @@ typedef enum IVHErr {
 
 
 typedef enum IVHState {
-    IVH_ST_STOPPED = 0,
+    IVH_ST_INVALID = 0,
+    IVH_ST_STOPPED,
     IVH_ST_WAITING,
     IVH_ST_WAITING_INTERNAL,
     IVH_ST_RUNNING,
@@ -168,7 +169,7 @@ public:
     IVHErr_t execute();
 
 private:
-    bool machineReady = false;
+    // bool machineReady = false;
     uint32_t _returnOffset = 0;
     uint64_t _pressInterval = 5000; //5ms
     IVHMachineInterface* _interface = nullptr;
@@ -215,7 +216,7 @@ protected:
     uint8_t keys[IVH_KEY_BUF_SIZE] = {};
     IVHBuffer stack = {};
     IVHErr err = IVH_ERR_OK;
-    IVHState state = IVH_ST_STOPPED, tempState = {};
+    IVHState state = IVH_ST_INVALID, tempState = {};
     uint64_t currentMicro = 1, deadlineMicro = 0;
     IVHParam param1 = {}, param2 = {}, param3 = {};
 };

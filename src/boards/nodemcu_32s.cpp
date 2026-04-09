@@ -47,7 +47,7 @@ void NodeMCU32s::loop() {
 
     }
     LEDState = hid_device.LEDs;
-    if (state == IVH_ST_STOPPED || state == IVH_ST_PAUSED || !ready()) {
+    if (state == IVH_ST_STOPPED || state == IVH_ST_INVALID || state == IVH_ST_PAUSED || !ready()) {
         digitalWrite(LED, LOW);
     }else {
         digitalWrite(LED, HIGH);

@@ -12,7 +12,7 @@ IVHMachine::IVHMachine(IVHMachineInterface *interface, const uint8_t *package) :
 
 void IVHMachine::setPackage(const uint8_t *_package) {
     package = _package;
-    machineReady = false;
+    state = IVH_ST_INVALID;
 }
 
 void IVHMachine::setStackBuffer(uint8_t *_stack, uint64_t _length) {
@@ -21,7 +21,7 @@ void IVHMachine::setStackBuffer(uint8_t *_stack, uint64_t _length) {
 }
 
 void IVHMachine::pause() {
-    if (state == IVH_ST_PAUSED || state == IVH_ST_STOPPED)
+    if (state == IVH_ST_PAUSED || state == IVH_ST_STOPPED || state == IVH_ST_INVALID)
         return;
     tempState = state;
     state = IVH_ST_PAUSED;
@@ -443,8 +443,7 @@ IVHErr_t IVHMachine::fastForwardBlock(uint32_t* finalOffset) {
 
 
 IVHErr_t IVHMachine::start() {
-    machineReady = false;
-    state = IVH_ST_STOPPED;
+    state = IVH_ST_INVALID;
     if (package == nullptr)
         return IVH_ERR_PACKAGE_UNSET;
     if (!isBufferValid(&stack))
@@ -467,7 +466,6 @@ IVHErr_t IVHMachine::start() {
         return IVH_ERR_PACKAGE_CORRUPT;
 
     // reset machine state
-    machineReady = true;
     state = IVH_ST_RUNNING;
     _returnOffset = 0;
     depth = 0;
@@ -476,7 +474,7 @@ IVHErr_t IVHMachine::start() {
 }
 
 IVHErr_t IVHMachine::execute() {
-    if (!machineReady) {
+    if (state == IVH_ST_INVALID) {
         return IVH_ERR_MACHINE_INVALID;
     }
 
@@ -494,7 +492,6 @@ IVHErr_t IVHMachine::execute() {
 
     if (currentOffset >= maxOffset && state == IVH_ST_RUNNING) {
         state = IVH_ST_STOPPED;
-        machineReady = false;
         return IVH_ERR_OK;
     }
 
@@ -503,7 +500,7 @@ IVHErr_t IVHMachine::execute() {
         command = fetch();
         lastCommand = command;
         if (command == IVH_COM_INVALID) {
-            machineReady = false;
+            state = IVH_ST_INVALID;
             return IVH_ERR_INVALID_COMMAND;
         }
     }
