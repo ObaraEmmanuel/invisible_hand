@@ -120,16 +120,20 @@ void IVHComm::handleCommand() {
             packageRead = 0;
             // Pause the machine because we are updating the package currently being read
             machine->pause();
+            forcePing();
             state = IVH_COMM_ST_READING_PACKAGE;
             break;
         case IVH_COMM_RESTART:
             machine->start();
+            forcePing();
             break;
         case IVH_COMM_PAUSE:
             machine->pause();
+            forcePing();
             break;
         case IVH_COMM_RESUME:
             machine->resume();
+            forcePing();
             break;
         default:
             // unhandled command, do nothing
@@ -150,6 +154,11 @@ const char * IVHComm::getBoardName() const {
     if (board == nullptr)
         board = DEFAULT_NAME;
     return board;
+}
+
+void IVHComm::forcePing() {
+    // this will force a ping to be sent out on the next comm tick
+    pingDeadline = 0;
 }
 
 void IVHComm::setMachine(IVHMachine *_machine) {

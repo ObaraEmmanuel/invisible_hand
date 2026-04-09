@@ -74,6 +74,8 @@ public:
 
     void sendCommand(IVHCommCommand command, const uint8_t *data, uint8_t len);
 
+    void forcePing();
+
 private:
     IVHCommInterface *comm = nullptr;
     IVHMachine *machine = nullptr;

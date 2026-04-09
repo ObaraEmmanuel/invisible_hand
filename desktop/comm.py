@@ -256,7 +256,7 @@ class DeviceManager:
                         if tick > deadline or tick < start:
                             success = False
                             break
-                    time.sleep(0.3)
+                    time.sleep(0.1)
         except (serial.SerialException, OSError):
             success = False
 

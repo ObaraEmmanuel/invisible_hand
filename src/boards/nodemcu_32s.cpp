@@ -42,6 +42,8 @@ void NodeMCU32s::loop() {
             machine.resume();
         else
             machine.pause();
+        // force ping to reflect state change ASAP
+        commHandle->forcePing();
 
     }
     LEDState = hid_device.LEDs;
