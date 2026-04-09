@@ -24,6 +24,7 @@ class COMCommand(Enum):
     RESTART = 0x11
     PAUSE = 0x12
     RESUME = 0x13
+    FLASH = 0x14
     PACKAGE_PROGRESS = 0x30
     IDENT = 0x31
 

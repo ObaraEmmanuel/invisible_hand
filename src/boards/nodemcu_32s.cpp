@@ -1,5 +1,6 @@
 #include "nodemcu_32s.h"
 #include <Arduino.h>
+#include <LittleFS.h>
 
 #define RANDOM_ANALOGUE    25
 #define PACKAGE_SIZE       65536
@@ -31,6 +32,17 @@ void NodeMCU32s::setup() {
 
     if (!comm.init()) {
         Serial.println("Failed to start IVH comm");
+    }
+
+    if (!LittleFS.begin(true)) {
+        Serial.println("Failed to mount LFS");
+    }else {
+        File f = LittleFS.open("/package.ivh", FILE_READ);
+        if (f) {
+            f.read(package, PACKAGE_SIZE);
+            f.close();
+            machine.start();
+        }
     }
 }
 

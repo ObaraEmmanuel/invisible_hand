@@ -173,9 +173,27 @@
                         {
                             "attrib": {
                                 "attr": {
-                                    "command": "flash_board", 
+                                    "command": "config_board", 
                                     "compound": "left", 
-                                    "image": "../resources/firmware.png", 
+                                    "image": "..\\resources\\config.png", 
+                                    "text": "Config"
+                                }, 
+                                "layout": {
+                                    "column": 2, 
+                                    "padx": "5 0", 
+                                    "row": 0, 
+                                    "width": ""
+                                }, 
+                                "name": "config_btn"
+                            }, 
+                            "type": "tkinter.ttk.Button"
+                        }, 
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "command": "flash_macro", 
+                                    "compound": "left", 
+                                    "image": "..\\resources\\firmware.png", 
                                     "text": "Flash"
                                 }, 
                                 "layout": {
@@ -184,7 +202,7 @@
                                     "row": 0, 
                                     "width": ""
                                 }, 
-                                "name": "fllash_btn"
+                                "name": "flash_btn"
                             }, 
                             "type": "tkinter.ttk.Button"
                         }
@@ -194,7 +212,7 @@
                 {
                     "attrib": {
                         "attr": {
-                            "background": "#1c1c1c",
+                            "background": "#1c1c1c", 
                             "highlightbackground": "#1c1c1c", 
                             "highlightcolor": "#2f60d8", 
                             "layout": "grid"
@@ -212,7 +230,7 @@
                         {
                             "attrib": {
                                 "attr": {
-                                    "command": "toggle_machine_state",
+                                    "command": "toggle_machine_state", 
                                     "compound": "left", 
                                     "image": "../resources/play.png", 
                                     "text": ""

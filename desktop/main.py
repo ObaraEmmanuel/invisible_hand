@@ -78,6 +78,61 @@ class UploadMacroDialog(Builder):
     def destroy(self):
         self._root.destroy()
 
+    def exists(self):
+        return self._root.winfo_exists()
+
+
+class FlashMacroDialog(Builder):
+    def __init__(self, master, on_flash):
+        self._root: tk.Toplevel = None
+        self.msg_lbl: ttk.Label = None
+        self.progress: ttk.Progressbar = None
+        self.progress_lbl: tk.Label = None
+        self.cancel_btn: ttk.Button = None
+        self.flash_btn: ttk.Button = None
+        super().__init__(master, path="layouts/flash_macro.json")
+        self.progress.grid_remove()
+        self.msg_lbl["text"] = (
+            "The uploaded macro will be permanently saved to the board.\n"
+            "Note that doing this too often may wear out the flash on your board."
+        )
+        self._root.transient(master)
+        self.connect_callbacks(self)
+        self.value = None
+        center_window(self._root, master)
+        self._root.grab_set()
+        self.cancel_btn.focus_set()
+        self._on_flash = on_flash
+
+    def flash(self):
+        if self._on_flash:
+            self._on_flash()
+        self.msg_lbl["text"] = "Flashing uploaded macro to permanent storage..."
+        self.progress.grid()
+        self.progress.start()
+        self.cancel_btn.grid_remove()
+        self.flash_btn.grid_remove()
+
+    def cancel(self):
+        self._root.destroy()
+
+    def completed(self, status: bool):
+        self.progress.grid_remove()
+        self.flash_btn.grid_remove()
+        self.cancel_btn.grid()
+        self.cancel_btn["text"] = "Finish"
+        self.cancel_btn.focus_set()
+        if status:
+            self.msg_lbl["text"] = "Package was flashed successfully."
+        else:
+            self.msg_lbl["text"] = "Package flashing failed."
+
+    def destroy(self):
+        self._root.destroy()
+
+    def exists(self):
+        return self._root.winfo_exists()
+
 
 class App(AppBuilder):
     NO_DEVICE = BlankDevice()
@@ -128,7 +183,8 @@ class App(AppBuilder):
         self.comm.add_listener(self._on_device_added, DeviceEventType.ADDED)
         self.comm.add_listener(self._on_device_removed, DeviceEventType.REMOVED)
         self.dev_manager: DeviceManager = None
-        self._upload_dialog = None
+        self._flash_dialog: FlashMacroDialog = None
+        self._upload_dialog: UploadMacroDialog = None
         self._upload_package = b''
         self._total_upload = 1
         self._last_state = IVHState.UNSET
@@ -191,6 +247,10 @@ class App(AppBuilder):
                 else:
                     self.dev_manager.send_command(COMCommand.RESTART)
                 self._update_progress(uploaded)
+            case COMCommand.FLASH:
+                success = int.from_bytes(frame.body, byteorder="little")
+                if self._flash_dialog and self._flash_dialog.exists():
+                    self._flash_dialog.completed(bool(success))
 
     def _update_progress(self, uploaded):
         if not self._upload_dialog:
@@ -209,16 +269,19 @@ class App(AppBuilder):
         if (not self.active_macro) or dev is self.NO_DEVICE:
             self.upload_btn.grid_remove()
             self.play_btn.grid_remove()
+            self.flash_btn.grid_remove()
         else:
             self.upload_btn.grid()
             if dev.state != IVHState.INVALID:
                 self.play_btn.grid()
+                self.flash_btn.grid()
                 if dev.state in (IVHState.PAUSED, IVHState.STOPPED):
                     self.play_btn['image'] = self._play_image
                 else:
                     self.play_btn['image'] = self._pause_image
             else:
                 self.play_btn.grid_remove()
+                self.flash_btn.grid_remove()
 
     def macro_changed(self, item):
         if not item:
@@ -251,6 +314,12 @@ class App(AppBuilder):
         self.dev_manager.send(self._upload_package[:32])
         self._upload_dialog.update_progress(0, self._total_upload)
 
+    def flash_macro(self):
+        self._flash_dialog = FlashMacroDialog(self.main, self._flash)
+
+    def _flash(self):
+        self.dev_manager.send_command(COMCommand.FLASH)
+
     def toggle_machine_state(self):
         dev = self.device_select.get()
         if not dev or dev is self.NO_DEVICE:
@@ -263,7 +332,7 @@ class App(AppBuilder):
         else:
             self.dev_manager.send_command(COMCommand.PAUSE)
 
-    def flash_board(self):
+    def config_board(self):
         pass
 
     def delete_macro(self):

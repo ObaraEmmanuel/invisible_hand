@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include <esp32-hal.h>
+#include <LittleFS.h>
 
 IVH::IVH() : IVH(nullptr) {
 }
@@ -64,4 +65,14 @@ uint64_t IVH::getMicros() {
 
 void IVH::updatePackage(const uint8_t *data, uint32_t offset, uint32_t len) {
     memcpy(_package + offset, data, len);
+    _macroSize = offset + len;
+}
+
+bool IVH::flashPackage() {
+    File f = LittleFS.open("/package.ivh", FILE_WRITE);
+    if (!f)
+        return false;
+    auto written = f.write(_package, _macroSize);
+    f.close();
+    return written == _macroSize;
 }

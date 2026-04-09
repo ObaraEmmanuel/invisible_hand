@@ -1,0 +1,142 @@
+{
+    "attrib": {
+        "attr": {
+            "background": "#1c1c1c", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "grid"
+        }, 
+        "layout": {
+            "height": 155, 
+            "width": 470, 
+            "x": 30, 
+            "y": 30
+        }, 
+        "name": "tk_1"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "column": "0", 
+                "weight": "1"
+            }, 
+            "type": "grid"
+        }, 
+        {
+            "attrib": {
+                "name": "title"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "Flash Macro"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "name": "geometry"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "470x122+0+0"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "name": "theme", 
+                "sub_theme": "dark", 
+                "theme": "sun-valley"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "mode": "indeterminate", 
+                    "value": 40
+                }, 
+                "layout": {
+                    "column": 0, 
+                    "columnspan": 3, 
+                    "padx": 20, 
+                    "pady": 5, 
+                    "row": 1, 
+                    "sticky": "ew"
+                }, 
+                "name": "progress"
+            }, 
+            "type": "tkinter.ttk.Progressbar"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "text": "Flashing uploaded macro to board ..."
+                }, 
+                "layout": {
+                    "column": 0, 
+                    "columnspan": 3, 
+                    "padx": 20, 
+                    "pady": 15, 
+                    "row": 0, 
+                    "sticky": "w", 
+                    "width": ""
+                }, 
+                "name": "msg_lbl"
+            }, 
+            "type": "tkinter.ttk.Label"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "command": "flash", 
+                    "style": "Accent.TButton", 
+                    "text": "Flash"
+                }, 
+                "layout": {
+                    "column": 1, 
+                    "padx": 5, 
+                    "pady": 15, 
+                    "row": 2, 
+                    "width": ""
+                }, 
+                "name": "flash_btn"
+            }, 
+            "type": "tkinter.ttk.Button"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "command": "cancel", 
+                    "text": "Cancel"
+                }, 
+                "layout": {
+                    "column": 2, 
+                    "padx": "0 20", 
+                    "pady": 15, 
+                    "row": 2, 
+                    "width": ""
+                }, 
+                "name": "cancel_btn"
+            }, 
+            "type": "tkinter.ttk.Button"
+        }
+    ], 
+    "type": "tkinter.Toplevel"
+}

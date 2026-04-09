@@ -135,6 +135,15 @@ void IVHComm::handleCommand() {
             machine->resume();
             forcePing();
             break;
+        case IVH_COMM_FLASH: {
+            uint8_t success = machineInterface->flashPackage();
+            sendCommand(
+                IVH_COMM_FLASH,
+                &success,
+                sizeof(success)
+            );
+            break;
+        }
         default:
             // unhandled command, do nothing
             break;
@@ -197,6 +206,7 @@ const char * IVHCommCommandToString(IVHCommCommand command) {
         case IVH_COMM_RESTART:           return "IVH_COMM_RESTART";
         case IVH_COMM_PAUSE:             return "IVH_COMM_PAUSE";
         case IVH_COMM_RESUME:            return "IVH_COMM_RESUME";
+        case IVH_COMM_FLASH:             return "IVH_COMM_FLASH";
         case IVH_COMM_PACKAGE_PROGRESS:  return "IVH_COMM_PACKAGE_PROGRESS";
         case IVH_COMM_IDENT:             return "IVH_COMM_IDENT";
     }

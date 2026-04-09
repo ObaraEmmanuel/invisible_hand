@@ -20,6 +20,7 @@ typedef enum IVHCommCommand {
     IVH_COMM_RESTART,
     IVH_COMM_PAUSE,
     IVH_COMM_RESUME,
+    IVH_COMM_FLASH,
     // board to client
     IVH_COMM_PACKAGE_PROGRESS = 0x30,
     IVH_COMM_IDENT = 0x31,

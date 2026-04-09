@@ -134,6 +134,8 @@ public:
     virtual uint64_t getMicros() = 0;
 
     virtual void updatePackage(const uint8_t* data, uint32_t offset, uint32_t len) = 0;
+
+    virtual bool flashPackage() = 0;
 };
 
 class IVHMachine {

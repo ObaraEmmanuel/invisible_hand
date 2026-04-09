@@ -14,6 +14,7 @@ public:
     void setDevice(HID* device);
     void setPackageArea(uint8_t *area, size_t size);
     void bind(IVHMachine* machine);
+    size_t _macroSize = 0;
 private:
     HID* hid_device{};
     uint8_t *_package = nullptr;
@@ -31,4 +32,5 @@ protected:
     uint64_t getRandom(uint64_t min, uint64_t max) override;
     uint64_t getMicros() override;
     void updatePackage(const uint8_t *data, uint32_t offset, uint32_t len) override;
+    bool flashPackage() override;
 };
