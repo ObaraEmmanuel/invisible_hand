@@ -23,4 +23,5 @@ private:
     IVHComm comm;
     uint8_t* package = nullptr;
     uint8_t LEDState = 0;
+    bool firstToggle = false;
 };

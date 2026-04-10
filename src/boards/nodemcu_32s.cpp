@@ -49,11 +49,14 @@ void NodeMCU32s::setup() {
 void NodeMCU32s::loop() {
     IVHState state = machine.getState();
     if ((LEDState ^ hid_device.LEDs) & CAPS_LOCK) {
-        // Caps Lock has been toggled
-        if (state == IVH_ST_PAUSED)
-            machine.resume();
-        else
-            machine.pause();
+        if (firstToggle) {
+            // Caps Lock has been toggled
+            if (state == IVH_ST_PAUSED)
+                machine.resume();
+            else
+                machine.pause();
+        }
+        firstToggle = true;
         // force ping to reflect state change ASAP
         commHandle->forcePing();
 
