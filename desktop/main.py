@@ -357,6 +357,10 @@ class App(AppBuilder):
         self.on_command_select()
 
 
-if __name__ == "__main__":
+def run():
     app = App()
     app._root.mainloop()
+
+
+if __name__ == "__main__":
+    run()

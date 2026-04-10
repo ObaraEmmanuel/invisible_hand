@@ -63,7 +63,30 @@
             "children": [
                 {
                     "attrib": {
-                        "value": "1000x750+0+0"
+                        "value": "1000x747+0+0"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "defer": true, 
+                "name": "iconphoto"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "type": "int", 
+                        "value": 1
+                    }, 
+                    "type": "arg"
+                }, 
+                {
+                    "attrib": {
+                        "type": "image", 
+                        "value": "..\\resources\\hand.ico"
                     }, 
                     "type": "arg"
                 }
