@@ -53,6 +53,8 @@ void NodeMCU32s::loop() {
             // Caps Lock has been toggled
             if (state == IVH_ST_PAUSED)
                 machine.resume();
+            else if (state == IVH_ST_STOPPED)
+                machine.start();
             else
                 machine.pause();
         }

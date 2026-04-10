@@ -95,7 +95,7 @@ private:
 
     static BLEHID* instance;
 
-    bool isConnected{};
+    volatile bool isConnected{};
     uint8_t battery{};
 
     uint8_t pressed[MAX_REPORT_KEYS]{};

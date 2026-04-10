@@ -27,12 +27,12 @@ void loop() {
         delay(1000);
         return;
     }
+    board->commHandle->tick();
+    board->loop();
     if (!board->ready()) {
         delay(10);
         return;
     }
-    board->commHandle->tick();
-    board->loop();
     IVHErr err = board->machineHandle->execute();
     if (err == IVH_ERR_MACHINE_INVALID) {
         delay(10);
