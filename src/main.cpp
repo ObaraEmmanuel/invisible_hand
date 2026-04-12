@@ -5,35 +5,34 @@
 #ifdef NODEMCU_32S
 
 #include "boards/nodemcu_32s.h"
-NodeMCU32s boardInstance;
+NodeMCU32s board{};
 
 #else
 
 #include "boards/dummy_board.h"
-DummyBoard boardInstance;
+DummyBoard board{};
 
 #endif
 
-Board *board = nullptr;
+bool boardReady = false;
 
 void setup() {
     Serial.begin(115200);
-    board = &boardInstance;
-    board->setup();
+    boardReady = board.setup();
 }
 
 void loop() {
-    if (board == nullptr) {
+    if (!boardReady) {
         delay(1000);
         return;
     }
-    board->commHandle->tick();
-    board->loop();
-    if (!board->ready()) {
+    board.comm.tick();
+    board.loop();
+    if (!board.ready()) {
         delay(10);
         return;
     }
-    IVHErr err = board->machineHandle->execute();
+    IVHErr err = board.machine.execute();
     if (err == IVH_ERR_MACHINE_INVALID) {
         delay(10);
         return;

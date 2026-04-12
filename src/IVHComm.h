@@ -2,8 +2,6 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "IVHMachine.h"
-
 #define IVH_COMM_BUF_SIZE 256
 #define IVH_COMM_MAX_BODY_SIZE 128
 #define IVH_COMM_PING_INTERVAL 1000000 // us
@@ -12,6 +10,8 @@
 // Delimiters should be of equal length
 #define IVH_COMM_FRAME_DELIMITER_LEN 2
 #define IVH_COMM_MAX_BOARD_NAME_LEN 32
+
+class Board;
 
 typedef enum IVHCommCommand {
     IVH_COMM_INVALID = 0,
@@ -59,17 +59,13 @@ class IVHComm {
 public:
     IVHComm() = default;
 
-    IVHComm(IVHCommInterface *comm, IVHMachine *machine);
+    explicit IVHComm(Board &board);
 
     ~IVHComm() = default;
 
-    bool init();
+    void init();
 
     void tick();
-
-    void setMachine(IVHMachine *_machine);
-
-    void setCommInterface(IVHCommInterface *interface);
 
     void sendCommand(IVHCommCommand command);
 
@@ -78,9 +74,7 @@ public:
     void forcePing();
 
 private:
-    IVHCommInterface *comm = nullptr;
-    IVHMachine *machine = nullptr;
-    IVHMachineInterface *machineInterface = nullptr;
+    Board *board = nullptr;
     uint8_t in[IVH_COMM_BUF_SIZE] = {};
     uint8_t out[IVH_COMM_BUF_SIZE] = {};
     uint8_t body[IVH_COMM_BUF_SIZE] = {};
@@ -97,6 +91,4 @@ private:
     void handleCommand();
 
     static uint64_t readNumber(const uint8_t *data, size_t len);
-
-    const char *getBoardName() const;
 };

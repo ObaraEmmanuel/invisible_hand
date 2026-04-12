@@ -10,6 +10,9 @@ static bool CRC32IsValid(uint32_t expected, const uint8_t* data, size_t len);
 IVHMachine::IVHMachine(IVHMachineInterface *interface, const uint8_t *package) : _interface(interface), package(package) {
 }
 
+IVHMachine::IVHMachine(IVHMachineInterface *interface) : _interface(interface) {
+}
+
 void IVHMachine::setPackage(const uint8_t *_package) {
     package = _package;
     state = IVH_ST_INVALID;

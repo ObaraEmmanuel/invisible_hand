@@ -3,7 +3,7 @@
 
 class HID {
 public:
-    uint8_t inputType = 0;
+    uint8_t type = 0;
 
     virtual ~HID() = default;
 
@@ -11,11 +11,11 @@ public:
 
     virtual bool begin();
 
-    virtual void holdKey(uint8_t *keys, uint8_t len, uint8_t modifier);
+    virtual void keyHold(uint8_t *keys, uint8_t len, uint8_t modifier);
 
-    virtual void releaseKey(uint8_t *keys, uint8_t len, uint8_t modifier);
+    virtual void keyRelease(uint8_t *keys, uint8_t len, uint8_t modifier);
 
-    virtual void releaseAll();
+    virtual void keyReleaseAll();
 
     virtual void buttonHold(uint8_t buttons);
 

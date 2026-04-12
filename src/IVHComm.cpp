@@ -1,48 +1,33 @@
 #include "IVHComm.h"
+#include "boards/board.h"
 
 #include <algorithm>
 #include <cstring>
 
-#define DEFAULT_NAME "Unknown"
 
-
-IVHComm::IVHComm(IVHCommInterface *comm, IVHMachine *machine) : comm(comm), machine(machine) {
+IVHComm::IVHComm(Board &board) : board(&board) {
 }
 
-bool IVHComm::init() {
-    if (machine == nullptr || comm == nullptr) {
-        return false;
-    }
-    if (machine->getInterface() == nullptr) {
-        return false;
-    }
-    machineInterface = machine->getInterface();
-
-    pingDeadline = machineInterface->getMicros() + IVH_COMM_PING_INTERVAL;
-
-    const char* board = getBoardName();
-    const auto boardLen = strlen(board);
+void IVHComm::init() {
+    pingDeadline = board->getMicros() + IVH_COMM_PING_INTERVAL;
+    const auto boardLen = strlen(board->name);
     identActualSize = sizeof(IVHIdent) - IVH_COMM_MAX_BOARD_NAME_LEN + boardLen;
-    strncpy(ident.boardName, board, IVH_COMM_MAX_BOARD_NAME_LEN);
-    return true;
+    strncpy(ident.boardName, board->name, IVH_COMM_MAX_BOARD_NAME_LEN);
 }
 
 void IVHComm::tick() {
-    if (machine == nullptr || comm == nullptr || machineInterface == nullptr) {
-        return;
-    }
-    auto micros = machineInterface->getMicros();
+    auto micros = board->getMicros();
     if (micros > pingDeadline) {
         pingDeadline = micros + IVH_COMM_PING_INTERVAL;
-        ident.inputType = machineInterface->inputType;
-        ident.memSize = machineInterface->maxPackageSize;
-        ident.state = machine->getState();
+        ident.inputType = board->getInputType();
+        ident.memSize = board->packageBufferSize;
+        ident.state = board->machine.getState();
         sendCommand(IVH_COMM_IDENT, reinterpret_cast<const uint8_t *>(&ident), identActualSize);
     }
     size_t available;
-    while ((available = comm->available()) > 0) {
+    while ((available = board->commInterface->available()) > 0) {
         memset(out, 0, IVH_COMM_BUF_SIZE);
-        auto len = comm->receive(in, std::min(static_cast<size_t>(IVH_COMM_BUF_SIZE), available));
+        auto len = board->commInterface->receive(in, std::min(static_cast<size_t>(IVH_COMM_BUF_SIZE), available));
         size_t offset = 0;
         while (offset < len) {
             switch (state) {
@@ -91,7 +76,7 @@ void IVHComm::tick() {
                     break;
                 case IVH_COMM_ST_READING_PACKAGE: {
                     auto availablePackage = std::min(packageLen - packageRead, len - offset);
-                    machineInterface->updatePackage(in + offset, packageRead, availablePackage);
+                    board->updatePackage(in + offset, packageRead, availablePackage);
                     offset += availablePackage;
                     packageRead += availablePackage;
                     sendCommand(
@@ -119,24 +104,24 @@ void IVHComm::handleCommand() {
             packageLen = readNumber(body, bodyLen);
             packageRead = 0;
             // Pause the machine because we are updating the package currently being read
-            machine->pause();
+            board->machine.pause();
             forcePing();
             state = IVH_COMM_ST_READING_PACKAGE;
             break;
         case IVH_COMM_RESTART:
-            machine->start();
+            board->machine.start();
             forcePing();
             break;
         case IVH_COMM_PAUSE:
-            machine->pause();
+            board->machine.pause();
             forcePing();
             break;
         case IVH_COMM_RESUME:
-            machine->resume();
+            board->machine.resume();
             forcePing();
             break;
         case IVH_COMM_FLASH: {
-            uint8_t success = machineInterface->flashPackage();
+            uint8_t success = board->flashPackage();
             sendCommand(
                 IVH_COMM_FLASH,
                 &success,
@@ -158,24 +143,9 @@ uint64_t IVHComm::readNumber(const uint8_t *data, size_t len) {
     return result;
 }
 
-const char * IVHComm::getBoardName() const {
-    const char* board = machineInterface->board;
-    if (board == nullptr)
-        board = DEFAULT_NAME;
-    return board;
-}
-
 void IVHComm::forcePing() {
     // this will force a ping to be sent out on the next comm tick
     pingDeadline = 0;
-}
-
-void IVHComm::setMachine(IVHMachine *_machine) {
-    this->machine = _machine;
-}
-
-void IVHComm::setCommInterface(IVHCommInterface *interface) {
-    this->comm = interface;
 }
 
 void IVHComm::sendCommand(const IVHCommCommand command) {
@@ -195,7 +165,7 @@ void IVHComm::sendCommand(const IVHCommCommand command, const uint8_t *data, con
     }
     memcpy(out + offset, IVH_COMM_FRAME_END_DELIMITER, IVH_COMM_FRAME_DELIMITER_LEN);
     offset += IVH_COMM_FRAME_DELIMITER_LEN;
-    comm->send(out, offset);
+    board->commInterface->send(out, offset);
 }
 
 const char * IVHCommCommandToString(IVHCommCommand command) {

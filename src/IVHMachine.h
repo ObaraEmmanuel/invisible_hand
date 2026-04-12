@@ -6,6 +6,7 @@
 #define IVH_MAX_VERSION 1
 #define IVH_HEADER_SIZE 10
 #define IVH_KEY_BUF_SIZE 256
+#define IVH_STACK_SIZE 4096
 
 static const uint8_t IVH_COMMAND_LEN[256] = {
     /*      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F */
@@ -111,10 +112,6 @@ const char *IVHErrToString(IVHErr_t err);
 
 class IVHMachineInterface {
 public:
-    const char* board = nullptr;
-    uint8_t inputType = IVH_INPUT_NONE;
-    uint64_t maxPackageSize = 0;
-
     virtual ~IVHMachineInterface() = default;
 
     virtual uint64_t getRandom(uint64_t min, uint64_t max) = 0;
@@ -143,6 +140,8 @@ public:
     IVHCommand_t lastCommand = IVH_COM_INVALID;
 
     IVHMachine() = default;
+
+    explicit IVHMachine(IVHMachineInterface *interface);
 
     IVHMachine(IVHMachineInterface *interface, const uint8_t *package);
 

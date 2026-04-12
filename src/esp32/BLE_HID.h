@@ -48,7 +48,6 @@ public:
     uint8_t LEDs{};
 
     BLEHID();
-    static BLEHID* getInstance();
 
     bool begin() override;
 
@@ -62,11 +61,11 @@ public:
 
     bool connected() override;
 
-    void holdKey(uint8_t *keys, uint8_t len, uint8_t modifiers) override;
+    void keyHold(uint8_t *keys, uint8_t len, uint8_t modifiers) override;
 
-    void releaseKey(uint8_t *keys, uint8_t len, uint8_t modifiers) override;
+    void keyRelease(uint8_t *keys, uint8_t len, uint8_t modifiers) override;
 
-    void releaseAll() override;
+    void keyReleaseAll() override;
 
     void buttonHold(uint8_t buttons) override;
 
@@ -92,8 +91,6 @@ private:
     BLESecurity* security{};
     BLEAdvertising* advertising{};
     BLEServer* _server{};
-
-    static BLEHID* instance;
 
     volatile bool isConnected{};
     uint8_t battery{};

@@ -1,15 +1,15 @@
 #pragma once
-#include "board.h"
-#include "IVH.h"
+
+#include "esp32_board.h"
 #include "common/SerialComm.h"
 #include "esp32/BLE_HID.h"
 
 
-class NodeMCU32s : public Board {
+class NodeMCU32s : public ESP32BaseBoard {
 public:
     NodeMCU32s();
 
-    void setup() override;
+    bool setup() override;
 
     void loop() override;
 
@@ -18,10 +18,6 @@ public:
 private:
     BLEHID hid_device{};
     SerialComm serial_comm{};
-    IVH machineInterface;
-    IVHMachine machine;
-    IVHComm comm;
-    uint8_t* package = nullptr;
     uint8_t LEDState = 0;
     bool firstToggle = false;
 };

@@ -1,9 +1,10 @@
 #include "dummy_board.h"
 #include <HardwareSerial.h>
 
-void DummyBoard::setup() {
+bool DummyBoard::setup() {
     // show warning
     Serial.println("No board configured, using dummy board!");
+    return true;
 }
 
 void DummyBoard::loop() {

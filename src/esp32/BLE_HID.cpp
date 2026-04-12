@@ -3,18 +3,14 @@
 #include "BLE_HID_report.h"
 #include "IVHMachine.h"
 
-BLEHID *BLEHID::instance = nullptr;
-
 
 BLEHID::BLEHID() {
-    inputType = IVH_INPUT_BLE | IVH_INPUT_MOUSE | IVH_INPUT_KEYBOARD;
+    type = IVH_INPUT_BLE | IVH_INPUT_MOUSE | IVH_INPUT_KEYBOARD;
 };
 
-BLEHID *BLEHID::getInstance() {
-    return instance;
-}
-
 bool BLEHID::begin() {
+    if (!BLEDevice::getInitialized())
+        BLEDevice::init("Hand");
     _server = BLEDevice::createServer();
     _server->setCallbacks(this);
 
@@ -51,8 +47,6 @@ bool BLEHID::begin() {
     advertising->addServiceUUID(hid->deviceInfo()->getUUID());
     advertising->addServiceUUID(hid->batteryService()->getUUID());
     advertising->start();
-
-    instance = this;
     return true;
 }
 
@@ -91,7 +85,7 @@ void BLEHID::setBatteryLevel(uint8_t level) {
         hid->setBatteryLevel(battery);
 }
 
-void BLEHID::holdKey(uint8_t *keys, uint8_t len, uint8_t modifiers) {
+void BLEHID::keyHold(uint8_t *keys, uint8_t len, uint8_t modifiers) {
     if (!isConnected)
         return;
     for (uint8_t i = 0; i < len; i++) {
@@ -116,7 +110,7 @@ void BLEHID::holdKey(uint8_t *keys, uint8_t len, uint8_t modifiers) {
     send_keys();
 }
 
-void BLEHID::releaseKey(uint8_t *keys, uint8_t len, uint8_t modifiers) {
+void BLEHID::keyRelease(uint8_t *keys, uint8_t len, uint8_t modifiers) {
     if (!isConnected)
         return;
     for (uint8_t i = 0; i < len; i++) {
@@ -130,7 +124,7 @@ void BLEHID::releaseKey(uint8_t *keys, uint8_t len, uint8_t modifiers) {
     send_keys();
 }
 
-void BLEHID::releaseAll() {
+void BLEHID::keyReleaseAll() {
     if (!isConnected)
         return;
     memset(pressed, 0, sizeof(uint8_t) * MAX_REPORT_KEYS);

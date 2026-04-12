@@ -4,9 +4,9 @@
 
 class DummyBoard : public Board {
 public:
-    DummyBoard() = default;
+    using Board::Board;
 
-    void setup() override;
+    bool setup() override;
 
     void loop() override;
 
