@@ -10,6 +10,5 @@ public:
     uint64_t getMicros() override;
     bool flashPackage() override;
 protected:
-    size_t maxPackageSize=0;
     bool hasFileSystem = false;
 };

@@ -21,6 +21,10 @@ bool NodeMCU32s::setup() {
     pinMode(RANDOM_ANALOGUE, INPUT);
     randomSeed(analogRead(RANDOM_ANALOGUE));
     pinMode(LED_BUILTIN, OUTPUT);
+
+    // There is a loaded package so begin execution
+    if (currentPackageSize > 0)
+        machine.start();
     return true;
 }
 

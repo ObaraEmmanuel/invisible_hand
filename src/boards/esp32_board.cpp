@@ -17,7 +17,7 @@ bool ESP32BaseBoard::setup() {
 
     File f = LittleFS.open(PACKAGE_FILE, FILE_READ);
     if (f) {
-        currentPackageSize = f.read(packageBuffer, maxPackageSize);
+        currentPackageSize = f.read(packageBuffer, packageBufferSize);
         f.close();
     }
     return true;
