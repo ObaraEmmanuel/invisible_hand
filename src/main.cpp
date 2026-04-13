@@ -7,6 +7,11 @@
 #include "boards/nodemcu_32s.h"
 NodeMCU32s board{};
 
+#elif defined ESP32_S3_N16R8V
+
+#include "boards/esp32_s3_devkit.h"
+ESP32S3Devkit board{};
+
 #else
 
 #include "boards/dummy_board.h"

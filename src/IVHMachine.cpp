@@ -52,6 +52,10 @@ IVHMachineInterface * IVHMachine::getInterface() const {
     return _interface;
 }
 
+bool IVHMachine::isRunning() const {
+    return state == IVH_ST_RUNNING || state == IVH_ST_WAITING || state == IVH_ST_WAITING_INTERNAL;
+}
+
 IVHCommand_t IVHMachine::fetch() {
     IVHCommand_t command = IVH_COM_INVALID;
     uint8_t key = package[currentOffset++];

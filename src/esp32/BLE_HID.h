@@ -45,8 +45,6 @@ struct MouseInputReport {
 
 class BLEHID: public HID, public BLEServerCallbacks, public BLECharacteristicCallbacks{
 public:
-    uint8_t LEDs{};
-
     BLEHID();
 
     bool begin() override;

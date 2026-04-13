@@ -163,6 +163,8 @@ public:
 
     [[nodiscard]] IVHMachineInterface *getInterface() const;
 
+    [[nodiscard]] bool isRunning() const;
+
     IVHCommand_t fetch();
 
     IVHErr_t start();
