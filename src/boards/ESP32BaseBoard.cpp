@@ -4,6 +4,10 @@
 
 #define PACKAGE_FILE "/package.ivh"
 
+#ifndef LED_HIGH_LOGIC
+#define LED_HIGH_LOGIC 1
+#endif
+
 
 bool ESP32BaseBoard::setup() {
     pinMode(LED_BUILTIN, OUTPUT);
@@ -62,9 +66,9 @@ bool ESP32BaseBoard::ready() {
 
 void ESP32BaseBoard::updateIndicators() {
     if (!machine.isRunning() || !ready()) {
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(LED_BUILTIN, !LED_HIGH_LOGIC);
     }else {
-        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(LED_BUILTIN, LED_HIGH_LOGIC);
     }
 }
 
