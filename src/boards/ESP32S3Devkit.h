@@ -1,6 +1,7 @@
 #pragma once
+#ifdef ESP32S3DEVKIT
 #include "Adafruit_NeoPixel.h"
-#include "esp32_board.h"
+#include "ESP32BaseBoard.h"
 #include "common/SerialComm.h"
 #include "esp32/BLE_HID.h"
 
@@ -20,3 +21,4 @@ private:
     uint8_t LEDState = 0;
     bool firstToggle = false;
 };
+#endif

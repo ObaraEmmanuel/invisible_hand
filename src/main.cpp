@@ -1,23 +1,15 @@
 #include <Arduino.h>
 
-#include "boards/board.h"
+#include "IVHMachine.h"
 
-#ifdef NODEMCU_32S
+#define STRINGIFY_INNER(x) #x
+#define STRINGIFY(x) STRINGIFY_INNER(x)
+#define BOARD_HEADER_PATH(x) boards/x.h
+#define BOARD_HEADER STRINGIFY(BOARD_HEADER_PATH(BOARD_CLASS))
 
-#include "boards/nodemcu_32s.h"
-NodeMCU32s board{};
+#include BOARD_HEADER
+BOARD_CLASS board{};
 
-#elif defined ESP32_S3_N16R8V
-
-#include "boards/esp32_s3_devkit.h"
-ESP32S3Devkit board{};
-
-#else
-
-#include "boards/dummy_board.h"
-DummyBoard board{};
-
-#endif
 
 bool boardReady = false;
 

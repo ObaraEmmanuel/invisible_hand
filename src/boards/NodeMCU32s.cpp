@@ -1,4 +1,4 @@
-#include "nodemcu_32s.h"
+#include "NodeMCU32s.h"
 
 #define RANDOM_ANALOGUE    25
 

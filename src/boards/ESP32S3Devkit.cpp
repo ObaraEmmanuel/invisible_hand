@@ -1,4 +1,5 @@
-#include "esp32_s3_devkit.h"
+#ifdef ESP32S3DEVKIT
+#include "ESP32S3Devkit.h"
 #include "Adafruit_NeoPixel.h"
 
 #define RANDOM_ANALOGUE  4
@@ -12,7 +13,6 @@ ESP32S3Devkit::ESP32S3Devkit() : ESP32BaseBoard(&serialComm, &hidDevice),
 }
 
 bool ESP32S3Devkit::setup() {
-    Serial0.begin(115200);
     if (!ESP32BaseBoard::setup())
         return false;
 
@@ -36,3 +36,4 @@ void ESP32S3Devkit::updateIndicators() {
     }
     rgbLED.show();
 }
+#endif
