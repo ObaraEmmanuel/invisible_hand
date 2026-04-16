@@ -10,9 +10,15 @@ IVHComm::IVHComm(Board &board) : board(&board) {
 
 void IVHComm::init() {
     pingDeadline = board->getMicros() + IVH_COMM_PING_INTERVAL;
+    // init ident values that cannot change at runtime
     const auto boardLen = strlen(board->name);
     identActualSize = sizeof(IVHIdent) - IVH_COMM_MAX_BOARD_NAME_LEN + boardLen;
     strncpy(ident.boardName, board->name, IVH_COMM_MAX_BOARD_NAME_LEN);
+    ident.major = VERSION_MAJOR;
+    ident.minor = VERSION_MINOR;
+    ident.patch = VERSION_PATCH;
+    ident.reserved = 0;
+    ident.memSize = board->packageBufferSize;
 }
 
 void IVHComm::tick() {
@@ -20,7 +26,6 @@ void IVHComm::tick() {
     if (micros > pingDeadline) {
         pingDeadline = micros + IVH_COMM_PING_INTERVAL;
         ident.inputType = board->getInputType();
-        ident.memSize = board->packageBufferSize;
         ident.state = board->machine.getState();
         sendCommand(IVH_COMM_IDENT, reinterpret_cast<const uint8_t *>(&ident), identActualSize);
     }

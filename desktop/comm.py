@@ -7,6 +7,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from typing import ClassVar
 
 import serial
 from serial.tools import list_ports
@@ -49,10 +50,16 @@ class IVHInputTypes(Enum):
 
 @dataclass
 class IVHIdent:
+    mem_size: int
+    major_version: int
+    minor_version: int
+    patch_version: int
+    reserved: int
     input_type: int
     state: IVHState
-    mem_size: int
     board: str
+
+    packing: ClassVar[str] = "<QHHHHBB"
 
 
 class IVHDevice:
@@ -241,13 +248,14 @@ class DeviceManager:
                             self._emit_event(frame)
                             if frame.command == COMCommand.IDENT:
                                 ident_found = True
-                                input_type, state, mem = struct.unpack(
-                                    "<BBQ", frame.body[:10]
-                                )
+                                ident_size = struct.calcsize(IVHIdent.packing)
                                 self.last_ident = IVHIdent(
-                                    input_type, IVHState(state), mem,
-                                    frame.body[10:].decode(errors="ignore")
+                                    *struct.unpack(
+                                        IVHIdent.packing, frame.body[:ident_size]
+                                    ),
+                                    frame.body[ident_size:].decode(errors="ignore")
                                 )
+                                self.last_ident.state = IVHState(self.last_ident.state)
                                 if isinstance(self.device, IVHDevice):
                                     self.device.update(self.last_ident)
                                 success = True

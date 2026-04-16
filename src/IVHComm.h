@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
 #include <cstdlib>
+#include <cstdint>
 
 #define IVH_COMM_BUF_SIZE 256
 #define IVH_COMM_MAX_BODY_SIZE 128
@@ -36,9 +36,13 @@ typedef enum IVHCommState {
 } IVHCommState_t;
 
 typedef struct IVHIdent {
+    uint64_t memSize;
+    uint16_t major;
+    uint16_t minor;
+    uint16_t patch;
+    uint16_t reserved;
     uint8_t inputType;
     uint8_t state;
-    uint64_t memSize;
     char boardName[IVH_COMM_MAX_BOARD_NAME_LEN];
 } __attribute__((packed)) IVHIdent_t;
 
