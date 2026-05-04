@@ -151,7 +151,7 @@ class App(AppBuilder):
         self.macro_list: MacroList = None
         self.macro_menu: tk.Menu = None
         self.catalogue: catalogue.CatalogueList = None
-        super().__init__(self, path="layouts/app.json")
+        super().__init__(path="layouts/app.json")
         self.connect_callbacks(self)
         MouseWheelDispatcher.set_up_mousewheel(self.main)
         s = ttk.Style()
