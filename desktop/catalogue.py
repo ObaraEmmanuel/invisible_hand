@@ -13,7 +13,8 @@ class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
         self.command: type[CommandComponent] | str = val
         self._image = None
         self._text = None
-        self._prev_node: ComponentTree | ComponentTree.Node = None
+        self._last_node: ComponentTree | ComponentTree.Node = None
+        self._last_action = None
         super().__init__(parent, val, i)
         if isinstance(self.command, type):
             self.allow_drag = True
@@ -43,26 +44,24 @@ class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
     def on_drag(self, event):
         node: ComponentTree.Node | ComponentTree = WidgetTree.event_first(
             event, self.winfo_toplevel(),
-            (ComponentTree.Node, ComponentTree)
+            (ComponentTree.Node, ComponentTree, ComponentTree.ShadowNode)
         )
         if node:
             if isinstance(node, ComponentTree.Node):
                 node._edge_scroll(event)
-            node.react(event)
-            self._prev_node = node
-        elif self._prev_node:
-            self._prev_node.clear_highlight()
-            self._prev_node.clear_indicators()
-            self._prev_node = None
+            if not isinstance(node, ComponentTree.ShadowNode):
+                self._last_action = node.react(event)
+                self._last_node = node
+        elif self._last_node:
+            self._last_node.clear_highlight()
+            self._last_node.clear_indicators()
+            self._last_node = None
 
     def on_drag_end(self, event):
-        node: ComponentTree.Node | ComponentTree = WidgetTree.event_first(
-            event, self.winfo_toplevel(),
-            (ComponentTree.Node, ComponentTree)
-        )
+        node: ComponentTree.Node | ComponentTree = self._last_node
         if node:
             new_node = node.add_as_node(key=self.command.__name__)
-            action = node.react(event)
+            action = self._last_action
             node.clear_highlight()
             node.clear_indicators()
             match action:
@@ -70,6 +69,8 @@ class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
                     node.insert_before(new_node)
                 case InsertType.INSERT_INTO:
                     node.insert(None, new_node)
+                case InsertType.INSERT_INTO_TOP:
+                    node.insert(0, new_node)
                 case InsertType.INSERT_AFTER:
                     node.insert_after(new_node)
 

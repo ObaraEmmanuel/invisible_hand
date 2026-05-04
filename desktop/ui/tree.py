@@ -2,16 +2,16 @@ import enum
 import tkinter as tk
 from tkinter import Frame, Label, PhotoImage
 
-from ui.highlight import EdgeIndicator
 from ui.scrolledframe import ScrolledFrame
 from ui.utils import chain, EventMask, DragWindow, WidgetTree
-from utils.geometry import absolute_bounds, upscale_bounds, bounds
+from utils.geometry import absolute_bounds
 
 
 class InsertType(enum.IntEnum):
     INSERT_BEFORE = 0
     INSERT_INTO = 1
-    INSERT_AFTER = 2
+    INSERT_INTO_TOP = 2
+    INSERT_AFTER = 3
 
 
 class Tree:
@@ -32,6 +32,7 @@ class Tree:
     drag_select = None  # The node where all events go when button is released ending drag
     drag_display_limit = 3  # The maximum number of items the drag popup can display
     drag_instance = None  # The current tree that is performing a drag
+    drag_last_action = None  # latest drop action
 
     class Strip(Frame):
         """
@@ -51,7 +52,7 @@ class Tree:
         COLLAPSED_ICON = None
         BLANK = None
         __icons_loaded = False
-        PADDING = 1
+        PADDING = 0
 
         def __init__(self, tree, **config):
             super().__init__(tree.get_body())
@@ -77,7 +78,7 @@ class Tree:
             self._selected = False
             self._depth = 0  # Will be set on addition to a node or tree so this value is just placeholder
             self.parent_node = None
-            self.nodes = []
+            self.nodes: list = []
             self._is_terminal = config.get("terminal", True)
             self._on_structure_change = None
             self.editable = False
@@ -428,7 +429,7 @@ class Tree:
             # Resolve the node that is immediately under the cursor position by iteratively getting widget's parent
             # For the sake of performance not more than 4 iterations
             limit = 4
-            while not isinstance(widget, self.__class__):
+            while not isinstance(widget, (self.__class__, Tree.ShadowNode)):
                 if widget is None:
                     # This happens when someone hovers outside the current top level window
                     break
@@ -438,15 +439,18 @@ class Tree:
                     break
             tree = WidgetTree.event_first(event, self.tree, Tree)
 
-            if isinstance(widget, self.__class__) and (not self.strict_mode or widget.tree == self.tree):
+            if isinstance(widget, Tree.ShadowNode):
+                # do nothing if we re within the shadow node
+                pass
+            elif isinstance(widget, self.__class__) and (not self.strict_mode or widget.tree == self.tree):
                 # We can only react if we have resolved the widget to a compatible Node object
-                widget.react(event)
+                Tree.drag_last_action = widget.react(event)
                 # Store the currently reacting widget so we can apply actions to it on ButtonRelease/ drag_end
                 Tree.drag_select = widget
             elif isinstance(tree, self.tree.__class__) and (not self.strict_mode or tree == self.tree):
                 # if the tree found is compatible to the current tree i.e belongs to same class or is subclass of
                 # disallow incompatible trees from interacting as this may cause errors
-                tree.react(event)
+                Tree.drag_last_action = tree.react(event)
                 Tree.drag_select = tree
             else:
                 # No viable node found on resolution so clear all highlights and indicators
@@ -461,11 +465,13 @@ class Tree:
             node = Tree.drag_select
             if Tree.drag_active:
                 if Tree.drag_select is not None:
-                    action = node.react(event)
+                    action = Tree.drag_last_action
                     if action == InsertType.INSERT_BEFORE:
                         node.insert_before(*Tree.drag_components)
                     elif action == InsertType.INSERT_INTO:
                         node.insert(None, *Tree.drag_components)
+                    elif action == InsertType.INSERT_INTO_TOP:
+                        node.insert(0, *Tree.drag_components)
                     elif action == InsertType.INSERT_AFTER:
                         node.insert_after(*Tree.drag_components)
                     # else there is no viable action to take.
@@ -488,7 +494,7 @@ class Tree:
 
         def highlight(self):
             Tree.drag_highlight = self
-            self.configure(highlightthickness=1, highlightbackground="#3d8aff")
+            self.configure(highlightthickness=1, highlightbackground="#22d17f")
 
         def react(self, event) -> int:
             # Checks, based on the cursor position whether we can insert before, into or after the node
@@ -497,33 +503,38 @@ class Tree:
             self.clear_indicators()
             # The cursor is at the top edge of the node so we can attempt to insert before it
             if event.y_root < self.strip.winfo_rooty() + 5:
-                self.tree.edge_indicator.top(upscale_bounds(bounds(self.strip), self))
+                self.tree.shadow_node.show_before(self)
                 return InsertType.INSERT_BEFORE
             # The cursor is at the center of the node so we can attempt a direct insert into the node
             if self.strip.winfo_rooty() + 5 < event.y_root < self.strip.winfo_rooty() + self.strip.winfo_reqheight() - 5:
                 if not self._is_terminal:
-                    # If node is terminal then id does not support children and consequently insertion
+                    # If node is not terminal then it does support children and consequently insertion
+                    if self._expanded:
+                        # insert as first child just under the expaned node
+                        self.tree.shadow_node.show_before(self.nodes[0])
+                        return InsertType.INSERT_INTO_TOP
+                    # target node is collapsed so highlight the node and insert at the end of the node
                     self.highlight()
                     return InsertType.INSERT_INTO
             # The cursor is at the bottom edge of the node so we attempt to insert immediately after the node
             elif self._expanded:  # --- Case * ---
                 # If the node is expanded we would want to edge indicate at the very bottom after its last child
                 if event.y_root > self.winfo_rooty() + self.winfo_reqheight() - 5:
-                    self.tree.edge_indicator.bottom(bounds(self))
+                    self.tree.shadow_node.show_in(self)
                     return InsertType.INSERT_AFTER
             else:
-                self.tree.edge_indicator.bottom(upscale_bounds(bounds(self.strip), self))
+                self.tree.shadow_node.show_after(self)
                 return InsertType.INSERT_AFTER
 
         def clear_highlight(self):
             # Remove the rectangular highlight around the node
-            self.configure(highlightthickness=0, highlightbackground="#3d8aff")
+            self.configure(highlightthickness=0, highlightbackground="#22d17f")
 
         def clear_indicators(self):
-            # Remove any remaining node highlights and edge indicators
+            # Remove any remaining node highlights and shadow node
             if Tree.drag_highlight is not None:
                 Tree.drag_highlight.clear_highlight()
-            self.tree.edge_indicator.clear()
+            self.tree.shadow_node.hide()
 
         @property
         def is_terminal(self):
@@ -554,6 +565,42 @@ class Tree:
                 node.insert(None, sub_node_clone)
             return node
 
+    class ShadowNode(Node):
+
+        def __init__(self, tree, **config):
+            super().__init__(tree, **config)
+            self.highlight = Frame(self.strip, bg="#22d17f", height=24)
+            # self.highlight.grid_propagate(False)
+            self.highlight.grid(row=0, column=3, sticky="nsew")
+
+        def _get_body(self, node):
+            return node.get_body() if isinstance(node, Tree) else node.body
+
+        def _show(self, node, action=InsertType.INSERT_INTO):
+            self.lift()
+            self.depth = max(1, node.depth)
+            self.highlight.config(width=int(self.strip.winfo_width() * 0.7))
+            common_config = dict(fill="x", padx="0 20")
+            if action == InsertType.INSERT_AFTER:
+                self.pack(in_=self._get_body(node.parent_node), after=node, **common_config)
+            elif action == InsertType.INSERT_BEFORE:
+                self.pack(in_=self._get_body(node.parent_node), before=node, **common_config)
+            elif action == InsertType.INSERT_INTO:
+                self.pack(in_=self._get_body(node), **common_config)
+
+        def show_after(self, node):
+            self._show(node, InsertType.INSERT_AFTER)
+
+        def show_before(self, node):
+            self._show(node, InsertType.INSERT_BEFORE)
+
+        def show_in(self, node):
+            self._show(node, InsertType.INSERT_INTO)
+
+        def hide(self):
+            if self.winfo_ismapped():
+                self.pack_forget()
+
     # =========================== Tree =================================
 
     def get_body(self):
@@ -582,8 +629,15 @@ class Tree:
         self._visible = True
         self._on_structure_change = None
         self.is_terminal = False
-        # A line that shows where an insertion can occur
-        self.edge_indicator = EdgeIndicator(self.get_body(), background="#3d8aff")
+        # A special that shows where an insertion can occur
+        self._shadow_node = None
+
+    @property
+    def shadow_node(self):
+        # lazy load shadow node
+        if self._shadow_node is None:
+            self._shadow_node = self.__class__.ShadowNode(self)
+        return self._shadow_node
 
     @property
     def depth(self):
@@ -807,31 +861,31 @@ class Tree:
             # clone to new parent tree
             # the node will still be retained in the former tree
             nodes = [node.clone(self) for node in nodes]
-            self.edge_indicator.clear()
+            self.shadow_node.hide()
         self._insert(index, *nodes)
         # Return the nodes just in case they have been cloned and new references are required
         return nodes
 
     def react(self, *_):
         self.clear_indicators()
-        self.highlight()
+        self.shadow_node.show_in(self)
         # always perform a direct insert
         return InsertType.INSERT_INTO
 
     def highlight(self):
         Tree.drag_highlight = self
-        self.get_body().configure(highlightthickness=1, highlightbackground="#3d8aff")
+        self.get_body().configure(highlightthickness=1, highlightbackground="#22d17f")
 
     def clear_highlight(self):
         # Remove the rectangular highlight around the node
-        self.get_body().configure(highlightthickness=0, highlightbackground="#3d8aff")
+        self.get_body().configure(highlightthickness=0, highlightbackground="#22d17f")
         pass
 
     def clear_indicators(self):
-        # Remove any remaining node highlights and edge indicators
+        # Remove any remaining node highlights and shadow node
         if Tree.drag_highlight is not None:
             Tree.drag_highlight.clear_highlight()
-            self.edge_indicator.clear()
+        self.shadow_node.hide()
 
 
 class TreeView(Tree, ScrolledFrame):
