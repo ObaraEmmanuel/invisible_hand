@@ -410,7 +410,7 @@
                         {
                             "attrib": {
                                 "attr": {
-                                    "layout": "pack"
+                                    "layout": "grid"
                                 }, 
                                 "layout": {
                                     "fill": "x", 
@@ -423,59 +423,115 @@
                                 {
                                     "attrib": {
                                         "attr": {
-                                            "activebackground": "#2f60d8", 
-                                            "activeforeground": "#ffffff", 
-                                            "anchor": "w", 
-                                            "background": "#1c1c1c", 
-                                            "disabledforeground": "#535353", 
-                                            "foreground": "#22d17f", 
-                                            "highlightbackground": "#1c1c1c", 
-                                            "highlightcolor": "#2f60d8", 
-                                            "text": "Macro files"
-                                        }, 
-                                        "layout": {
-                                            "anchor": "nw", 
-                                            "height": 0, 
-                                            "padx": 5, 
-                                            "pady": 5, 
-                                            "side": "left", 
-                                            "width": 0
-                                        }, 
-                                        "name": "macro_name_lbl"
-                                    }, 
-                                    "type": "tkinter.Label"
-                                }, 
-                                {
-                                    "attrib": {
-                                        "attr": {
                                             "command": "save_macro", 
                                             "compound": "left", 
                                             "image": "..\\resources\\save.png", 
-                                            "text": "Save"
+                                            "text": ""
                                         }, 
                                         "layout": {
-                                            "padx": 5, 
+                                            "column": 5, 
+                                            "padx": "5 0", 
                                             "pady": 5, 
-                                            "side": "right", 
+                                            "row": 0, 
+                                            "sticky": "e", 
                                             "width": ""
                                         }, 
-                                        "name": "button_1"
+                                        "name": "command_save"
                                     }, 
                                     "type": "tkinter.ttk.Button"
                                 }, 
                                 {
                                     "attrib": {
                                         "attr": {
-                                            "command": "delete_command", 
-                                            "compound": "left", 
+                                            "command": "delete_commands", 
+                                            "compound": "center", 
                                             "image": "..\\resources\\delete.png", 
-                                            "text": "Delete"
+                                            "text": ""
                                         }, 
                                         "layout": {
-                                            "side": "right", 
+                                            "column": 0, 
+                                            "padx": "5 0", 
+                                            "pady": 5, 
+                                            "row": 0, 
                                             "width": ""
                                         }, 
                                         "name": "command_delete"
+                                    }, 
+                                    "type": "tkinter.ttk.Button"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "command": "undo_command", 
+                                            "compound": "center", 
+                                            "image": "..\\resources\\undo.png", 
+                                            "text": ""
+                                        }, 
+                                        "layout": {
+                                            "column": 3, 
+                                            "padx": "5 0", 
+                                            "pady": 5, 
+                                            "row": 0, 
+                                            "width": ""
+                                        }, 
+                                        "name": "command_undo"
+                                    }, 
+                                    "type": "tkinter.ttk.Button"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "command": "redo_command", 
+                                            "compound": "center", 
+                                            "image": "..\\resources\\redo.png", 
+                                            "text": ""
+                                        }, 
+                                        "layout": {
+                                            "column": 4, 
+                                            "padx": "5 0", 
+                                            "pady": 5, 
+                                            "row": 0, 
+                                            "width": ""
+                                        }, 
+                                        "name": "command_redo"
+                                    }, 
+                                    "type": "tkinter.ttk.Button"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "command": "copy_commands", 
+                                            "compound": "center", 
+                                            "image": "..\\resources\\copy.png", 
+                                            "text": ""
+                                        }, 
+                                        "layout": {
+                                            "column": 2, 
+                                            "padx": "5 0", 
+                                            "pady": 5, 
+                                            "row": 0, 
+                                            "width": ""
+                                        }, 
+                                        "name": "command_copy"
+                                    }, 
+                                    "type": "tkinter.ttk.Button"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "command": "cut_commands", 
+                                            "compound": "center", 
+                                            "image": "..\\resources\\cut.png", 
+                                            "text": ""
+                                        }, 
+                                        "layout": {
+                                            "column": 1, 
+                                            "padx": "5 0", 
+                                            "pady": 5, 
+                                            "row": 0, 
+                                            "width": ""
+                                        }, 
+                                        "name": "command_cut"
                                     }, 
                                     "type": "tkinter.ttk.Button"
                                 }
@@ -493,6 +549,7 @@
                                     "expand": 1, 
                                     "fill": "both", 
                                     "height": 265, 
+                                    "pady": "20 0", 
                                     "width": 378
                                 }, 
                                 "name": "macro_canvas"

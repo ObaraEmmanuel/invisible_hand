@@ -3,13 +3,13 @@ from tkinter import Label, PhotoImage
 
 import commands
 from commands import CommandComponent, ComponentTree
+from glue import GlueInterface
 from ui import itemlist
-from ui.tree import InsertType
 from ui.utils import DraggableMixin, WidgetTree
 
 
 class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
-    def __init__(self, parent, val, i):
+    def __init__(self, parent: 'CatalogueList', val, i):
         self.command: type[CommandComponent] | str = val
         self._image = None
         self._text = None
@@ -64,15 +64,7 @@ class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
             action = self._last_action
             node.clear_highlight()
             node.clear_indicators()
-            match action:
-                case InsertType.INSERT_BEFORE:
-                    node.insert_before(new_node)
-                case InsertType.INSERT_INTO:
-                    node.insert(None, new_node)
-                case InsertType.INSERT_INTO_TOP:
-                    node.insert(0, new_node)
-                case InsertType.INSERT_AFTER:
-                    node.insert_after(new_node)
+            GlueInterface.instance().add_node(node, new_node, action, False)
 
 
 class CatalogueList(itemlist.CompoundList):

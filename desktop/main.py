@@ -1,15 +1,18 @@
 import tkinter as tk
+from collections.abc import Callable
 from tkinter import ttk
-
 from formation import AppBuilder, Builder
 
 import catalogue
 from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame, BlankDevice, IVHState
 from commands import ComponentTree
 from device_select import DeviceSelector
+from glue import GlueInterface
 from macro import MacroList, Macro
 from package import IVHPackage
+from ui.tree import Tree, InsertType
 from ui.utils import MouseWheelDispatcher
+from utils.action import Action
 from utils.system import unsigned_to_bytes
 
 
@@ -134,10 +137,11 @@ class FlashMacroDialog(Builder):
         return self._root.winfo_exists()
 
 
-class App(AppBuilder):
+class App(AppBuilder, GlueInterface):
     NO_DEVICE = BlankDevice()
 
     def __init__(self):
+        GlueInterface.set_instance(self)
         self.main: tk.Tk = None
         self.package_list: ttk.Treeview = None
         self.package_box: tk.Frame = None
@@ -146,7 +150,12 @@ class App(AppBuilder):
         self.play_btn: ttk.Button = None
         self.flash_btn: ttk.Button = None
         self.command_delete: ttk.Button = None
-        self.macro_name_lbl: ttk.Label = None
+        self.command_undo: ttk.Button = None
+        self.command_redo: ttk.Button = None
+        self.command_copy: ttk.Button = None
+        self.command_cut: ttk.Button = None
+        self.command_paste: ttk.Button = None
+        self.command_save: ttk.Button = None
         self.macro_canvas: ComponentTree = None
         self.macro_list: MacroList = None
         self.macro_menu: tk.Menu = None
@@ -168,6 +177,16 @@ class App(AppBuilder):
         self.active_macro: Macro = None
         self.macro_canvas._menu = self.macro_menu
         self.macro_canvas.on_select(self.on_command_select)
+
+        self.button_criteria: dict[tk.Widget, list[Callable]] = {
+            self.command_delete: {"action": "hide", "criteria": [self.has_selection]},
+            self.command_undo: {"action": "disable", "criteria": [self.has_undo]},
+            self.command_redo: {"action": "disable", "criteria": [self.has_redo]},
+            self.command_copy: {"action": "hide", "criteria": [self.has_selection]},
+            self.command_cut: {"action": "hide", "criteria": [self.has_selection]},
+            self.command_save: {"action": "hide", "criteria": [lambda: True]},
+        }
+
         self.on_command_select()
         self.macro_canvas.load_macro(None)
 
@@ -290,8 +309,8 @@ class App(AppBuilder):
 
         self.active_macro = item.value
         self.macro_canvas.load_macro(self.active_macro)
-        self.macro_name_lbl.config(text=self.active_macro.name)
         self._update_state()
+        self._update_macro_state()
 
     def add_macro(self):
         name = AddMacroDialog.get_name(self._root)
@@ -341,20 +360,118 @@ class App(AppBuilder):
     def clear_macro(self):
         pass
 
-    def on_command_select(self):
-        if self.macro_canvas.get():
-            self.command_delete.pack(side="right")
-        else:
-            self.command_delete.pack_forget()
+    def copy_commands(self):
+        pass
 
-    def delete_command(self):
+    def cut_commands(self):
+        pass
+
+    def undo_command(self):
+        if self.active_macro:
+            self.active_macro.undo()
+        self._update_macro_state()
+
+    def redo_command(self):
+        if self.active_macro:
+            self.active_macro.redo()
+        self._update_macro_state()
+
+    def _update_macro_state(self):
+        for button, criteria in self.button_criteria.items():
+            if all(c() for c in criteria["criteria"]):
+                if criteria["action"] == "hide":
+                    button.grid()
+                else:
+                    button["state"] = tk.NORMAL
+            else:
+                if criteria["action"] == "hide":
+                    button.grid_remove()
+                else:
+                    button["state"] = tk.DISABLED
+
+    def has_selection(self) -> bool:
+        return bool(self.macro_canvas.get())
+
+    def has_undo(self) -> bool:
+        if self.active_macro:
+            return self.active_macro.has_undo()
+        return False
+
+    def has_redo(self) -> bool:
+        if self.active_macro:
+            return self.active_macro.has_redo()
+        return False
+
+    def on_command_select(self):
+        self._update_macro_state()
+
+    def delete_commands(self):
         if not self.macro_canvas.get():
             return
         to_delete = list(self.macro_canvas.get())
         for node in to_delete:
             self.macro_canvas.deselect(node)
-            node.remove()
+        self.delete_nodes(to_delete, silent=False)
         self.on_command_select()
+
+    def add_action(self, action: Action):
+        if self.active_macro:
+            self.active_macro.add_action(action)
+            self._update_macro_state()
+
+    # Glue logic
+
+    def add_node(self, target: Tree.Node, node: Tree.Node, method: InsertType, silent: bool = True):
+        if not self.active_macro:
+            return
+        match method:
+            case InsertType.INSERT_BEFORE:
+                target.insert_before(node)
+            case InsertType.INSERT_INTO:
+                target.insert(None, node)
+            case InsertType.INSERT_INTO_TOP:
+                target.insert(0, node)
+            case InsertType.INSERT_AFTER:
+                target.insert_after(node)
+        if not silent:
+            parent = node.parent_node
+            index = node.index()
+            self.add_action(Action(
+                undo=lambda _: self.delete_nodes([node]),
+                redo=lambda _: self.restore_nodes([node], [parent], [index])
+            ))
+
+    def delete_nodes(self, nodes: list[Tree.Node], silent: bool = True):
+        if not self.active_macro:
+            return
+        nodes = self._compact(nodes)
+        if not silent:
+            old_parents = [node.parent_node for node in nodes]
+            old_indices = [node.index() for node in nodes]
+            self.add_action(Action(
+                undo=lambda _: self.restore_nodes(nodes, old_parents, old_indices),
+                redo=lambda _: self.delete_nodes(nodes)
+            ))
+        for node in nodes:
+            node.remove()
+
+    def on_nodes_moved(self, nodes: list[Tree.Node], old_parents: list[Tree.Node], old_indices: list[int]):
+        indices = [node.index() for node in nodes]
+        parents = [node.parent_node for node in nodes]
+        self.add_action(Action(
+            undo=lambda _: self._move_nodes(nodes, old_parents, old_indices),
+            redo=lambda _: self._move_nodes(nodes, parents, indices)
+        ))
+
+    def _move_nodes(self, nodes: list[Tree.Node], parents: list[Tree.Node], indices: list[int]):
+        for node in nodes:
+            node.remove()
+        for node, parent, index in sorted(zip(nodes, parents, indices), key=lambda x: x[2]):
+            parent.insert(index, node)
+
+    def restore_nodes(self, nodes: list[Tree.Node], old_parents: list[Tree.Node], old_indices: list[int]):
+        for node, parent, index in sorted(zip(nodes, old_parents, old_indices), key=lambda p: p[2]):
+            parent.insert(index, node)
 
 
 def run():

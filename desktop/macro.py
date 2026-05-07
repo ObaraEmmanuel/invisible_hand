@@ -9,6 +9,7 @@ import constants
 from keymaps import EnumEncoder, as_enum
 from ui.itemlist import CompoundList
 from ui.utils import EmptyScreen
+from utils.action import Action
 
 
 class Macro:
@@ -20,6 +21,30 @@ class Macro:
                 f.write("[]")
         self.name = macro_path.stem
         self.data = None
+        self._undo_stack = []
+        self._redo_stack = []
+
+    def add_action(self, action: Action):
+        self._redo_stack.clear()
+        self._undo_stack.append(action)
+
+    def undo(self):
+        if self._undo_stack:
+            action = self._undo_stack.pop()
+            action.undo()
+            self._redo_stack.append(action)
+
+    def redo(self):
+        if self._redo_stack:
+            action = self._redo_stack.pop()
+            action.redo()
+            self._undo_stack.append(action)
+
+    def has_redo(self) -> bool:
+        return bool(self._redo_stack)
+
+    def has_undo(self) -> bool:
+        return bool(self._undo_stack)
 
     def get(self):
         if self.data:
@@ -97,7 +122,7 @@ class MacroList(CompoundList):
                 continue
 
             macro = Macro(file_path)
-            self.macros[macro] = macro
+            self.macros[file_path] = macro
 
         self.set_values(
             self.macros.values()

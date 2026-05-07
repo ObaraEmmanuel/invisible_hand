@@ -4,6 +4,7 @@ from tkinter import PhotoImage
 from formation import Builder
 
 import ui.tree
+from glue import GlueInterface
 from keymaps import get_key, is_modifier, Key, get_button
 from macro import Macro
 from ui.menu import MenuUtils
@@ -479,6 +480,17 @@ class ComponentTree(ui.tree.TreeView):
         @property
         def icon(self):
             return self.command.label['image']
+
+        def end_drag(self, event):
+            if self.tree.drag_active and self.tree.drag_select:
+                glue = GlueInterface.instance()
+                nodes: list[ComponentTree.Node] = list(self.tree.get())
+                old_indices = [n.index() for n in nodes]
+                old_parents = [n.parent_node for n in nodes]
+                super().end_drag(event)
+                glue.on_nodes_moved(nodes, old_parents, old_indices)
+            else:
+                super().end_drag(event)
 
     def __init__(self, master=None, **config):
         super().__init__(master, **config)
