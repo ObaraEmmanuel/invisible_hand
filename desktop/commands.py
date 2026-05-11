@@ -564,6 +564,12 @@ class ComponentTree(ui.tree.TreeView):
         super().insert(index, *nodes)
         self.empty_screen.hide()
 
+    def select_all(self):
+        if not self._active_macro:
+            return
+        for node in self.nodes:
+            node.select()
+
     def _show_empty_file(self):
         self.empty_screen.show(
             text="Select macro file to start",

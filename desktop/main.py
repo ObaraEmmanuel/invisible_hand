@@ -194,6 +194,7 @@ class App(AppBuilder, GlueInterface):
         self._bind_control("X", self.cut_commands)
         self._bind_control("V", self.paste_commands)
         self._bind_control("S", self.save_macro)
+        self._bind_control("A", self.macro_canvas.select_all)
         self.main.bind("<Delete>", lambda _: self.delete_commands())
 
         self.on_command_select()
