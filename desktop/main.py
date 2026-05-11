@@ -188,13 +188,20 @@ class App(AppBuilder, GlueInterface):
             self.command_save: {"action": "hide", "criteria": [lambda: True]},
         }
 
+        self._bind_control("Z", self.undo_command)
+        self._bind_control("Y", self.redo_command)
+        self._bind_control("C", self.copy_commands)
+        self._bind_control("X", self.cut_commands)
+        self._bind_control("V", self.paste_commands)
+        self._bind_control("S", self.save_macro)
+        self.main.bind("<Delete>", lambda _: self.delete_commands())
+
         self.on_command_select()
         self.macro_canvas.load_macro(None)
 
         self.catalogue.load()
         self.macro_list.on_change(self.macro_changed)
         self.macro_list.load()
-        self.main.wm_protocol("WM_DELETE_WINDOW", lambda: [print("exiting"), self.main.destroy()])
         self._update_state()
 
         self._clipboard = None
@@ -362,6 +369,10 @@ class App(AppBuilder, GlueInterface):
 
     def clear_macro(self):
         pass
+
+    def _bind_control(self, key: str, callback: Callable):
+        self.main.bind(f"<Control-{key.lower()}>", lambda _: callback())
+        self.main.bind(f"<Control-{key.upper()}>", lambda _: callback())
 
     def copy_commands(self):
         if not self.active_macro:
