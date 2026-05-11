@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import PhotoImage
+from typing import Any
 
 from formation import Builder
 
@@ -46,10 +47,10 @@ class CommandComponent:
     def set_label_img(self, img):
         self.label['image'] = img
 
-    def load_data(self, data):
+    def load_data(self, data: dict[str, Any]):
         pass
 
-    def to_data(self):
+    def to_data(self) -> dict[str, Any]:
         return {
             "type": self.__class__.__name__,
         }
@@ -544,7 +545,7 @@ class ComponentTree(ui.tree.TreeView):
             image=self._no_command_image
         )
 
-    def _generate_tree(self, parent_node=None, parent_data=None):
+    def _generate_tree(self, parent_node=None, parent_data=None) -> dict:
         if parent_node is None:
             parent_node = self
         if parent_data is None:
@@ -555,20 +556,24 @@ class ComponentTree(ui.tree.TreeView):
                 parent_data["nodes"] = []
             self._generate_tree(node, node_data)
             parent_data["nodes"].append(node_data)
+        return parent_data
 
-    def build_tree(self):
+    def build_tree(self, nodes: list[ComponentTree.Node] = None) -> list[dict]:
+        if nodes is None:
+            nodes = self.nodes
         data = []
-        for node in self.nodes:
+        for node in nodes:
             node_data = node.command.to_data()
             self._generate_tree(node, node_data)
             data.append(node_data)
         return data
 
-    def _load_node(self, parent_node: 'ComponentTree.Node', data):
+    def load_node(self, parent_node: 'ComponentTree.Node', data: dict) -> ComponentTree.Node:
         node = parent_node.add_as_node(key=data.get("type"), data=data)
 
         for sub_node_data in data.get("nodes", []):
-            self._load_node(node, sub_node_data)
+            self.load_node(node, sub_node_data)
+        return node
 
     def load_macro(self, macro: Macro):
         if macro == self._active_macro:
@@ -595,7 +600,7 @@ class ComponentTree(ui.tree.TreeView):
         else:
             # Load afresh
             for sub_node_data in macro.get():
-                self._load_node(self, sub_node_data)
+                self.load_node(self, sub_node_data)
 
         if not self.nodes:
             self._show_empty_command()

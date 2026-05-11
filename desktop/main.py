@@ -184,6 +184,7 @@ class App(AppBuilder, GlueInterface):
             self.command_redo: {"action": "disable", "criteria": [self.has_redo]},
             self.command_copy: {"action": "hide", "criteria": [self.has_selection]},
             self.command_cut: {"action": "hide", "criteria": [self.has_selection]},
+            self.command_paste: {"action": "hide", "criteria": [self.has_selection, self.has_clipboard]},
             self.command_save: {"action": "hide", "criteria": [lambda: True]},
         }
 
@@ -195,6 +196,8 @@ class App(AppBuilder, GlueInterface):
         self.macro_list.load()
         self.main.wm_protocol("WM_DELETE_WINDOW", lambda: [print("exiting"), self.main.destroy()])
         self._update_state()
+
+        self._clipboard = None
 
         self.comm: COMManger = COMManger()
         self.comm.bind(self.main)
@@ -361,10 +364,36 @@ class App(AppBuilder, GlueInterface):
         pass
 
     def copy_commands(self):
-        pass
+        if not self.active_macro:
+            return
+        nodes = self.macro_canvas.get()
+        if not nodes:
+            return
+        nodes: ComponentTree.Node = self._compact(nodes)
+        self._clipboard = self.macro_canvas.build_tree(nodes)
+        self._update_macro_state()
 
     def cut_commands(self):
-        pass
+        self.copy_commands()
+        self.delete_commands()
+
+    def paste_commands(self):
+        if self._clipboard is None or not self.active_macro:
+            return
+        target_nodes = self._compact_ancestors(self.macro_canvas.get() or [])
+        if not target_nodes:
+            return
+        all_nodes = []
+        for data in self._clipboard:
+            for target_node in target_nodes:
+                all_nodes.append(self.macro_canvas.load_node(target_node, data))
+        old_parents = [node.parent_node for node in all_nodes]
+        old_indices = [node.index() for node in all_nodes]
+        self.active_macro.add_action(Action(
+            lambda _: self.delete_nodes(all_nodes),
+            lambda _: self.restore_nodes(all_nodes, old_parents, old_indices)
+        ))
+        self._update_macro_state()
 
     def undo_command(self):
         if self.active_macro:
@@ -402,6 +431,9 @@ class App(AppBuilder, GlueInterface):
             return self.active_macro.has_redo()
         return False
 
+    def has_clipboard(self) -> bool:
+        return bool(self._clipboard)
+
     def on_command_select(self):
         self._update_macro_state()
 
@@ -409,8 +441,6 @@ class App(AppBuilder, GlueInterface):
         if not self.macro_canvas.get():
             return
         to_delete = list(self.macro_canvas.get())
-        for node in to_delete:
-            self.macro_canvas.deselect(node)
         self.delete_nodes(to_delete, silent=False)
         self.on_command_select()
 
@@ -444,6 +474,8 @@ class App(AppBuilder, GlueInterface):
     def delete_nodes(self, nodes: list[Tree.Node], silent: bool = True):
         if not self.active_macro:
             return
+        for node in nodes:
+            self.macro_canvas.deselect(node)
         nodes = self._compact(nodes)
         if not silent:
             old_parents = [node.parent_node for node in nodes]

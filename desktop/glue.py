@@ -43,3 +43,13 @@ class GlueInterface(abc.ABC):
             else:
                 reduced_nodes.add(node)
         return list(reduced_nodes)
+
+    @classmethod
+    def _compact_ancestors(cls, nodes: list[Tree.Node]) -> list[Tree.Node]:
+        reduced_nodes = set()
+        for node in nodes:
+            if node.is_terminal:
+                reduced_nodes.add(node.parent_node)
+            else:
+                reduced_nodes.add(node)
+        return list(reduced_nodes)
