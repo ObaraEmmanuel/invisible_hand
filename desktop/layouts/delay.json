@@ -114,7 +114,7 @@
                     "side": "right", 
                     "width": 0
                 }, 
-                "name": "label_1"
+                "name": "delay_lbl"
             }, 
             "type": "tkinter.Label"
         }

@@ -123,7 +123,7 @@
                     "side": "right", 
                     "width": 0
                 }, 
-                "name": "label_2"
+                "name": "stop_lbl"
             }, 
             "type": "tkinter.Label"
         }, 
@@ -176,7 +176,7 @@
                     "side": "right", 
                     "width": 0
                 }, 
-                "name": "label_1"
+                "name": "start_lbl"
             }, 
             "type": "tkinter.Label"
         }

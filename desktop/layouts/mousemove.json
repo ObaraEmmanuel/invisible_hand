@@ -60,7 +60,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "image": "../resources/mouse.png",
+                    "image": "../resources/mouse.png", 
                     "text": "   Mouse move"
                 }, 
                 "layout": {
@@ -125,7 +125,7 @@
                     "side": "right", 
                     "width": 0
                 }, 
-                "name": "label_1"
+                "name": "delta_y_lbl"
             }, 
             "type": "tkinter.Label"
         }, 
@@ -180,7 +180,7 @@
                     "side": "right", 
                     "width": 0
                 }, 
-                "name": "label_2"
+                "name": "delta_x_lbl"
             }, 
             "type": "tkinter.Label"
         }

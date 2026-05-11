@@ -37,6 +37,9 @@ class CommandComponent:
     def as_text(self, *_):
         return self.label['text']
 
+    def clickables(self) -> list[str]:
+        return [self.label, self.base]
+
     def set_color(self, color):
         self.label['bg'] = color
         self.base['bg'] = color
@@ -232,11 +235,16 @@ class MouseWheel(Builder, CommandComponent):
         self.base: tk.Frame = None
         self.delta_x: tk.IntVar = None
         self.delta_y: tk.IntVar = None
+        self.delta_x_lbl: tk.Label = None
+        self.delta_y_lbl: tk.Label = None
         self.label: tk.Label = None
         super().__init__(master, path="layouts/mousewheel.json")
         self.delta_x.set(1)
         self.delta_y.set(1)
         self.set_color(self.color)
+
+    def clickables(self) -> list[str]:
+        return super().clickables() + [self.delta_y_lbl, self.delta_x_lbl]
 
     def load_data(self, data):
         if data:
@@ -260,11 +268,16 @@ class MouseMove(Builder, CommandComponent):
         self.base: tk.Frame = None
         self.delta_x: tk.IntVar = None
         self.delta_y: tk.IntVar = None
+        self.delta_x_lbl: tk.Label = None
+        self.delta_y_lbl: tk.Label = None
         self.label: tk.Label = None
         super().__init__(master, path="layouts/mousemove.json")
         self.delta_x.set(1)
         self.delta_y.set(1)
         self.set_color(self.color)
+
+    def clickables(self) -> list[str]:
+        return super().clickables() + [self.delta_y_lbl, self.delta_x_lbl]
 
     def load_data(self, data):
         if data:
@@ -303,7 +316,11 @@ class LoopFor(Builder, CommandComponent):
 
     def __init__(self, master):
         self.count: tk.IntVar = None
+        self.count_lbl: tk.Label = None
         super().__init__(master, path="layouts/loopfor.json")
+
+    def clickables(self) -> list[str]:
+        return super().clickables() + [self.count_lbl]
 
     @property
     def is_block(self):
@@ -328,7 +345,12 @@ class LoopForRandom(Builder, CommandComponent):
     def __init__(self, master):
         self.start: tk.IntVar = None
         self.stop: tk.IntVar = None
+        self.start_lbl: tk.Label = None
+        self.stop_lbl: tk.Label = None
         super().__init__(master, path="layouts/loopforrandom.json")
+
+    def clickables(self) -> list[str]:
+        return super().clickables() + [self.start_lbl, self.stop_lbl]
 
     @property
     def is_block(self):
@@ -379,7 +401,11 @@ class Delay(Builder, CommandComponent):
 
     def __init__(self, master):
         self.duration: tk.DoubleVar = None
+        self.delay_lbl: tk.Label = None
         super().__init__(master, path="layouts/delay.json")
+
+    def clickables(self) -> list[str]:
+        return super().clickables() + [self.delay_lbl]
 
     def load_data(self, data):
         if data:
@@ -400,7 +426,12 @@ class DelayRandom(Builder, CommandComponent):
     def __init__(self, master):
         self.stop: tk.DoubleVar = None
         self.start: tk.DoubleVar = None
+        self.stop_lbl: tk.Label = None
+        self.start_lbl: tk.Label = None
         super().__init__(master, path="layouts/delayrandom.json")
+
+    def clickables(self) -> list[str]:
+        return super().clickables() + [self.stop_lbl, self.start_lbl]
 
     def load_data(self, data):
         if data:
@@ -459,7 +490,7 @@ class ComponentTree(ui.tree.TreeView):
             self.tree.on_node_created(self)
 
         def _bind_widgets(self):
-            return self.strip, self.command.label
+            return [self.strip, *self.command.clickables()]
 
         def select(self, event=None, silently=False):
             super().select(event, silently)

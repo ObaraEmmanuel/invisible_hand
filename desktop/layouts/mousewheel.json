@@ -125,7 +125,7 @@
                     "side": "right", 
                     "width": 0
                 }, 
-                "name": "label_1"
+                "name": "delta_y_lbl"
             }, 
             "type": "tkinter.Label"
         }, 
@@ -180,7 +180,7 @@
                     "side": "right", 
                     "width": 0
                 }, 
-                "name": "label_2"
+                "name": "delta_x_lbl"
             }, 
             "type": "tkinter.Label"
         }
