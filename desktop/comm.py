@@ -131,13 +131,13 @@ class DeviceManager:
         self.buffer = bytearray()
         self._send_queue: queue.Queue[bytes] = queue.Queue()
         self._listening: bool = False
-        self._listeners: Callable[IVHDevice, IVHFrame] = []
+        self._listeners: list[Callable[[IVHDevice, IVHFrame], None]] = []
         self.last_ident: IVHIdent = None
 
-    def add_listener(self, listener: Callable[IVHDevice, IVHFrame]):
+    def add_listener(self, listener: Callable[[IVHDevice, IVHFrame], None]):
         self._listeners.append(listener)
 
-    def remove_listener(self, listener: Callable[IVHDevice, IVHFrame]):
+    def remove_listener(self, listener: Callable[[IVHDevice, IVHFrame], None]):
         if listener in self._listeners:
             self._listeners.remove(listener)
 
@@ -281,12 +281,12 @@ class COMManger:
 
     def __init__(self):
         self.devices: set[ListPortInfo] = set()
-        self.ivh_devices: dict[ListPortInfo: IVHDevice] = {}
+        self.ivh_devices: dict[ListPortInfo, IVHDevice] = {}
         self._listener_thread: threading.Thread = None
         self._is_listening: bool = False
         self._event_queue: queue.Queue[DeviceEvent] = queue.Queue()
         self._probe_queue: queue.Queue[IVHDevice] = queue.Queue()
-        self._listeners: dict[list[Callable[IVHDevice]]] = defaultdict(list)
+        self._listeners: dict[DeviceEventType, list[Callable[[IVHDevice], None]]] = defaultdict(list)
         self._widget = None
         self.buffer = bytearray()
 
@@ -313,10 +313,10 @@ class COMManger:
         if self._widget:
             self._widget.after(int(self.PORT_POLL_INTERVAL * 1000), self._emit_events)
 
-    def add_listener(self, listener: Callable[IVHDevice], event_type: DeviceEventType) -> None:
+    def add_listener(self, listener: Callable[[IVHDevice], None], event_type: DeviceEventType) -> None:
         self._listeners[event_type].append(listener)
 
-    def remove_listener(self, listener: Callable[IVHDevice], event_type: DeviceEventType) -> None:
+    def remove_listener(self, listener:Callable[[IVHDevice], None], event_type: DeviceEventType) -> None:
         if listener in self._listeners[type]:
             self._listeners[event_type].remove(listener)
 

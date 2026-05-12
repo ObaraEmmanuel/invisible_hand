@@ -178,7 +178,7 @@ class App(AppBuilder, GlueInterface):
         self.macro_canvas._menu = self.macro_menu
         self.macro_canvas.on_select(self.on_command_select)
 
-        self.button_criteria: dict[tk.Widget, list[Callable]] = {
+        self.button_criteria: dict[tk.Widget, list[Callable[[], None]]] = {
             self.command_delete: {"action": "hide", "criteria": [self.has_selection]},
             self.command_undo: {"action": "disable", "criteria": [self.has_undo]},
             self.command_redo: {"action": "disable", "criteria": [self.has_redo]},
@@ -371,7 +371,7 @@ class App(AppBuilder, GlueInterface):
     def clear_macro(self):
         pass
 
-    def _bind_control(self, key: str, callback: Callable):
+    def _bind_control(self, key: str, callback: Callable[[], None]):
         self.main.bind(f"<Control-{key.lower()}>", lambda _: callback())
         self.main.bind(f"<Control-{key.upper()}>", lambda _: callback())
 

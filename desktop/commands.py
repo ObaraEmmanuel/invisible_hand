@@ -595,7 +595,7 @@ class ComponentTree(ui.tree.TreeView):
             parent_data["nodes"].append(node_data)
         return parent_data
 
-    def build_tree(self, nodes: list[ComponentTree.Node] = None) -> list[dict]:
+    def build_tree(self, nodes: list['ComponentTree.Node'] = None) -> list[dict]:
         if nodes is None:
             nodes = self.nodes
         data = []
@@ -605,7 +605,7 @@ class ComponentTree(ui.tree.TreeView):
             data.append(node_data)
         return data
 
-    def load_node(self, parent_node: 'ComponentTree.Node', data: dict) -> ComponentTree.Node:
+    def load_node(self, parent_node: 'ComponentTree.Node', data: dict) -> 'ComponentTree.Node':
         node = parent_node.add_as_node(key=data.get("type"), data=data)
 
         for sub_node_data in data.get("nodes", []):
