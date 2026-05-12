@@ -86,7 +86,7 @@
                 {
                     "attrib": {
                         "type": "image", 
-                        "value": "..\\resources\\hand.ico"
+                        "value": "../resources/hand.ico"
                     }, 
                     "type": "arg"
                 }
@@ -180,7 +180,7 @@
                                 "attr": {
                                     "command": "upload_macro", 
                                     "compound": "left", 
-                                    "image": "..\\resources\\upload.png", 
+                                    "image": "../resources/upload.png", 
                                     "text": "Upload"
                                 }, 
                                 "layout": {
@@ -198,7 +198,7 @@
                                 "attr": {
                                     "command": "config_board", 
                                     "compound": "left", 
-                                    "image": "..\\resources\\config.png", 
+                                    "image": "../resources/config.png", 
                                     "text": "Config"
                                 }, 
                                 "layout": {
@@ -216,7 +216,7 @@
                                 "attr": {
                                     "command": "flash_macro", 
                                     "compound": "left", 
-                                    "image": "..\\resources\\firmware.png", 
+                                    "image": "../resources/firmware.png", 
                                     "text": "Flash"
                                 }, 
                                 "layout": {
@@ -425,7 +425,7 @@
                                         "attr": {
                                             "command": "save_macro", 
                                             "compound": "left", 
-                                            "image": "..\\resources\\save.png", 
+                                            "image": "../resources/save.png", 
                                             "text": ""
                                         }, 
                                         "layout": {
@@ -445,7 +445,7 @@
                                         "attr": {
                                             "command": "delete_commands", 
                                             "compound": "center", 
-                                            "image": "..\\resources\\delete.png", 
+                                            "image": "../resources/delete.png", 
                                             "text": ""
                                         }, 
                                         "layout": {
@@ -464,7 +464,7 @@
                                         "attr": {
                                             "command": "undo_command", 
                                             "compound": "center", 
-                                            "image": "..\\resources\\undo.png", 
+                                            "image": "../resources/undo.png", 
                                             "text": ""
                                         }, 
                                         "layout": {
@@ -483,7 +483,7 @@
                                         "attr": {
                                             "command": "redo_command", 
                                             "compound": "center", 
-                                            "image": "..\\resources\\redo.png", 
+                                            "image": "../resources/redo.png", 
                                             "text": ""
                                         }, 
                                         "layout": {
@@ -502,7 +502,7 @@
                                         "attr": {
                                             "command": "copy_commands", 
                                             "compound": "center", 
-                                            "image": "..\\resources\\copy.png", 
+                                            "image": "../resources/copy.png", 
                                             "text": ""
                                         }, 
                                         "layout": {
@@ -521,7 +521,7 @@
                                         "attr": {
                                             "command": "cut_commands", 
                                             "compound": "center", 
-                                            "image": "..\\resources\\cut.png", 
+                                            "image": "../resources/cut.png", 
                                             "text": ""
                                         }, 
                                         "layout": {
@@ -540,7 +540,7 @@
                                         "attr": {
                                             "command": "paste_commands", 
                                             "compound": "center", 
-                                            "image": "..\\resources\\paste.png", 
+                                            "image": "../resources/paste.png", 
                                             "text": ""
                                         }, 
                                         "layout": {

@@ -51,7 +51,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "image": "..\\resources\\loop.png", 
+                    "image": "../resources/loop.png", 
                     "text": "   Loop For"
                 }, 
                 "layout": {

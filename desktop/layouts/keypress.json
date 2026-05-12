@@ -42,7 +42,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "image": "..\\resources\\keypress.png", 
+                    "image": "../resources/keypress.png", 
                     "text": "   KeyPress"
                 }, 
                 "layout": {
@@ -113,22 +113,22 @@
                     "activebackground": "#363636", 
                     "activeforeground": "#ffffff", 
                     "background": "#363636", 
-                    "borderwidth": "0", 
+                    "borderwidth": 0, 
                     "command": "clear", 
                     "disabledforeground": "#535353", 
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "image": "..\\resources\\clear_small.png", 
+                    "image": "../resources/clear_small.png", 
                     "relief": "flat", 
                     "text": "button_2"
                 }, 
                 "layout": {
                     "fill": "y", 
-                    "height": "16", 
+                    "height": 16, 
                     "ipadx": 5, 
                     "side": "left", 
-                    "width": "20"
+                    "width": 20
                 }, 
                 "name": "button_2"
             }, 

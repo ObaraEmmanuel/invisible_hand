@@ -60,7 +60,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "image": "..\\resources\\time.png", 
+                    "image": "../resources/time.png", 
                     "text": "   Random Delay"
                 }, 
                 "layout": {

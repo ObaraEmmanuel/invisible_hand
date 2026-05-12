@@ -29,7 +29,7 @@
                 "name": "version"
             }, 
             "type": "meta"
-        },
+        }, 
         {
             "attrib": {
                 "attr": {
@@ -40,7 +40,7 @@
                     "foreground": "#fafafa", 
                     "highlightbackground": "#1c1c1c", 
                     "highlightcolor": "#2f60d8", 
-                    "image": "..\\resources\\firmware.png", 
+                    "image": "../resources/firmware.png", 
                     "text": ""
                 }, 
                 "layout": {
