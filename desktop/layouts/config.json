@@ -1,0 +1,308 @@
+{
+    "attrib": {
+        "attr": {
+            "background": "#1c1c1c", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "pack"
+        }, 
+        "layout": {
+            "height": 335, 
+            "width": 425, 
+            "x": 30, 
+            "y": 30
+        }, 
+        "name": "main"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "name": "title"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "Config"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "name": "geometry"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "425x302+0+0"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "name": "resizable"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "name": "width", 
+                        "type": "int", 
+                        "value": 0
+                    }, 
+                    "type": "arg"
+                }, 
+                {
+                    "attrib": {
+                        "name": "height", 
+                        "type": "int", 
+                        "value": 0
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "name": "theme", 
+                "sub_theme": "dark", 
+                "theme": "sun-valley"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "attr": {}, 
+                "layout": {
+                    "expand": 1, 
+                    "fill": "both", 
+                    "height": 0, 
+                    "width": 0
+                }, 
+                "name": "notebook_1"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "attr": {
+                            "layout": "pack"
+                        }, 
+                        "layout": {
+                            "padding": "0", 
+                            "text": "Firmware"
+                        }, 
+                        "name": "frame_1"
+                    }, 
+                    "children": [
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "layout": "grid"
+                                }, 
+                                "layout": {
+                                    "anchor": "n", 
+                                    "fill": "x", 
+                                    "height": 1, 
+                                    "padx": 20, 
+                                    "pady": "30 15", 
+                                    "width": 0
+                                }, 
+                                "name": "frame_2"
+                            }, 
+                            "children": [
+                                {
+                                    "attrib": {
+                                        "column": "0", 
+                                        "minsize": "80"
+                                    }, 
+                                    "type": "grid"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "column": "1", 
+                                        "weight": "1"
+                                    }, 
+                                    "type": "grid"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "font": "{Segoe UI} 10 {}", 
+                                            "text": "COM Port"
+                                        }, 
+                                        "layout": {
+                                            "column": 0, 
+                                            "padx": "5 0", 
+                                            "row": 0, 
+                                            "sticky": "w", 
+                                            "width": ""
+                                        }, 
+                                        "name": "label_1"
+                                    }, 
+                                    "type": "tkinter.ttk.Label"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "exportselection": 0, 
+                                            "font": "{Segoe UI} 10 {}", 
+                                            "state": "readonly"
+                                        }, 
+                                        "layout": {
+                                            "column": 1, 
+                                            "height": 10, 
+                                            "padx": "15 0", 
+                                            "row": 0, 
+                                            "width": 20
+                                        }, 
+                                        "name": "com_selector"
+                                    }, 
+                                    "type": "tkinter.ttk.Combobox"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "font": "{Courier New} 9 {}", 
+                                            "foreground": "#22d17f", 
+                                            "text": "COM port 10 plugged in"
+                                        }, 
+                                        "layout": {
+                                            "column": 0, 
+                                            "columnspan": 2, 
+                                            "padx": "5 0", 
+                                            "pady": 10, 
+                                            "row": 1, 
+                                            "sticky": "ew", 
+                                            "width": ""
+                                        }, 
+                                        "name": "com_advisory_lbl"
+                                    }, 
+                                    "type": "tkinter.ttk.Label"
+                                }
+                            ], 
+                            "type": "tkinter.ttk.Frame"
+                        }, 
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "layout": "grid"
+                                }, 
+                                "layout": {
+                                    "anchor": "n", 
+                                    "fill": "x", 
+                                    "height": 1, 
+                                    "padx": 20, 
+                                    "pady": "15 0", 
+                                    "width": 0
+                                }, 
+                                "name": "frame_4"
+                            }, 
+                            "children": [
+                                {
+                                    "attrib": {
+                                        "column": "0", 
+                                        "minsize": "80"
+                                    }, 
+                                    "type": "grid"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "column": "1", 
+                                        "weight": "1"
+                                    }, 
+                                    "type": "grid"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "font": "{Segoe UI} 10 {}", 
+                                            "text": "Board"
+                                        }, 
+                                        "layout": {
+                                            "column": 0, 
+                                            "padx": "5 0", 
+                                            "row": 0, 
+                                            "sticky": "w", 
+                                            "width": ""
+                                        }, 
+                                        "name": "label_3"
+                                    }, 
+                                    "type": "tkinter.ttk.Label"
+                                }, 
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "exportselection": 0, 
+                                            "font": "{Segoe UI} 10 {}", 
+                                            "state": "readonly"
+                                        }, 
+                                        "layout": {
+                                            "column": 1, 
+                                            "height": 10, 
+                                            "padx": "15 0", 
+                                            "row": 0, 
+                                            "width": 20
+                                        }, 
+                                        "name": "board_selector"
+                                    }, 
+                                    "type": "tkinter.ttk.Combobox"
+                                }
+                            ], 
+                            "type": "tkinter.ttk.Frame"
+                        }, 
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "layout": "pack"
+                                }, 
+                                "layout": {
+                                    "anchor": "s", 
+                                    "fill": "x", 
+                                    "height": 1, 
+                                    "pady": 15, 
+                                    "side": "bottom", 
+                                    "width": 0
+                                }, 
+                                "name": "frame_5"
+                            }, 
+                            "children": [
+                                {
+                                    "attrib": {
+                                        "attr": {
+                                            "command": "flash", 
+                                            "style": "Accent.TButton", 
+                                            "text": "Flash"
+                                        }, 
+                                        "layout": {
+                                            "padx": "0 5", 
+                                            "width": ""
+                                        }, 
+                                        "name": "flash_btn"
+                                    }, 
+                                    "type": "tkinter.ttk.Button"
+                                }
+                            ], 
+                            "type": "tkinter.ttk.Frame"
+                        }
+                    ], 
+                    "type": "tkinter.ttk.Frame"
+                }
+            ], 
+            "type": "tkinter.ttk.Notebook"
+        }
+    ], 
+    "type": "tkinter.Toplevel"
+}

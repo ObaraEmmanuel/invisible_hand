@@ -1,0 +1,158 @@
+{
+    "attrib": {
+        "attr": {
+            "background": "#1c1c1c", 
+            "highlightbackground": "#1c1c1c", 
+            "highlightcolor": "#2f60d8", 
+            "layout": "pack"
+        }, 
+        "layout": {
+            "height": 246, 
+            "width": 567, 
+            "x": 30, 
+            "y": 30
+        }, 
+        "name": "main"
+    }, 
+    "children": [
+        {
+            "attrib": {
+                "name": "title"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "Firmware flash"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "name": "geometry"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "value": "567x213+0+0"
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "name": "resizable"
+            }, 
+            "children": [
+                {
+                    "attrib": {
+                        "name": "width", 
+                        "type": "int", 
+                        "value": 0
+                    }, 
+                    "type": "arg"
+                }, 
+                {
+                    "attrib": {
+                        "name": "height", 
+                        "type": "int", 
+                        "value": 0
+                    }, 
+                    "type": "arg"
+                }
+            ], 
+            "type": "meth"
+        }, 
+        {
+            "attrib": {
+                "major": "8", 
+                "minor": "16", 
+                "name": "version"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "name": "theme", 
+                "sub_theme": "dark", 
+                "theme": "sun-valley"
+            }, 
+            "type": "meta"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "text": "Uploading firmware"
+                }, 
+                "layout": {
+                    "anchor": "w", 
+                    "padx": 15, 
+                    "pady": 10, 
+                    "width": ""
+                }, 
+                "name": "flash_message"
+            }, 
+            "type": "tkinter.ttk.Label"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "mode": "indeterminate", 
+                    "value": 40
+                }, 
+                "layout": {
+                    "anchor": "w", 
+                    "fill": "x", 
+                    "padx": 15, 
+                    "pady": 10
+                }, 
+                "name": "flash_progress"
+            }, 
+            "type": "tkinter.ttk.Progressbar"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "background": "#1c1c1c", 
+                    "foreground": "#22d17f", 
+                    "highlightbackground": "#1c1c1c", 
+                    "highlightcolor": "#2f60d8", 
+                    "insertbackground": "#fafafa", 
+                    "relief": "flat", 
+                    "selectbackground": "#2f60d8", 
+                    "selectforeground": "#ffffff", 
+                    "state": "disabled", 
+                    "wrap": "none"
+                }, 
+                "layout": {
+                    "height": 5, 
+                    "padx": 15, 
+                    "pady": 10, 
+                    "width": 80
+                }, 
+                "name": "log_text"
+            }, 
+            "type": "tkinter.Text"
+        }, 
+        {
+            "attrib": {
+                "attr": {
+                    "command": "destroy", 
+                    "state": "disabled", 
+                    "style": "Accent.TButton", 
+                    "text": "Close"
+                }, 
+                "layout": {
+                    "width": ""
+                }, 
+                "name": "close_btn"
+            }, 
+            "type": "tkinter.ttk.Button"
+        }
+    ], 
+    "type": "tkinter.Toplevel"
+}

@@ -6,31 +6,15 @@ from formation import AppBuilder, Builder
 import catalogue
 from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame, BlankDevice, IVHState
 from commands import ComponentTree
+from config_ui import ConfigWindow
 from device_select import DeviceSelector
 from glue import GlueInterface
 from macro import MacroList, Macro
 from package import IVHPackage
 from ui.tree import Tree, InsertType
-from ui.utils import MouseWheelDispatcher
+from ui.utils import MouseWheelDispatcher, center_window
 from utils.action import Action
 from utils.system import unsigned_to_bytes
-
-
-def center_window(window, master=None):
-    if master is None:
-        window.update_idletasks()
-        width = window.winfo_screenwidth()
-        height = window.winfo_screenheight()
-        x, y = 0, 0
-    else:
-        master.update_idletasks()
-        width = master.winfo_width()
-        height = master.winfo_height()
-        x, y = master.winfo_x(), master.winfo_y()
-    # window.update_idletasks()
-    sub_width = window.winfo_width()
-    sub_height = window.winfo_height()
-    window.geometry(f"+{x + (width - sub_width) // 2}+{y + (height - sub_height) // 2}")
 
 
 class AddMacroDialog(Builder):
@@ -165,7 +149,9 @@ class App(AppBuilder, GlueInterface):
         MouseWheelDispatcher.set_up_mousewheel(self.main)
         s = ttk.Style()
         s.configure('Treeview', rowheight=40)
+        self.main.withdraw()
         center_window(self._root)
+        self.main.deiconify()
         self._devices = [self.NO_DEVICE]
         self._selected_device = self.NO_DEVICE
         self.device_select.on_change(self._on_device_selection)
@@ -363,7 +349,7 @@ class App(AppBuilder, GlueInterface):
             self.dev_manager.send_command(COMCommand.PAUSE)
 
     def config_board(self):
-        pass
+        ConfigWindow.show(self.main)
 
     def delete_macro(self):
         pass
@@ -462,6 +448,10 @@ class App(AppBuilder, GlueInterface):
             self._update_macro_state()
 
     # Glue logic
+
+    def close_connections(self):
+        self.device_select.set(self.NO_DEVICE)
+        self._on_device_selection()
 
     def add_node(self, target: Tree.Node, node: Tree.Node, method: InsertType, silent: bool = True):
         if not self.active_macro:

@@ -23,6 +23,10 @@ class GlueInterface(abc.ABC):
     def restore_nodes(self, nodes: list[Tree.Node], old_parents: list[Tree.Node], old_indices: list[int]):
         pass
 
+    @abc.abstractmethod
+    def close_connections(self):
+        pass
+
     @classmethod
     def instance(cls) -> 'GlueInterface':
         return cls._instance

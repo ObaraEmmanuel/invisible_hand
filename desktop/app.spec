@@ -1,5 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
-
+import os
+import esptool
 
 a = Analysis(
     ['app.pyw'],
@@ -8,6 +9,9 @@ a = Analysis(
     datas=[
         ('resources', 'resources'),
         ('layouts', 'layouts'),
+        ('firmware', 'firmware'),
+        ('upload_spec.json', '.')
+
     ],
     hiddenimports=[
         "os",
@@ -22,7 +26,8 @@ a = Analysis(
         "collections",
         "platformdirs",
         "formation",
-        "sv_ttk"
+        "sv_ttk",
+        "esptool"
     ],
     hookspath=[],
     hooksconfig={},
@@ -31,16 +36,36 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
-pyz = PYZ(a.pure)
 
-exe = EXE(
-    pyz,
+esptool_path = os.path.dirname(esptool.__file__)
+targets_path = os.path.join(esptool_path, 'targets')
+
+b = Analysis(
+    ['flash.py'],
+    pathex=["."],
+    binaries=[],
+    datas=[(targets_path, 'esptool/targets')],
+    hiddenimports=[
+        "esptool"
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    noarchive=False,
+    optimize=0,
+)
+
+pyza = PYZ(a.pure)
+pyzb = PYZ(b.pure)
+
+exea = EXE(
+    pyza,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
     name='Invisible Hand',
     icon='resources/hand.ico',
+    contents_directory='.',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -54,4 +79,37 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     version='version.txt',
+)
+
+exeb = EXE(
+    pyzb,
+    b.scripts,
+    [],
+    name='flash',
+    contents_directory='.',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
+    disable_windowed_traceback=False,
+    argv_emulation=True,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+)
+
+coll = COLLECT(
+    exea,
+    a.binaries,
+    a.datas,
+    exeb,
+    b.binaries,
+    b.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='Invisible Hand',
 )

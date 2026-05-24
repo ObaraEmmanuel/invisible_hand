@@ -107,6 +107,23 @@ def clear_children(widget):
         child.place_forget()
 
 
+def center_window(window, master=None):
+    if master is None:
+        window.update_idletasks()
+        width = window.winfo_screenwidth()
+        height = window.winfo_screenheight()
+        x, y = 0, 0
+    else:
+        master.update_idletasks()
+        width = master.winfo_width()
+        height = master.winfo_height()
+        x, y = master.winfo_x(), master.winfo_y()
+    # window.update_idletasks()
+    sub_width = window.winfo_width()
+    sub_height = window.winfo_height()
+    window.geometry(f"+{x + (width - sub_width) // 2}+{y + (height - sub_height) // 2}")
+
+
 class EmptyScreen(tk.Label):
 
     def __init__(self, master, **kwargs):
