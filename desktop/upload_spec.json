@@ -29,7 +29,7 @@
       "--after": "hard_reset",
       "write-flash": "",
       "-z": "",
-      "--flash-mode": "qio",
+      "--flash-mode": "dio",
       "--flash-freq": "80m",
       "--flash-size": "16MB"
     },
