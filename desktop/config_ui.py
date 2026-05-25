@@ -14,6 +14,7 @@ from serial.tools import list_ports
 import glue
 from comm import DeviceEventType
 from ui.utils import center_window
+from version import __version__
 
 
 class FlashDialog(Builder):
@@ -107,8 +108,10 @@ class ConfigWindow(Builder):
         self.board_selector: ttk.Combobox = None
         self.com_advisory_lbl: ttk.Label = None
         self.flash_btn: ttk.Button = None
+        self.version_lbl: ttk.Label = None
         super().__init__(parent, path="layouts/config.json")
         self.connect_callbacks(self)
+        self.version_lbl["text"] = f"Version {__version__}"
         self.com_advisory_lbl["text"] = (
             "Unplug then plug in your board to detrmine port\n"
             "Make sure the cable in use supports data transfer"

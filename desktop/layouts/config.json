@@ -299,6 +299,63 @@
                         }
                     ], 
                     "type": "tkinter.ttk.Frame"
+                }, 
+                {
+                    "attrib": {
+                        "attr": {
+                            "layout": "pack"
+                        }, 
+                        "layout": {
+                            "padding": "0", 
+                            "text": "About"
+                        }, 
+                        "name": "frame_7"
+                    }, 
+                    "children": [
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "font": "{Segoe UI} 16 {}", 
+                                    "foreground": "#22d17f", 
+                                    "text": "Invisible Hand"
+                                }, 
+                                "layout": {
+                                    "pady": "40 0", 
+                                    "width": ""
+                                }, 
+                                "name": "label_2"
+                            }, 
+                            "type": "tkinter.ttk.Label"
+                        }, 
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "text": "version 2026.0.1"
+                                }, 
+                                "layout": {
+                                    "pady": 15, 
+                                    "width": ""
+                                }, 
+                                "name": "version_lbl"
+                            }, 
+                            "type": "tkinter.ttk.Label"
+                        }, 
+                        {
+                            "attrib": {
+                                "attr": {
+                                    "justify": "center", 
+                                    "text": "Barracoder\nCopyright \u00a9 2025-2026, All rights reserved.\n\n\nIcons by icons8.com"
+                                }, 
+                                "layout": {
+                                    "pady": 15, 
+                                    "width": ""
+                                }, 
+                                "name": "label_5"
+                            }, 
+                            "type": "tkinter.ttk.Label"
+                        }
+                    ], 
+                    "type": "tkinter.ttk.Frame"
                 }
             ], 
             "type": "tkinter.ttk.Notebook"
