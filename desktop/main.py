@@ -282,12 +282,10 @@ class App(AppBuilder, GlueInterface):
 
     def _update_state(self):
         dev = self.device_select.get()
-        if (not self.active_macro) or dev is self.NO_DEVICE:
-            self.upload_btn.grid_remove()
+        if dev is self.NO_DEVICE:
             self.play_btn.grid_remove()
             self.flash_btn.grid_remove()
         else:
-            self.upload_btn.grid()
             if dev.state != IVHState.INVALID:
                 self.play_btn.grid()
                 self.flash_btn.grid()
@@ -298,6 +296,11 @@ class App(AppBuilder, GlueInterface):
             else:
                 self.play_btn.grid_remove()
                 self.flash_btn.grid_remove()
+
+        if not self.active_macro:
+            self.upload_btn.grid_remove()
+        else:
+            self.upload_btn.grid()
 
     def macro_changed(self, item):
         if not item:
