@@ -9,10 +9,9 @@ from copy import deepcopy
 from tkinter import ttk
 
 from formation import Builder
-from serial.tools import list_ports
 
 import glue
-from comm import DeviceEventType
+from comm import DeviceEventType, COMManger
 from ui.utils import center_window
 from version import __version__
 
@@ -125,7 +124,7 @@ class ConfigWindow(Builder):
         self.main.deiconify()
         self.main.wm_protocol("WM_DELETE_WINDOW", self._exit)
         self._listening = False
-        self._dev_list = set(list_ports.comports())
+        self._dev_list = set(COMManger.comports())
         threading.Thread(target=self._listen, daemon=True).start()
         self._device_event_queue = queue.Queue()
         self.main.after(1000, self._update_advisory)
@@ -175,7 +174,7 @@ class ConfigWindow(Builder):
     def _listen(self):
         self._listening = True
         while self._listening:
-            new_devs = set(list_ports.comports())
+            new_devs = set(COMManger.comports())
             added = new_devs - self._dev_list
             removed = self._dev_list - new_devs
             self._dev_list = new_devs

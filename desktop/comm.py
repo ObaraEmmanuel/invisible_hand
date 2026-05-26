@@ -151,10 +151,6 @@ class DeviceManager:
             baudrate=self.baudrate,
             timeout=self.READ_TIMEOUT,
             write_timeout=self.WRITE_TIMEOUT,
-            bytesize=serial.EIGHTBITS,
-            parity=serial.PARITY_NONE,
-            stopbits=serial.STOPBITS_ONE,
-            dsrdtr=None,
         )
 
     def _feed(self, data: bytes):
@@ -322,7 +318,7 @@ class COMManger:
 
     def _com_port_listener(self) -> None:
         while self._is_listening:
-            dev_list = set(list_ports.comports())
+            dev_list = set(COMManger.comports())
             added = dev_list - self.devices
             removed = self.devices - dev_list
 
@@ -353,3 +349,13 @@ class COMManger:
             dev.update(dev_manager.last_ident)
             self._probe_queue.put(dev)
         return status
+
+    @classmethod
+    def comports(cls) -> list[ListPortInfo]:
+        devs = list(filter(
+            lambda dev: (not dev.device.startswith("/dev/tty")) or any(
+                dev.device.startswith(f"/dev/tty{x}") for x in ["USB", "ACM"]
+            ),
+            list_ports.comports()
+        ))
+        return devs
