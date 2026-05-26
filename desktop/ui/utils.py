@@ -108,6 +108,8 @@ def clear_children(widget):
 
 
 def center_window(window, master=None):
+    if platform_is(WINDOWS):
+        window.withdraw()
     if master is None:
         window.update_idletasks()
         width = window.winfo_screenwidth()
@@ -122,6 +124,8 @@ def center_window(window, master=None):
     sub_width = window.winfo_width()
     sub_height = window.winfo_height()
     window.geometry(f"+{x + (width - sub_width) // 2}+{y + (height - sub_height) // 2}")
+    if platform_is(WINDOWS):
+        window.deiconify()
 
 
 class EmptyScreen(tk.Label):

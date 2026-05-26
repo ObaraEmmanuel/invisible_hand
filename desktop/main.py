@@ -14,6 +14,7 @@ from package import IVHPackage
 from ui.tree import Tree, InsertType
 from ui.utils import MouseWheelDispatcher, center_window
 from utils.action import Action
+from utils.platform import platform_is, WINDOWS
 from utils.system import unsigned_to_bytes
 
 
@@ -149,9 +150,7 @@ class App(AppBuilder, GlueInterface):
         MouseWheelDispatcher.set_up_mousewheel(self.main)
         s = ttk.Style()
         s.configure('Treeview', rowheight=40)
-        self.main.withdraw()
         center_window(self._root)
-        self.main.deiconify()
         self._devices = [self.NO_DEVICE]
         self._selected_device = self.NO_DEVICE
         self.device_select.on_change(self._on_device_selection)

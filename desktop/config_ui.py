@@ -26,12 +26,10 @@ class FlashDialog(Builder):
         self.close_btn: ttk.Button = None
         super().__init__(parent, path="layouts/flash_firmware.json")
         self.connect_callbacks(self)
-        self.main.withdraw()
         center_window(self.main, parent)
         self.main.transient(parent)
         self.main.grab_set()
         self.main.focus_set()
-        self.main.deiconify()
         self.spec = spec
         threading.Thread(target=self._flash).start()
 
@@ -116,12 +114,10 @@ class ConfigWindow(Builder):
             "Make sure the cable in use supports data transfer"
         )
         self.com_selector["state"] = "disabled"
-        self.main.withdraw()
         center_window(self.main, parent)
         self.main.transient(parent)
         self.main.grab_set()
         self.main.focus_set()
-        self.main.deiconify()
         self.main.wm_protocol("WM_DELETE_WINDOW", self._exit)
         self._listening = False
         self._dev_list = set(COMManger.comports())
