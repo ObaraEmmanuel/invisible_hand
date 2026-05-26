@@ -296,7 +296,7 @@ class App(AppBuilder, GlueInterface):
                 self.play_btn.grid_remove()
                 self.flash_btn.grid_remove()
 
-        if not self.active_macro:
+        if (not self.active_macro) or dev is self.NO_DEVICE:
             self.upload_btn.grid_remove()
         else:
             self.upload_btn.grid()
