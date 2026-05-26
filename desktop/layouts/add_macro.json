@@ -78,7 +78,6 @@
         {
             "attrib": {
                 "attr": {
-                    "cursor": "ibeam", 
                     "font": "SunValleyBodyFont"
                 }, 
                 "layout": {
