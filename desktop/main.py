@@ -172,7 +172,7 @@ class App(AppBuilder, GlueInterface):
             self.command_copy: {"action": "hide", "criteria": [self.has_selection]},
             self.command_cut: {"action": "hide", "criteria": [self.has_selection]},
             self.command_paste: {"action": "hide", "criteria": [self.has_selection, self.has_clipboard]},
-            self.command_save: {"action": "hide", "criteria": [lambda: True]},
+            self.command_save: {"action": "hide", "criteria": []},
         }
 
         self._bind_control("Z", self.undo_command)
@@ -409,16 +409,25 @@ class App(AppBuilder, GlueInterface):
         self._update_macro_state()
 
     def _update_macro_state(self):
+        if not self.active_macro:
+            for button in self.button_criteria:
+                button.grid_remove()
+            return
+
         for button, criteria in self.button_criteria.items():
             if all(c() for c in criteria["criteria"]):
                 if criteria["action"] == "hide":
                     button.grid()
                 else:
+                    if not button.winfo_ismapped():
+                        button.grid()
                     button["state"] = tk.NORMAL
             else:
                 if criteria["action"] == "hide":
                     button.grid_remove()
                 else:
+                    if not button.winfo_ismapped():
+                        button.grid()
                     button["state"] = tk.DISABLED
 
     def has_selection(self) -> bool:
