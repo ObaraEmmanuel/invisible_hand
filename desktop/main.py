@@ -145,6 +145,8 @@ class App(AppBuilder, GlueInterface):
         self.macro_list: MacroList = None
         self.macro_menu: tk.Menu = None
         self.catalogue: catalogue.CatalogueList = None
+        self.macro_catalogue: tk.Frame = None
+        self.main_pane: tk.PanedWindow = None
         super().__init__(path="layouts/app.json")
         self.connect_callbacks(self)
         MouseWheelDispatcher.set_up_mousewheel(self.main)
@@ -301,12 +303,13 @@ class App(AppBuilder, GlueInterface):
         else:
             self.upload_btn.grid()
 
-    def macro_changed(self, item):
-        if not item:
-            self.macro_canvas.load_macro(None)
-            self.active_macro = None
+        if not self.active_macro:
+            self.main_pane.remove(self.macro_catalogue)
+        else:
+            self.main_pane.add(self.macro_catalogue, minsize=250)
 
-        self.active_macro = item.value
+    def macro_changed(self, item):
+        self.active_macro = item.value if item else None
         self.macro_canvas.load_macro(self.active_macro)
         self._update_state()
         self._update_macro_state()

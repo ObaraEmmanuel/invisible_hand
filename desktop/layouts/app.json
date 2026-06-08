@@ -286,7 +286,7 @@
                     "sticky": "nesw", 
                     "width": ""
                 }, 
-                "name": "panedwindow_1"
+                "name": "main_pane"
             }, 
             "children": [
                 {
@@ -354,7 +354,7 @@
                                             "command": "add_macro", 
                                             "compound": "left", 
                                             "image": "../resources/add_file.png", 
-                                            "text": "Add"
+                                            "text": ""
                                         }, 
                                         "layout": {
                                             "padx": 5, 
