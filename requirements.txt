@@ -1,0 +1,5 @@
+formation-studio
+pyserial
+sv-ttk
+esptool
+platformdirs

@@ -1,10 +1,9 @@
 # Invisible Hand
 
+[![License](https://img.shields.io/github/license/ObaraEmmanuel/invisible_hand)](LICENSE)
 [![PyPI version](https://img.shields.io/pypi/v/ivh?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/ivh/)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/downloads/)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/ObaraEmmanuel/invisible_hand/releases)
-[![License](https://img.shields.io/github/license/ObaraEmmanuel/invisible_hand)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/ObaraEmmanuel/invisible_hand?style=social)](https://github.com/ObaraEmmanuel/invisible_hand/stargazers)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-purple)](https://github.com/ObaraEmmanuel/invisible_hand/releases)
 
 ## Overview
 

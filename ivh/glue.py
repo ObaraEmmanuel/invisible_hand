@@ -1,7 +1,7 @@
 import abc
 from typing import Union
 
-from ui.tree import Tree, InsertType
+from ivh.ui.tree import Tree, InsertType
 
 
 class GlueInterface(abc.ABC):

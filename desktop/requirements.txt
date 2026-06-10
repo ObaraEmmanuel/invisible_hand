@@ -1,3 +1,0 @@
-formation-studio
-pyserial
-sv-ttk

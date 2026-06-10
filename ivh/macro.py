@@ -5,11 +5,11 @@ from tkinter import Label, PhotoImage
 
 import platformdirs
 
-import constants
-from keymaps import EnumEncoder, as_enum
-from ui.itemlist import CompoundList
-from ui.utils import EmptyScreen
-from utils.action import Action
+from ivh import constants
+from ivh.keymaps import EnumEncoder, as_enum
+from ivh.ui.itemlist import CompoundList
+from ivh.ui.utils import EmptyScreen
+from ivh.utils.action import Action
 
 
 class Macro:

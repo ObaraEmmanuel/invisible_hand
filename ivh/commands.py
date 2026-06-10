@@ -4,13 +4,13 @@ from typing import Any
 
 from formation import Builder
 
-import ui.tree
-from glue import GlueInterface
-from keymaps import get_key, is_modifier, Key, get_button
-from macro import Macro
-from ui.menu import MenuUtils
-from ui.utils import EmptyScreen
-from utils.color import to_hex, from_hsl
+from ivh.ui import tree
+from ivh.glue import GlueInterface
+from ivh.keymaps import get_key, is_modifier, Key, get_button
+from ivh.macro import Macro
+from ivh.ui.menu import MenuUtils
+from ivh.ui.utils import EmptyScreen
+from ivh.utils.color import to_hex, from_hsl
 
 
 class CommandComponent:
@@ -473,8 +473,8 @@ def get_component(key):
     return _components_map[key]
 
 
-class ComponentTree(ui.tree.TreeView):
-    class Node(ui.tree.Tree.Node):
+class ComponentTree(tree.TreeView):
+    class Node(tree.Tree.Node):
 
         def __init__(self, master=None, **config):
             super().__init__(master, **config)

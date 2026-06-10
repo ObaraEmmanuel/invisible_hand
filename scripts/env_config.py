@@ -1,23 +1,19 @@
 """
 Build and extract binary upload configuration from platformio environment dump
 """
-import shutil
-import subprocess
 import json
 import os
+import re
+import shutil
+import subprocess
 from pathlib import Path
 
-import re
-
-print("Switching to platformio project root: ", Path("..").resolve())
-original_path = os.getcwd()
-os.chdir("..")
-
 from platformio.project.config import ProjectConfig
-config = ProjectConfig()
 
+
+config = ProjectConfig()
 spec_file = "upload_spec.json"
-firmware_folder = Path(original_path) / "firmware"
+firmware_folder = Path("firmware")
 core_dir = Path(config.get("platformio", "core_dir"))
 build_dir = Path(config.get("platformio", "build_dir"))
 upload_spec = {}
@@ -80,19 +76,16 @@ for env in config.envs():
     if "--port" in upload_args["options"]:
         upload_args["options"]['--port'] = ""
 
-    print(f"Copying firmware files to firmware/{env}")
+    print(f"Copying firmware files to firmware/{env}...")
     os.makedirs(firmware_folder, exist_ok=True)
     os.makedirs(firmware_folder / env, exist_ok=True)
     for offset, image in upload_args["images"].items():
         image_name = Path(image).name
         print(f"Copying image {image} to firmware/{env}/{image_name}")
         shutil.copy2(image, firmware_folder / env)
-        upload_args["images"][offset] = (firmware_folder / env / image_name).relative_to(original_path).as_posix()
+        upload_args["images"][offset] = (firmware_folder / env / image_name).as_posix()
 
     print(f"Spec for env:{env} = {upload_spec[env]}")
-
-print("Switching to script root: ", original_path)
-os.chdir(original_path)
 
 if upload_spec:
     print("Writing upload spec to", spec_file)

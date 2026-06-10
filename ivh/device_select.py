@@ -1,10 +1,10 @@
 from formation import Builder
 import tkinter as tk
 
-from comm import IVHDevice
-from ui.itemlist import CompoundList
-from ui.spinner import Spinner
-from ui.utils import bind_all
+from ivh.comm import IVHDevice
+from ivh.ui.itemlist import CompoundList
+from ivh.ui.spinner import Spinner
+from ivh.ui.utils import bind_all
 
 
 class DeviceItemBuilder(Builder):

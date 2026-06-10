@@ -10,10 +10,10 @@ from tkinter import ttk
 
 from formation import Builder
 
-import glue
-from comm import DeviceEventType, COMManger
-from ui.utils import center_window
-from version import __version__
+from ivh import glue
+from ivh.comm import DeviceEventType, COMManger
+from ivh.ui.utils import center_window
+from ivh import __version__
 
 
 class FlashDialog(Builder):

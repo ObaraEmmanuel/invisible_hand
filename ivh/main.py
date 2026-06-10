@@ -3,19 +3,18 @@ from collections.abc import Callable
 from tkinter import ttk
 from formation import AppBuilder, Builder
 
-import catalogue
-from comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame, BlankDevice, IVHState
-from commands import ComponentTree
-from config_ui import ConfigWindow
-from device_select import DeviceSelector
-from glue import GlueInterface
-from macro import MacroList, Macro
-from package import IVHPackage
-from ui.tree import Tree, InsertType
-from ui.utils import MouseWheelDispatcher, center_window
-from utils.action import Action
-from utils.platform import platform_is, WINDOWS
-from utils.system import unsigned_to_bytes
+from ivh import catalogue
+from ivh.comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame, BlankDevice, IVHState
+from ivh.commands import ComponentTree
+from ivh.config_ui import ConfigWindow
+from ivh.device_select import DeviceSelector
+from ivh.glue import GlueInterface
+from ivh.macro import MacroList, Macro
+from ivh.package import IVHPackage
+from ivh.ui.tree import Tree, InsertType
+from ivh.ui.utils import MouseWheelDispatcher, center_window
+from ivh.utils.action import Action
+from ivh.utils.system import unsigned_to_bytes
 
 
 class AddMacroDialog(Builder):

@@ -1,11 +1,11 @@
 from studio import WidgetMeta
 
-from catalogue import CatalogueList
-from commands import ComponentTree
-from device_select import DeviceSelector
-from macro import MacroList
-from ui.scrolledframe import ScrolledFrame
-from ui.tree import TreeView
+from ivh.catalogue import CatalogueList
+from ivh.commands import ComponentTree
+from ivh.device_select import DeviceSelector
+from ivh.macro import MacroList
+from ivh.ui.scrolledframe import ScrolledFrame
+from ivh.ui.tree import TreeView
 
 
 class ScrolledFrameMeta(ScrolledFrame, metaclass=WidgetMeta):

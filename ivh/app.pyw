@@ -1,7 +1,7 @@
 import os
 import sys
 
-from main import run
+from ivh.main import run
 
 if hasattr(sys, "_MEIPASS"):
     os.chdir(sys._MEIPASS)

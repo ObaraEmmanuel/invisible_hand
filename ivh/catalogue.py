@@ -1,11 +1,11 @@
 from collections import defaultdict
 from tkinter import Label, PhotoImage
 
-import commands
-from commands import CommandComponent, ComponentTree
-from glue import GlueInterface
-from ui import itemlist
-from ui.utils import DraggableMixin, WidgetTree
+from ivh import commands
+from ivh.commands import CommandComponent, ComponentTree
+from ivh.glue import GlueInterface
+from ivh.ui import itemlist
+from ivh.ui.utils import DraggableMixin, WidgetTree
 
 
 class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
