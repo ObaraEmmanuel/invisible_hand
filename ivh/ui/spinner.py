@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from ui.itemlist import CompoundList
-from ui.utils import Popup, chain, disable_all
-from utils.animation import Animate, Easing
+from ivh.ui.itemlist import CompoundList
+from ivh.ui.utils import Popup, chain, disable_all
+from ivh.utils.animation import Animate, Easing
 
 
 class Spinner(tk.Frame):

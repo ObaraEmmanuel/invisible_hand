@@ -3,14 +3,14 @@ import os
 import esptool
 
 a = Analysis(
-    ['app.pyw'],
+    ['../ivh/app.pyw'],
     pathex=["."],
     binaries=[],
     datas=[
-        ('resources', 'resources'),
-        ('layouts', 'layouts'),
-        ('firmware', 'firmware'),
-        ('upload_spec.json', '.')
+        ('../ivh/resources', 'ivh/resources'),
+        ('../ivh/layouts', 'ivh/layouts'),
+        ('../firmware', 'firmware'),
+        ('../upload_spec.json', '.')
 
     ],
     hiddenimports=[
@@ -41,7 +41,7 @@ esptool_path = os.path.dirname(esptool.__file__)
 targets_path = os.path.join(esptool_path, 'targets')
 
 b = Analysis(
-    ['flash.py'],
+    ['../ivh/flash.py'],
     pathex=["."],
     binaries=[],
     datas=[(targets_path, 'esptool/targets')],
@@ -64,7 +64,7 @@ exea = EXE(
     a.scripts,
     [],
     name='Invisible Hand',
-    icon='resources/hand.ico',
+    icon='../ivh/resources/hand.ico',
     contents_directory='.',
     debug=False,
     bootloader_ignore_signals=False,

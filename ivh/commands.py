@@ -4,6 +4,7 @@ from typing import Any
 
 from formation import Builder
 
+from ivh import get_layout, get_resource
 from ivh.ui import tree
 from ivh.glue import GlueInterface
 from ivh.keymaps import get_key, is_modifier, Key, get_button
@@ -70,7 +71,7 @@ class KeyPressBase(Builder, CommandComponent):
     ]
 
     def __init__(self, master):
-        super().__init__(master, path="layouts/keypress.json")
+        super().__init__(master, path=get_layout("keypress.json"))
         self.connect_callbacks(self)
         self.keys = set()
         self.clicks_since_focus = 0
@@ -178,7 +179,7 @@ class ButtonPress(KeyPressBase):
         super().__init__(master)
         self.set_color(self.color)
         self.set_label("Button Press")
-        self.img = PhotoImage(file="resources/mouse.png")
+        self.img = PhotoImage(file=get_resource("mouse.png"))
         self.set_label_img(self.img)
 
     def on_keypress(self, event):
@@ -204,7 +205,7 @@ class ButtonHold(KeyPressBase):
         super().__init__(master)
         self.set_color(self.color)
         self.set_label("Button Hold")
-        self.img = PhotoImage(file="resources/mouse.png")
+        self.img = PhotoImage(file=get_resource("mouse.png"))
         self.set_label_img(self.img)
 
     def on_buttonpress(self, event):
@@ -238,7 +239,7 @@ class MouseWheel(Builder, CommandComponent):
         self.delta_x_lbl: tk.Label = None
         self.delta_y_lbl: tk.Label = None
         self.label: tk.Label = None
-        super().__init__(master, path="layouts/mousewheel.json")
+        super().__init__(master, path=get_layout("mousewheel.json"))
         self.delta_x.set(1)
         self.delta_y.set(1)
         self.set_color(self.color)
@@ -271,7 +272,7 @@ class MouseMove(Builder, CommandComponent):
         self.delta_x_lbl: tk.Label = None
         self.delta_y_lbl: tk.Label = None
         self.label: tk.Label = None
-        super().__init__(master, path="layouts/mousemove.json")
+        super().__init__(master, path=get_layout("mousemove.json"))
         self.delta_x.set(1)
         self.delta_y.set(1)
         self.set_color(self.color)
@@ -298,10 +299,10 @@ class Loop(Builder, CommandComponent):
     type = "control"
 
     def __init__(self, master):
-        super().__init__(master, path="layouts/command.json")
+        super().__init__(master, path=get_layout("command.json"))
         self.set_color(self.color)
         self.set_label("Loop forever")
-        self.img = PhotoImage(file="resources/loop.png")
+        self.img = PhotoImage(file=get_resource("loop.png"))
         self.set_label_img(self.img)
 
     @property
@@ -317,7 +318,7 @@ class LoopFor(Builder, CommandComponent):
     def __init__(self, master):
         self.count: tk.IntVar = None
         self.count_lbl: tk.Label = None
-        super().__init__(master, path="layouts/loopfor.json")
+        super().__init__(master, path=get_layout("loopfor.json"))
 
     def clickables(self) -> list[str]:
         return super().clickables() + [self.count_lbl]
@@ -347,7 +348,7 @@ class LoopForRandom(Builder, CommandComponent):
         self.stop: tk.IntVar = None
         self.start_lbl: tk.Label = None
         self.stop_lbl: tk.Label = None
-        super().__init__(master, path="layouts/loopforrandom.json")
+        super().__init__(master, path=get_layout("loopforrandom.json"))
 
     def clickables(self) -> list[str]:
         return super().clickables() + [self.start_lbl, self.stop_lbl]
@@ -376,7 +377,7 @@ class Randomize(Loop):
 
     def __init__(self, master):
         super().__init__(master)
-        self.img = PhotoImage(file="resources/random.png")
+        self.img = PhotoImage(file=get_resource("random.png"))
         self.set_label_img(self.img)
         self.set_label("Randomize")
 
@@ -387,10 +388,10 @@ class Break(Builder, CommandComponent):
     type = "control"
 
     def __init__(self, master):
-        super().__init__(master, path="layouts/command.json")
+        super().__init__(master, path=get_layout("command.json"))
         self.set_color(self.color)
         self.set_label("Break")
-        self.img = PhotoImage(file="resources/break.png")
+        self.img = PhotoImage(file=get_resource("break.png"))
         self.set_label_img(self.img)
 
 
@@ -402,7 +403,7 @@ class Delay(Builder, CommandComponent):
     def __init__(self, master):
         self.duration: tk.DoubleVar = None
         self.delay_lbl: tk.Label = None
-        super().__init__(master, path="layouts/delay.json")
+        super().__init__(master, path=get_layout("delay.json"))
 
     def clickables(self) -> list[str]:
         return super().clickables() + [self.delay_lbl]
@@ -428,7 +429,7 @@ class DelayRandom(Builder, CommandComponent):
         self.start: tk.DoubleVar = None
         self.stop_lbl: tk.Label = None
         self.start_lbl: tk.Label = None
-        super().__init__(master, path="layouts/delayrandom.json")
+        super().__init__(master, path=get_layout("delayrandom.json"))
 
     def clickables(self) -> list[str]:
         return super().clickables() + [self.stop_lbl, self.start_lbl]
@@ -540,8 +541,8 @@ class ComponentTree(tree.TreeView):
     def empty_screen(self):
         if self._empty_screen:
             return self._empty_screen
-        self._no_file_image = PhotoImage(file="resources/empty.png")
-        self._no_command_image = PhotoImage(file="resources/add.png")
+        self._no_file_image = PhotoImage(file=get_resource("empty.png"))
+        self._no_command_image = PhotoImage(file=get_resource("add.png"))
         self._empty_screen = EmptyScreen(self)
         return self._empty_screen
 

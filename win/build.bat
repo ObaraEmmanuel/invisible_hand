@@ -1,1 +1,1 @@
-pyinstaller --clean app.spec
+pyinstaller --noconfirm --clean win/app.spec

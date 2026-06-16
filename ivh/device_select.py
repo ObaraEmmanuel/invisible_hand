@@ -1,6 +1,7 @@
 from formation import Builder
 import tkinter as tk
 
+from ivh import get_layout
 from ivh.comm import IVHDevice
 from ivh.ui.itemlist import CompoundList
 from ivh.ui.spinner import Spinner
@@ -26,7 +27,7 @@ class DeviceItem(CompoundList.BaseItem):
             bind_all(self, "<Leave>", self.on_hover_ended)
 
     def render(self):
-        self._build = DeviceItemBuilder(self, path="layouts/device.json")
+        self._build = DeviceItemBuilder(self, path=get_layout("device.json"))
         self._build._root.grid(sticky='nswe')
         self.update_render()
 

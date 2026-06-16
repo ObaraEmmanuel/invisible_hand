@@ -3,7 +3,7 @@ from collections.abc import Callable
 from tkinter import ttk
 from formation import AppBuilder, Builder
 
-from ivh import catalogue
+from ivh import catalogue, get_layout, get_resource
 from ivh.comm import COMManger, DeviceEventType, DeviceManager, COMCommand, IVHDevice, IVHFrame, BlankDevice, IVHState
 from ivh.commands import ComponentTree
 from ivh.config_ui import ConfigWindow
@@ -21,7 +21,7 @@ class AddMacroDialog(Builder):
     def __init__(self, master):
         self._root: tk.Toplevel = None
         self.macro_name: ttk.Entry = None
-        super().__init__(master, path="layouts/add_macro.json")
+        super().__init__(master, path=get_layout("add_macro.json"))
         self._root.transient(master)
         self.connect_callbacks(self)
         self.value = None
@@ -49,7 +49,7 @@ class UploadMacroDialog(Builder):
         self.msg_lbl: ttk.Label = None
         self.progress: ttk.Progressbar = None
         self.progress_lbl: tk.Label = None
-        super().__init__(master, path="layouts/upload_macro.json")
+        super().__init__(master, path=get_layout("upload_macro.json"))
         self.msg_lbl["text"] = text
         self._root.transient(master)
         self.connect_callbacks(self)
@@ -77,7 +77,7 @@ class FlashMacroDialog(Builder):
         self.progress_lbl: tk.Label = None
         self.cancel_btn: ttk.Button = None
         self.flash_btn: ttk.Button = None
-        super().__init__(master, path="layouts/flash_macro.json")
+        super().__init__(master, path=get_layout("flash_macro.json"))
         self.progress.grid_remove()
         self.msg_lbl["text"] = (
             "The uploaded macro will be permanently saved to the board.\n"
@@ -146,7 +146,7 @@ class App(AppBuilder, GlueInterface):
         self.catalogue: catalogue.CatalogueList = None
         self.macro_catalogue: tk.Frame = None
         self.main_pane: tk.PanedWindow = None
-        super().__init__(path="layouts/app.json")
+        super().__init__(path=get_layout("app.json"))
         self.connect_callbacks(self)
         MouseWheelDispatcher.set_up_mousewheel(self.main)
         s = ttk.Style()
@@ -156,9 +156,9 @@ class App(AppBuilder, GlueInterface):
         self._selected_device = self.NO_DEVICE
         self.device_select.on_change(self._on_device_selection)
         self.device_select.set_values((self.NO_DEVICE,))
-        self._package_image = tk.PhotoImage(file="resources/package.png")
-        self._play_image = tk.PhotoImage(file="resources/play.png")
-        self._pause_image = tk.PhotoImage(file="resources/pause.png")
+        self._package_image = tk.PhotoImage(file=get_resource("package.png"))
+        self._play_image = tk.PhotoImage(file=get_resource("play.png"))
+        self._pause_image = tk.PhotoImage(file=get_resource("pause.png"))
         self._items = {}
         self.active_macro: Macro = None
         self.macro_canvas._menu = self.macro_menu

@@ -1,7 +1,7 @@
 import functools
 import tkinter as tk
 
-from utils.platform import windowing_is, AQUA, platform_is, MAC, LINUX
+from ivh.utils.platform import windowing_is, AQUA, platform_is, MAC, LINUX
 
 
 class Manipulator:

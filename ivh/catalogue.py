@@ -1,7 +1,7 @@
 from collections import defaultdict
 from tkinter import Label, PhotoImage
 
-from ivh import commands
+from ivh import commands, get_resource
 from ivh.commands import CommandComponent, ComponentTree
 from ivh.glue import GlueInterface
 from ivh.ui import itemlist
@@ -21,7 +21,7 @@ class CatalogueItem(DraggableMixin, itemlist.CompoundList.BaseItem):
 
     def render(self):
         if isinstance(self.command, type):
-            self._image = PhotoImage(file=f"resources/{self.command.image}.png")
+            self._image = PhotoImage(file=get_resource(f"{self.command.image}.png"))
             self._text = Label(self, text=f"  {self.command.__name__}", anchor="w", image=self._image, compound="left")
             self._text.pack(fill="both", padx=10, pady="0 5")
         else:

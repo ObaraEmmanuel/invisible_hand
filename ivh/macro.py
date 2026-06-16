@@ -5,7 +5,7 @@ from tkinter import Label, PhotoImage
 
 import platformdirs
 
-from ivh import constants
+from ivh import constants, get_resource
 from ivh.keymaps import EnumEncoder, as_enum
 from ivh.ui.itemlist import CompoundList
 from ivh.ui.utils import EmptyScreen
@@ -69,7 +69,7 @@ class MacroItem(CompoundList.BaseItem):
         super().__init__(parent, val, i)
 
     def render(self):
-        self._image = PhotoImage(file="resources/file.png")
+        self._image = PhotoImage(file=get_resource("file.png"))
         self._text = Label(self, text=f"   {self._value.name}", anchor='w', image=self._image, compound="left")
         self._text.pack(fill="x", padx=10, pady="0 5")
 
@@ -94,7 +94,7 @@ class MacroList(CompoundList):
     def empty_screen(self):
         if self._empty_screen:
             return self._empty_screen
-        self._image = PhotoImage(file="resources/add_file.png")
+        self._image = PhotoImage(file=get_resource("add_file.png"))
         self._empty_screen = EmptyScreen(self, text="Add new macro file", image=self._image)
         return self._empty_screen
 

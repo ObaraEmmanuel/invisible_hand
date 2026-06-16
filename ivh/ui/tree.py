@@ -1,10 +1,10 @@
 import enum
 import tkinter as tk
 from tkinter import Frame, Label, PhotoImage
-
-from ui.scrolledframe import ScrolledFrame
-from ui.utils import chain, EventMask, DragWindow, WidgetTree
-from utils.geometry import absolute_bounds
+from ivh import get_resource
+from ivh.ui.scrolledframe import ScrolledFrame
+from ivh.ui.utils import chain, EventMask, DragWindow, WidgetTree
+from ivh.utils.geometry import absolute_bounds
 
 
 class InsertType(enum.IntEnum):
@@ -116,9 +116,9 @@ class Tree:
             if self.__icons_loaded:
                 return
             cls = self.__class__
-            cls.EXPANDED_ICON = PhotoImage(file="resources/collapse.png")
-            cls.COLLAPSED_ICON = PhotoImage(file="resources/expand.png")
-            cls.BLANK = PhotoImage(file="resources/blank.png")
+            cls.EXPANDED_ICON = PhotoImage(file=get_resource("collapse.png"))
+            cls.COLLAPSED_ICON = PhotoImage(file=get_resource("expand.png"))
+            cls.BLANK = PhotoImage(file=get_resource("blank.png"))
             cls.__icons_loaded = True
 
         @property

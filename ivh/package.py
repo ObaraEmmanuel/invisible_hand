@@ -1,6 +1,6 @@
 import binascii
 
-from keymaps import is_modifier, get_hid_usage, create_key_mask, create_button_mask
+from ivh.keymaps import is_modifier, get_hid_usage, create_key_mask, create_button_mask
 
 VERSION = 1
 

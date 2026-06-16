@@ -2,7 +2,7 @@ import time
 import tkinter as tk
 from tkinter import ttk, Frame
 
-from ui.utils import ScrollableInterface
+from ivh.ui.utils import ScrollableInterface
 
 
 class ScrolledFrame(tk.Frame, ScrollableInterface):

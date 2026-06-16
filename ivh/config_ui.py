@@ -10,10 +10,9 @@ from tkinter import ttk
 
 from formation import Builder
 
-from ivh import glue
+from ivh import glue, __version__, get_layout
 from ivh.comm import DeviceEventType, COMManger
 from ivh.ui.utils import center_window
-from ivh import __version__
 
 
 class FlashDialog(Builder):
@@ -24,7 +23,7 @@ class FlashDialog(Builder):
         self.log_text: tkinter.Text = None
         self.flash_progress: ttk.Progressbar = None
         self.close_btn: ttk.Button = None
-        super().__init__(parent, path="layouts/flash_firmware.json")
+        super().__init__(parent, path=get_layout("flash_firmware.json"))
         self.connect_callbacks(self)
         center_window(self.main, parent)
         self.main.transient(parent)
@@ -106,7 +105,7 @@ class ConfigWindow(Builder):
         self.com_advisory_lbl: ttk.Label = None
         self.flash_btn: ttk.Button = None
         self.version_lbl: ttk.Label = None
-        super().__init__(parent, path="layouts/config.json")
+        super().__init__(parent, path=get_layout("config.json"))
         self.connect_callbacks(self)
         self.version_lbl["text"] = f"Version {__version__}"
         self.com_advisory_lbl["text"] = (
