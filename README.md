@@ -11,7 +11,7 @@
 
 For detailed documentation, check out the [wiki](https://github.com/ObaraEmmanuel/invisible_hand/wiki).
 
-![showcase-img](resources/showcase.png)
+![showcase-img](https://raw.githubusercontent.com/ObaraEmmanuel/invisible_hand/main/resources/showcase.png)
 
 ---
 
