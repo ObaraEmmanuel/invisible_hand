@@ -9,7 +9,7 @@ readme = "README.md"
 authors = [
     {name = "Emmanuel Obara", email = "emmanuelobarany@gmail.com"},
 ]
-requires-python = ">=3.14"
+requires-python = ">=3.10"
 keywords = [
     "ivh", "invisible-hand", "auto-clicker", "automation", "esp32",
     "mouse-jiggler", "rubberducky", "keyboard-automation", "mouse-automation",
@@ -43,8 +43,11 @@ classifiers = [
     "Environment :: Cygwin (MS Windows)",
 
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: 3.15",
     "Operating System :: OS Independent",
 ]
 
