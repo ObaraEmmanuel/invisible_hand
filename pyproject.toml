@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ivh"
+description = "Turn common microcontrollers like ESP32 into programmable keyboards and mouse."
+readme = "README.md"
+authors = [
+    {name = "Emmanuel Obara", email = "emmanuelobarany@gmail.com"},
+]
+requires-python = ">=3.14"
+keywords = [
+    "ivh", "invisible-hand", "auto-clicker", "automation", "esp32",
+    "mouse-jiggler", "rubberducky", "keyboard-automation", "mouse-automation",
+]
+license = "GPL-3.0-only"
+license-files = ["LICEN[CS]E*"]
+dynamic = ["version"]
+dependencies = [
+    "formation-studio",
+    "pyserial",
+    "sv-ttk",
+    "esptool",
+    "platformdirs",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Embedded Systems",
+    "Topic :: System :: Hardware :: Universal Serial Bus (USB)",
+    "Topic :: System :: Hardware :: Universal Serial Bus (USB) :: Human Interface Device (HID)",
+    "Topic :: System :: Hardware",
+    "Topic :: System :: Hardware :: Hardware Drivers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+
+    "Environment :: Console",
+    "Environment :: Cygwin (MS Windows)",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Documentation = "https://github.com/ObaraEmmanuel/invisible_hand"
+Issues = "https://github.com/ObaraEmmanuel/invisible_hand/issues"
+Source = "https://github.com/ObaraEmmanuel/invisible_hand"
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["venv"]
+namespaces = false
+
+[tool.setuptools.package-data]
+"ivh.layouts" = ["*.json"]
+"ivh.resources" = ["*.png", "*.ico"]
+"ivh.firmware" = ["*/*.bin", "*.json"]
+
+[project.scripts]
+ivh = "ivh.main:run"
+
+[tool.setuptools.dynamic]
+version = {attr = "ivh.__version__"}

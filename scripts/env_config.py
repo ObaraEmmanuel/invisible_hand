@@ -12,8 +12,8 @@ from platformio.project.config import ProjectConfig
 
 
 config = ProjectConfig()
-spec_file = "upload_spec.json"
-firmware_folder = Path("firmware")
+firmware_folder = Path("ivh") / "firmware"
+spec_file = firmware_folder / "upload_spec.json"
 core_dir = Path(config.get("platformio", "core_dir"))
 build_dir = Path(config.get("platformio", "build_dir"))
 upload_spec = {}

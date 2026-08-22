@@ -12,3 +12,11 @@ def get_resource(name: str) -> pathlib.Path:
 
 def get_layout(name: str) -> pathlib.Path:
     return MODULE_DIR / "layouts" / name
+
+
+def get_firmware(name: str) -> pathlib.Path:
+    return MODULE_DIR / "firmware" / name
+
+
+def get_path_from_root(path: str) -> pathlib.Path:
+    return ROOT_DIR / pathlib.Path(path)

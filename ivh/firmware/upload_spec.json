@@ -13,10 +13,10 @@
       "--flash-size": "4MB"
     },
     "images": {
-      "0x1000": "firmware/nodemcu-32s/bootloader.bin",
-      "0x8000": "firmware/nodemcu-32s/partitions.bin",
-      "0xe000": "firmware/nodemcu-32s/boot_app0.bin",
-      "0x10000": "firmware/nodemcu-32s/firmware.bin"
+      "0x1000": "ivh/firmware/nodemcu-32s/bootloader.bin",
+      "0x8000": "ivh/firmware/nodemcu-32s/partitions.bin",
+      "0xe000": "ivh/firmware/nodemcu-32s/boot_app0.bin",
+      "0x10000": "ivh/firmware/nodemcu-32s/firmware.bin"
     },
     "tool": "esptool"
   },
@@ -34,10 +34,10 @@
       "--flash-size": "16MB"
     },
     "images": {
-      "0x0000": "firmware/esp32-s3-n16r8v/bootloader.bin",
-      "0x8000": "firmware/esp32-s3-n16r8v/partitions.bin",
-      "0xe000": "firmware/esp32-s3-n16r8v/boot_app0.bin",
-      "0x10000": "firmware/esp32-s3-n16r8v/firmware.bin"
+      "0x0000": "ivh/firmware/esp32-s3-n16r8v/bootloader.bin",
+      "0x8000": "ivh/firmware/esp32-s3-n16r8v/partitions.bin",
+      "0xe000": "ivh/firmware/esp32-s3-n16r8v/boot_app0.bin",
+      "0x10000": "ivh/firmware/esp32-s3-n16r8v/firmware.bin"
     },
     "tool": "esptool"
   },
@@ -55,10 +55,10 @@
       "--flash-size": "4MB"
     },
     "images": {
-      "0x1000": "firmware/esp32cam/bootloader.bin",
-      "0x8000": "firmware/esp32cam/partitions.bin",
-      "0xe000": "firmware/esp32cam/boot_app0.bin",
-      "0x10000": "firmware/esp32cam/firmware.bin"
+      "0x1000": "ivh/firmware/esp32cam/bootloader.bin",
+      "0x8000": "ivh/firmware/esp32cam/partitions.bin",
+      "0xe000": "ivh/firmware/esp32cam/boot_app0.bin",
+      "0x10000": "ivh/firmware/esp32cam/firmware.bin"
     },
     "tool": "esptool"
   }

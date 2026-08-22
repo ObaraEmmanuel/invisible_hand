@@ -10,7 +10,7 @@ from tkinter import ttk
 
 from formation import Builder
 
-from ivh import glue, __version__, get_layout
+from ivh import glue, __version__, get_layout, get_firmware, flash, get_path_from_root
 from ivh.comm import DeviceEventType, COMManger
 from ivh.ui.utils import center_window
 
@@ -40,14 +40,14 @@ class FlashDialog(Builder):
             # running in pyinstaller
             command = ["flash.exe"]
         else:
-            command = [sys.executable, "flash.py"]
+            command = [sys.executable, flash.__file__]
 
         for option in self.spec["options"]:
             command.append(option)
             if self.spec["options"][option] != '':
                 command.append(self.spec["options"][option])
         for offset, image in self.spec["images"].items():
-            command.extend([offset, image])
+            command.extend([offset, get_path_from_root(image)])
         return command
 
     def _flash(self):
@@ -128,7 +128,7 @@ class ConfigWindow(Builder):
         self._on_value_change()
         self.board_selector["values"] = ["test", "test2", "test3"]
         self.upload_spec = {}
-        with open("upload_spec.json", "r") as f:
+        with open(get_firmware("upload_spec.json"), "r") as f:
             self.upload_spec = json.load(f)
         self.board_selector["values"] = list(self.upload_spec.keys())
 

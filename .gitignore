@@ -26,4 +26,4 @@ MANIFEST
 *.manifest
 *.bin
 .idea/
-firmware/
+firmware/*/*.bin
