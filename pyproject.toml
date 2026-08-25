@@ -9,7 +9,7 @@ readme = "README.md"
 authors = [
     {name = "Emmanuel Obara", email = "emmanuelobarany@gmail.com"},
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = [
     "ivh", "invisible-hand", "auto-clicker", "automation", "esp32",
     "mouse-jiggler", "rubberducky", "keyboard-automation", "mouse-automation",
@@ -18,7 +18,7 @@ license = "GPL-3.0-only"
 license-files = ["LICEN[CS]E*"]
 dynamic = ["version"]
 dependencies = [
-    "formation-studio",
+    "formation-studio>=0.9.0",
     "pyserial",
     "sv-ttk",
     "esptool",
