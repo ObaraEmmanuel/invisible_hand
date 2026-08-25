@@ -28,12 +28,22 @@ void IVHMachine::pause() {
         return;
     tempState = state;
     state = IVH_ST_PAUSED;
+    // mark when pause started so we can compensate later
+    pauseMicro = _interface->getMicros();
+    _interface->pause();
 }
 
 void IVHMachine::resume() {
     if (state != IVH_ST_PAUSED)
         return;
+
     state = tempState;
+    if (pauseMicro && (state == IVH_ST_WAITING || state == IVH_ST_WAITING_INTERNAL)) {
+        // compensate delay deadline with time elapsed in pause state
+        deadlineMicro += _interface->getMicros() - pauseMicro;
+        pauseMicro = 0;
+    }
+    _interface->resume();
 }
 
 void IVHMachine::setPressInterval(uint64_t _interval) {
@@ -477,6 +487,9 @@ IVHErr_t IVHMachine::start() {
     _returnOffset = 0;
     depth = 0;
     stackPointer = 0;
+    pauseMicro = 0;
+    deadlineMicro = 0;
+    _interface->reset();
     return IVH_ERR_OK;
 }
 

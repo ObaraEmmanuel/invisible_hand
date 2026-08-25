@@ -50,6 +50,35 @@ bool BLEHID::begin() {
     return true;
 }
 
+void BLEHID::pause() {
+    if (!isConnected)
+        return;
+    // send empty reports to stop all ongoing actions while keeping internal state intact
+    KeyboardInputReport report = {};
+    input->setValue(reinterpret_cast<uint8_t *>(&report), sizeof(report));
+    input->notify();
+    MouseInputReport mReport = {};
+    mouse_input->setValue(reinterpret_cast<uint8_t *>(&mReport), sizeof(mReport));
+    mouse_input->notify();
+}
+
+void BLEHID::resume() {
+    if (!isConnected)
+        return;
+    // resend keyboard keys
+    send_keys();
+    // resend mouse button states
+    buttonHold(0);
+}
+
+void BLEHID::reset() {
+    if (!isConnected)
+        return;
+    // clear internal state
+    keyReleaseAll();
+    buttonReleaseAll();
+}
+
 void BLEHID::onConnect(BLEServer *server) {
     isConnected = true;
 

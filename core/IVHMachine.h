@@ -116,6 +116,12 @@ public:
 
     virtual uint64_t getRandom(uint64_t min, uint64_t max) = 0;
 
+    virtual void pause();
+
+    virtual void resume();
+
+    virtual void reset();
+
     virtual void keyHold(uint8_t *key, uint8_t len, uint8_t modifier) = 0;
 
     virtual void keyRelease(uint8_t *key, uint8_t len, uint8_t modifier) = 0;
@@ -220,6 +226,6 @@ protected:
     IVHBuffer stack = {};
     IVHErr err = IVH_ERR_OK;
     IVHState state = IVH_ST_INVALID, tempState = {};
-    uint64_t currentMicro = 1, deadlineMicro = 0;
+    uint64_t currentMicro = 1, deadlineMicro = 0, pauseMicro = 0;
     IVHParam param1 = {}, param2 = {}, param3 = {};
 };

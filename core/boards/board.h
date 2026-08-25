@@ -25,6 +25,12 @@ public:
 
     // HID methods
 
+    void pause() override;
+
+    void resume() override;
+
+    void reset() override;
+
     void keyHold(uint8_t *key, uint8_t len, uint8_t modifier) override;
 
     void keyRelease(uint8_t *key, uint8_t len, uint8_t modifier) override;

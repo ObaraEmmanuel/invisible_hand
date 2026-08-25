@@ -12,6 +12,12 @@ public:
 
     virtual bool begin();
 
+    virtual void pause();
+
+    virtual void resume();
+
+    virtual void reset();
+
     virtual void keyHold(uint8_t *keys, uint8_t len, uint8_t modifier);
 
     virtual void keyRelease(uint8_t *keys, uint8_t len, uint8_t modifier);

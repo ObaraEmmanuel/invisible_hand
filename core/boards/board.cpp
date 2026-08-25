@@ -13,6 +13,18 @@ uint8_t Board::getInputType() const {
     return hid->type;
 }
 
+void Board::pause() {
+    hid->pause();
+}
+
+void Board::resume() {
+    hid->resume();
+}
+
+void Board::reset() {
+    hid->reset();
+}
+
 void Board::keyHold(uint8_t *key, uint8_t len, uint8_t modifier) {
     hid->keyHold(key, len, modifier);
 }

@@ -49,6 +49,12 @@ public:
 
     bool begin() override;
 
+    void pause() override;
+
+    void resume() override;
+
+    void reset() override;
+
     void onConnect(BLEServer* server) override;
 
     void onDisconnect(BLEServer* server) override;
