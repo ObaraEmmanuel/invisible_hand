@@ -116,7 +116,8 @@ IVHCommand_t IVHMachine::_readKey(uint8_t key) {
         case 0x8:
         case 0xC: {
             keys[0] = package[currentOffset++];
-            param1.len = 1;;
+            param1.len = 1;
+            param2.modifier = 0;
             break;
         }
         case 0x5:
