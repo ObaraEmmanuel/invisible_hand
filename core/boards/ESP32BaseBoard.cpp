@@ -73,7 +73,9 @@ void ESP32BaseBoard::updateIndicators() {
 }
 
 uint64_t ESP32BaseBoard::getRandom(uint64_t min, uint64_t max) {
-    return random(static_cast<long>(min), static_cast<long>(max));
+    // IVH machine requires random values in the closed range [min, max]
+    // arduino random returns values in open range [min, max) so add 1
+    return random(static_cast<long>(min), static_cast<long>(max + 1));
 }
 
 uint64_t ESP32BaseBoard::getMicros() {
