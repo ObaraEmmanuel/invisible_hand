@@ -128,7 +128,7 @@ class App(AppBuilder, GlueInterface):
         GlueInterface.set_instance(self)
         self.main: tk.Tk = None
         self.package_list: ttk.Treeview = None
-        self.package_box: tk.Frame = None
+        self.package_body: tk.Frame = None
         self.device_select: DeviceSelector = None
         self.upload_btn: ttk.Button = None
         self.play_btn: ttk.Button = None
@@ -204,6 +204,9 @@ class App(AppBuilder, GlueInterface):
         self._upload_package = b''
         self._total_upload = 1
         self._last_state = IVHState.UNSET
+        self.package_body.config()
+        for w in [self.package_body, self.package_list, self.macro_catalogue]:
+            w.config(highlightcolor="#2a2a2a", highlightbackground="#2a2a2a")
 
     def _on_device_added(self, device: IVHDevice):
         if device in self._devices:
