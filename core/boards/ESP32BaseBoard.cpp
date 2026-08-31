@@ -1,12 +1,15 @@
 #include "ESP32BaseBoard.h"
 #include <Arduino.h>
 #include <LittleFS.h>
+#include <esp_task_wdt.h>
 
 #define PACKAGE_FILE "/package.ivh"
 
 #ifndef LED_HIGH_LOGIC
 #define LED_HIGH_LOGIC 1
 #endif
+
+#define WDT_TIMEOUT 5
 
 
 bool ESP32BaseBoard::setup() {
@@ -39,6 +42,10 @@ bool ESP32BaseBoard::setup() {
         hasFileSystem = false;
     }
 
+    // enable watchdog timer
+    esp_task_wdt_init(WDT_TIMEOUT, true);
+    esp_task_wdt_add(nullptr);
+
     return true;
 }
 
@@ -58,6 +65,8 @@ void ESP32BaseBoard::loop() {
     }
     hidLEDState = hid->LEDs;
     updateIndicators();
+    // reset watchdog timer
+    esp_task_wdt_reset();
 }
 
 bool ESP32BaseBoard::ready() {
