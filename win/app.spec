@@ -9,9 +9,7 @@ a = Analysis(
     datas=[
         ('../ivh/resources', 'ivh/resources'),
         ('../ivh/layouts', 'ivh/layouts'),
-        ('../firmware', 'firmware'),
-        ('../upload_spec.json', '.')
-
+        ('../ivh/firmware', 'ivh/firmware'),
     ],
     hiddenimports=[
         "os",

@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "Invisible Hand"
-#define MyAppVersion "2026.0.3"
+#define MyAppVersion "2026.0.5"
 #define MyAppPublisher "Barracoder"
 #define MyAppExeName "Invisible Hand.exe"
 #expr EmitLanguagesSection
@@ -30,8 +30,8 @@ DisableProgramGroupPage=yes
 LicenseFile=..\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputDir=dist
-OutputBaseFilename=invisible-hand-{#MyAppVersion}
+OutputDir=..\dist
+OutputBaseFilename=invisible-hand-{#MyAppVersion}-setup
 SolidCompression=yes
 WizardStyle=modern dynamic
 
@@ -39,8 +39,8 @@ WizardStyle=modern dynamic
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "dist\Invisible Hand\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "dist\Invisible Hand\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\Invisible Hand\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\dist\Invisible Hand\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
